@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 
 export interface UseLongPressOptions {
@@ -95,6 +95,13 @@ export function useLongPress(cb: () => void, opts: UseLongPressOptions = {}): Us
   const onPointerCancel = useCallback(() => {
     stop();
   }, [stop]);
+
+  // Se il componente si smonta a meta' pressione (es. la bimba naviga via
+  // dallo schermo mentre l'adulto sta ancora tenendo premuto), l'intervallo
+  // avviato in onPointerDown deve essere fermato: altrimenti continuerebbe a
+  // girare su uno hook ormai smontato e, peggio, invocherebbe cbRef.current()
+  // (pausa/uscita/child-lock) su una schermata che l'utente ha gia' lasciato.
+  useEffect(() => stop, [stop]);
 
   return {
     handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel },

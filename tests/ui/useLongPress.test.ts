@@ -127,4 +127,33 @@ describe('useLongPress', () => {
     expect(samples[samples.length - 1]).toBe(1);
     expect(onFire).toHaveBeenCalledTimes(1);
   });
+
+  test('lo smontaggio a meta pressione ferma il timer: il callback non scatta dopo', () => {
+    const onFire = vi.fn();
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
+    const { unmount } = render(createElement(Probe, { onFire }));
+    const target = screen.getByTestId('target');
+
+    act(() => {
+      fireEvent.pointerDown(target, { clientX: 0, clientY: 0 });
+    });
+    act(() => {
+      // Pressione a meta' strada, ben prima della soglia di attivazione
+      // (ms=3000): il componente scompare mentre l'intervallo e' ancora vivo.
+      vi.advanceTimersByTime(1000);
+    });
+
+    const callsBeforeUnmount = clearIntervalSpy.mock.calls.length;
+    unmount();
+    expect(clearIntervalSpy.mock.calls.length).toBeGreaterThan(callsBeforeUnmount);
+
+    act(() => {
+      // Ben oltre ms: se l'intervallo fosse sopravvissuto allo smontaggio,
+      // scatterebbe qui invocando cbRef.current() su uno hook gia' smontato.
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(onFire).not.toHaveBeenCalled();
+    clearIntervalSpy.mockRestore();
+  });
 });
