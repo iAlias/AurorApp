@@ -1,7 +1,45 @@
 import { render, screen } from '@testing-library/react';
 import App from '../src/App';
+import { useApp } from '../src/app/store';
+import type { ChildProfile } from '../src/core/catalog/types';
 
-test('App renderizza il titolo AurorApp', () => {
-  render(<App />);
+// Task 1 introduceva App come placeholder statico (`<h1>AurorApp</h1>`) senza
+// routing. Task 7 lo sostituisce con il vero shell di navigazione
+// (RouterProvider): questo test è stato aggiornato di conseguenza — non più
+// un render nudo, ma uno smoke test end-to-end dell'App reale (store +
+// router + Layout), passando `initialEntries` per usare MemoryRouter invece
+// della history del browser. Il testo "AurorApp" (branding, ora nella
+// sidebar di `Layout`) resta verificato, cosi' come il comportamento di
+// redirect da Task 7.
+
+function profileFixture(): ChildProfile {
+  return {
+    id: 'child-1',
+    name: 'Aurora',
+    avatarId: 'volpina',
+    birthdate: '2023-05-10',
+    interests: ['animali'],
+    spaces: ['casa'],
+    vacationStart: '2026-07-01',
+    vacationEnd: '2026-08-31',
+    createdAt: '2026-07-04T09:00:00.000Z',
+  };
+}
+
+beforeEach(() => {
+  useApp.setState({ profile: null });
+});
+
+test('con profilo, App mostra il brand AurorApp e reindirizza a Oggi', () => {
+  useApp.setState({ profile: profileFixture() });
+  render(<App initialEntries={['/']} />);
+
   expect(screen.getByText(/AurorApp/)).toBeInTheDocument();
+  expect(screen.getByText(/Oggi \(placeholder\)/i)).toBeInTheDocument();
+});
+
+test('senza profilo, App reindirizza al wizard', () => {
+  render(<App initialEntries={['/']} />);
+
+  expect(screen.getByText(/Wizard \(placeholder\)/i)).toBeInTheDocument();
 });

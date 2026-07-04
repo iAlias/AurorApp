@@ -1,7 +1,13 @@
-export default function App() {
-  return (
-    <main className="min-h-screen grid place-items-center bg-gradient-to-br from-sun to-[#FF9A3D]">
-      <h1 className="font-display text-5xl text-deep">AurorApp 🌈</h1>
-    </main>
-  );
+import { useMemo } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { createAppRouter } from './app/router';
+
+export interface AppProps {
+  /** Solo per i test: forza `MemoryRouter` invece della history del browser reale. */
+  initialEntries?: string[];
+}
+
+export default function App({ initialEntries }: AppProps = {}) {
+  const router = useMemo(() => createAppRouter(initialEntries), [initialEntries]);
+  return <RouterProvider router={router} />;
 }
