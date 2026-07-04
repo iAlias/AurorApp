@@ -1,0 +1,168 @@
+import { differenceInMonths, differenceInYears, parseISO } from 'date-fns';
+import { RoutineSettings, MealSettings } from '../../core/catalog/types';
+
+/**
+ * Valida il nome del bambino.
+ * Regole: trim, 1–20 caratteri, ammessi lettere unicode/spazi/apostrofi/accenti
+ * Regex: /^[\p{L}][\p{L}' ]{0,19}$/u (inizia con lettera, seguito da 0–19 di lettere/spazi/apostrofi)
+ */
+export function validateName(name: string): string | null {
+  const trimmed = name.trim();
+
+  // Regex pattern: starts with unicode letter, followed by 0-19 of (unicode letters, spaces, or apostrophes)
+  const nameRegex = /^[\p{L}][\p{L}' ]{0,19}$/u;
+
+  if (!nameRegex.test(trimmed)) {
+    return 'Il nome deve avere 1–20 caratteri e contenere solo lettere, spazi e apostrofi.';
+  }
+
+  return null;
+}
+
+/**
+ * Valida le date di vacanza.
+ * Regole: end > start, differenza <= 180 giorni
+ */
+export function validateVacation(startISO: string, endISO: string): string | null {
+  const start = parseISO(startISO);
+  const end = parseISO(endISO);
+
+  // end must be after start
+  if (end <= start) {
+    return 'La data di fine vacanza deve essere successiva alla data di inizio.';
+  }
+
+  // Calculate difference in days
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = diffMs / msPerDay;
+
+  if (diffDays > 180) {
+    return 'La vacanza non può durare più di 180 giorni.';
+  }
+
+  return null;
+}
+
+/**
+ * Calcola l'etichetta dell'età del bambino in formato italiano.
+ * Esempio: "3 anni e 1 mese"
+ */
+export function ageLabel(birthISO: string, todayISO: string): string {
+  const birth = parseISO(birthISO);
+  const today = parseISO(todayISO);
+
+  const years = differenceInYears(today, birth);
+  const months = differenceInMonths(today, birth) % 12;
+
+  // Build the label
+  let label = '';
+
+  // Add years part
+  if (years === 1) {
+    label += '1 anno';
+  } else if (years > 1) {
+    label += `${years} anni`;
+  }
+
+  // Add months part
+  if (months > 0) {
+    if (label) {
+      label += ' e ';
+    }
+    if (months === 1) {
+      label += '1 mese';
+    } else {
+      label += `${months} mesi`;
+    }
+  }
+
+  // Handle case where years = 0 (less than 1 year old)
+  if (years === 0 && months === 0) {
+    label = 'meno di 1 mese';
+  } else if (years === 0) {
+    if (months === 1) {
+      label = '1 mese';
+    } else {
+      label = `${months} mesi`;
+    }
+  }
+
+  return label;
+}
+
+/**
+ * Ritorna un messaggio di avvertimento se il bambino non è nel range 2–5 anni.
+ * Altrimenti ritorna null (OK).
+ */
+export function ageWarning(birthISO: string, todayISO: string): string | null {
+  const birth = parseISO(birthISO);
+  const today = parseISO(todayISO);
+
+  const years = differenceInYears(today, birth);
+
+  if (years < 2) {
+    return 'Aurora è pensata per bambini tra i 2 e i 5 anni. Questo bambino è troppo piccolo.';
+  }
+
+  if (years > 5) {
+    return 'Aurora è pensata per bambini tra i 2 e i 5 anni. Questo bambino è troppo grande.';
+  }
+
+  return null;
+}
+
+/**
+ * Converte un orario HH:mm in minuti da mezzanotte.
+ */
+function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+/**
+ * Valida la configurazione della routine.
+ * Controlla che gli orari siano in ordine crescente (strettamente).
+ */
+export function validateRoutine(
+  r: RoutineSettings,
+  _meals: MealSettings,
+): string | null {
+  const times = [
+    { name: 'wakeTime', value: r.wakeTime },
+    { name: 'breakfastEnd', value: r.breakfastEnd },
+    { name: 'morningSnackStart', value: r.morningSnackStart },
+    { name: 'morningSnackEnd', value: r.morningSnackEnd },
+    { name: 'lunchStart', value: r.lunchStart },
+    { name: 'napStart', value: r.napStart },
+    { name: 'afternoonSnackEnd', value: r.afternoonSnackEnd },
+    { name: 'dinnerStart', value: r.dinnerStart },
+    { name: 'bedTime', value: r.bedTime },
+  ];
+
+  // Check that times are in strictly increasing order
+  for (let i = 0; i < times.length - 1; i++) {
+    const current = timeToMinutes(times[i].value);
+    const next = timeToMinutes(times[i + 1].value);
+
+    if (current >= next) {
+      return 'Gli orari della routine devono essere in ordine crescente. Verifica che questo orario lascia troppo poco tempo per giocare.';
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Avatar costanti
+ */
+export const AVATARS = [
+  { id: 'volpina', emoji: '🦊', label: 'volpina' },
+  { id: 'coniglietta', emoji: '🐰', label: 'coniglietta' },
+  { id: 'orsetta', emoji: '🐻', label: 'orsetta' },
+  { id: 'gattina', emoji: '🐱', label: 'gattina' },
+  { id: 'dinosaura', emoji: '🦖', label: 'dinosaura' },
+  { id: 'unicorno', emoji: '🦄', label: 'unicorno' },
+  { id: 'ranocchia', emoji: '🐸', label: 'ranocchia' },
+  { id: 'stellina', emoji: '⭐', label: 'stellina' },
+];
