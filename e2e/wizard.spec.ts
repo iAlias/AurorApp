@@ -48,3 +48,26 @@ test('refresh dopo wizard: profilo persistito', async ({ page }) => {
   await expect(page).toHaveURL(/oggi/);
   await expect(page.getByText('Aurora', { exact: true })).toBeVisible();
 });
+
+test('Indietro dal riepilogo (step 6) torna allo step 5', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /iniziamo/i }).click();
+  await page.getByLabel(/nome/i).fill('Aurora');
+  await page.getByText('🦊').click();
+  await page.getByRole('button', { name: /avanti/i }).click();
+  await page.getByRole('button', { name: /avanti/i }).click();
+  await page.getByRole('button', { name: /avanti/i }).click();
+  await page.getByRole('button', { name: /animali/i }).click();
+  await page.getByRole('button', { name: /casa/i }).click();
+  await page.getByRole('button', { name: /avanti/i }).click();
+
+  // Ora siamo sul riepilogo (step 6): il CTA finale e' visibile.
+  await expect(page.getByRole('button', { name: /crea la nostra estate/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /indietro/i }).click();
+
+  // Torniamo allo step 5 (interessi/spazi): la sua intestazione riappare e
+  // il CTA del riepilogo scompare.
+  await expect(page.getByRole('heading', { name: /cosa le piace fare/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /crea la nostra estate/i })).toHaveCount(0);
+});

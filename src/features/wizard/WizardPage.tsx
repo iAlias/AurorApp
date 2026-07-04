@@ -120,7 +120,7 @@ export function WizardPage() {
       spaces,
       vacationStart,
       vacationEnd,
-      createdAt: new Date().toISOString(),
+      createdAt: existingProfile?.createdAt ?? new Date().toISOString(),
     };
     completeWizard(profile, routine);
     navigate(isRelaunch ? '/impostazioni' : '/oggi', { replace: true });
@@ -131,6 +131,7 @@ export function WizardPage() {
 
   const showFooterNav = step > 0 && step < TOTAL_STEPS - 1;
   const showBack = step > entryStep && step < TOTAL_STEPS - 1;
+  const showBackOnSummary = step > entryStep;
 
   return (
     <div className="flex min-h-screen flex-col bg-cream">
@@ -210,7 +211,7 @@ export function WizardPage() {
         </div>
       )}
 
-      {step === TOTAL_STEPS - 1 && showBack && (
+      {step === TOTAL_STEPS - 1 && showBackOnSummary && (
         <div className="px-6 pb-4">
           <Button type="button" variant="ghost" onClick={goBack}>
             Indietro
