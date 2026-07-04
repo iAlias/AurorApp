@@ -96,9 +96,14 @@ describe('wizardLogic', () => {
       expect(result).toBe('2 mesi');
     });
 
-    test('0 mesi quando stesso mese e giorno', () => {
-      const result = ageLabel('2025-07-04', '2026-07-04');
-      expect(result).toBe('1 anno');
+    test('meno di 1 mese quando nato oggi (years===0, months===0)', () => {
+      const result = ageLabel('2026-07-04', '2026-07-04');
+      expect(result).toBe('meno di 1 mese');
+    });
+
+    test('3 mesi quando nato meno di 1 anno fa (years===0, months>0)', () => {
+      const result = ageLabel('2026-04-04', '2026-07-04');
+      expect(result).toBe('3 mesi');
     });
 
     test('conta correttamente con boundary di mese', () => {

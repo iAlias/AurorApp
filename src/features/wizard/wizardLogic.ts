@@ -1,4 +1,4 @@
-import { differenceInMonths, differenceInYears, parseISO } from 'date-fns';
+import { differenceInCalendarDays, differenceInMonths, differenceInYears, parseISO } from 'date-fns';
 import { RoutineSettings, MealSettings } from '../../core/catalog/types';
 
 /**
@@ -32,10 +32,8 @@ export function validateVacation(startISO: string, endISO: string): string | nul
     return 'La data di fine vacanza deve essere successiva alla data di inizio.';
   }
 
-  // Calculate difference in days
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const diffMs = end.getTime() - start.getTime();
-  const diffDays = diffMs / msPerDay;
+  // Calculate difference in calendar days (DST-safe, unlike raw ms subtraction)
+  const diffDays = differenceInCalendarDays(end, start);
 
   if (diffDays > 180) {
     return 'La vacanza non può durare più di 180 giorni.';
@@ -54,6 +52,11 @@ export function ageLabel(birthISO: string, todayISO: string): string {
 
   const years = differenceInYears(today, birth);
   const months = differenceInMonths(today, birth) % 12;
+
+  // Under 1 year old and no full months yet: no years/months part to report.
+  if (years === 0 && months === 0) {
+    return 'meno di 1 mese';
+  }
 
   // Build the label
   let label = '';
@@ -74,17 +77,6 @@ export function ageLabel(birthISO: string, todayISO: string): string {
       label += '1 mese';
     } else {
       label += `${months} mesi`;
-    }
-  }
-
-  // Handle case where years = 0 (less than 1 year old)
-  if (years === 0 && months === 0) {
-    label = 'meno di 1 mese';
-  } else if (years === 0) {
-    if (months === 1) {
-      label = '1 mese';
-    } else {
-      label = `${months} mesi`;
     }
   }
 
