@@ -30,7 +30,7 @@ beforeEach(() => {
 describe('router: "/" redirect (FR-1)', () => {
   test('senza profilo, "/" reindirizza a /wizard', () => {
     renderAt('/');
-    expect(screen.getByText(/Wizard \(placeholder\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /iniziamo/i })).toBeInTheDocument();
   });
 
   test('con profilo, "/" reindirizza a /oggi', () => {

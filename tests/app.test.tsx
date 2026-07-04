@@ -41,5 +41,5 @@ test('con profilo, App mostra il brand AurorApp e reindirizza a Oggi', () => {
 test('senza profilo, App reindirizza al wizard', () => {
   render(<App initialEntries={['/']} />);
 
-  expect(screen.getByText(/Wizard \(placeholder\)/i)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /iniziamo/i })).toBeInTheDocument();
 });
