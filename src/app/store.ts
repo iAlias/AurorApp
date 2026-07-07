@@ -2,17 +2,31 @@ import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
 import type {
   ChildProfile,
+  DayPlan,
   MealSettings,
   RoutineSettings,
   Settings,
+  SlotId,
+  SlotStatus,
   StorageEnvelope,
   TimerSession,
+  Weather,
 } from '../core/catalog/types';
+import { ACTIVITIES } from '../core/catalog/activities';
 import { STORAGE_KEY, emptyEnvelope } from '../core/storage/envelope';
 import { loadEnvelope, makeDebouncedSave, saveNow } from '../core/storage/persist';
 import { next } from '../core/timer/timerMachine';
 import type { TimerEvent } from '../core/timer/timerMachine';
 import { restore } from '../core/timer/progress';
+import {
+  applyWeather,
+  generateDayPlan,
+  isFamilyDay,
+  materializeUpTo,
+  regenerateDay,
+  swapActivity,
+} from '../core/planner/generator';
+import type { GenContext } from '../core/planner/generator';
 
 // ——— Stato di idratazione ———
 export type StorageStatus = 'ready' | 'corrupted';
@@ -28,7 +42,13 @@ export interface AppStore extends StorageEnvelope {
   resetAll(): void;
   timerDispatch(e: TimerEvent): void;
   restoreTimer(now: number): void;
-  // azioni piani/progressi aggiunte nei task 10/12/13 — firme definite lì
+  ensurePlansUpTo(dateISO: string): void;
+  markSlot(dateISO: string, slotId: SlotId, status: SlotStatus): void;
+  swapSlot(dateISO: string, slotId: SlotId): { exhausted: boolean };
+  regenerate(dateISO: string): void;
+  setWeather(dateISO: string, w: Weather): void;
+  setSpecial(dateISO: string, special: DayPlan['special'] | undefined): void;
+  // azioni progresso aggiunte nel task 18 — firme definite lì
 }
 
 /** Estrae i soli campi persistibili (StorageEnvelope) da uno stato che li contiene. */
@@ -89,6 +109,29 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     };
     saveNow(localStorage, env);
     set({ timer: env.timer, progress: env.progress, savedAt: env.savedAt });
+  }
+
+  /**
+   * Contesto per le funzioni pure del generatore (Task 12). `null` se il
+   * wizard non è ancora stato completato: senza profilo non esiste una
+   * `vacationStart`/seed su cui basare alcuna generazione, quindi le azioni
+   * piani diventano no-op sicuri (la UI chiamante evita comunque di
+   * invocarle prima del wizard).
+   */
+  function genCtx(state: StorageEnvelope): GenContext | null {
+    if (!state.profile) return null;
+    return { profile: state.profile, settings: state.settings, catalog: ACTIVITIES, plans: state.plans };
+  }
+
+  /** Scrive subito su localStorage (write-through) i piani aggiornati e aggiorna lo stato. */
+  function commitPlans(state: StorageEnvelope, plans: Record<string, DayPlan>): void {
+    const env: StorageEnvelope = {
+      ...toEnvelope(state),
+      savedAt: new Date().toISOString(),
+      plans,
+    };
+    saveNow(localStorage, env);
+    set({ plans: env.plans, savedAt: env.savedAt });
   }
 
   return {
@@ -160,6 +203,108 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
       const restored = restore(state.timer, now);
       if (restored === state.timer) return; // nessuna ricostruzione necessaria
       commitTimerTransition(restored, prevStatus);
+    },
+
+    /**
+     * Materializza (Task 12: `materializeUpTo`) tutti i giorni mancanti da
+     * `profile.vacationStart` fino a `dateISO` incluso e li unisce ai piani
+     * esistenti. No-op se il profilo non è ancora impostato o se non ci sono
+     * giorni nuovi da aggiungere (evita scritture inutili).
+     */
+    ensurePlansUpTo(dateISO) {
+      const state = get();
+      const ctx = genCtx(state);
+      if (!ctx) return;
+      const newPlans = materializeUpTo(dateISO, ctx);
+      if (Object.keys(newPlans).length === 0) return;
+      commitPlans(state, { ...state.plans, ...newPlans });
+    },
+
+    /**
+     * Aggiorna lo stato di un solo slot. Puro store: nessun side-effect
+     * audio (di competenza della UI) e nessun ricalcolo di `progress`
+     * (streak/badge arrivano nel Task 18). Idempotente (E4): se lo slot è
+     * già nello stato richiesto non scrive nulla, così una doppia chiamata
+     * consecutiva lascia lo stato — e la sua identità di riferimento —
+     * invariato dopo la 2ª chiamata quanto dopo la 1ª.
+     */
+    markSlot(dateISO, slotId, status) {
+      const state = get();
+      const plan = state.plans[dateISO];
+      if (!plan) return;
+      const cur = plan.slots.find((s) => s.slotId === slotId);
+      if (!cur || cur.status === status) return;
+      const newPlan: DayPlan = {
+        ...plan,
+        slots: plan.slots.map((s) => (s.slotId === slotId ? { ...s, status } : s)),
+      };
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+    },
+
+    swapSlot(dateISO, slotId) {
+      const state = get();
+      const plan = state.plans[dateISO];
+      const ctx = genCtx(state);
+      if (!plan || !ctx) return { exhausted: false };
+      const { plan: newPlan, exhausted } = swapActivity(plan, slotId, ctx);
+      if (newPlan === plan) return { exhausted }; // slot inesistente o già esaurito: nessuna scrittura
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+      return { exhausted };
+    },
+
+    regenerate(dateISO) {
+      const state = get();
+      const plan = state.plans[dateISO];
+      const ctx = genCtx(state);
+      if (!plan || !ctx) return;
+      const newPlan = regenerateDay(plan, ctx);
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+    },
+
+    /** Delega ad `applyWeather` (Task 12), che già non tocca mai gli slot `done`. */
+    setWeather(dateISO, w) {
+      const state = get();
+      const plan = state.plans[dateISO];
+      const ctx = genCtx(state);
+      if (!plan || !ctx) return;
+      const newPlan = applyWeather(plan, w, ctx);
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+    },
+
+    /**
+     * `special` impostato → il giorno diventa "speciale" (slots: []).
+     * `special: undefined` → torna un giorno normale: rigenera gli slot con
+     * `generateDayPlan` mantenendo lo stesso `regenNonce`. Il piano corrente
+     * per `dateISO` viene escluso dal `plans` passato al generatore, perché
+     * `buildDay` altrimenti rileggerebbe da lì lo `special` appena rimosso
+     * (fallback interno per rigenerazioni "in place").
+     */
+    setSpecial(dateISO, special) {
+      const state = get();
+      const ctx = genCtx(state);
+      if (!ctx) return;
+      const plan = state.plans[dateISO];
+
+      let newPlan: DayPlan;
+      if (special) {
+        newPlan = {
+          date: dateISO,
+          familyDay: plan?.familyDay ?? isFamilyDay(dateISO),
+          special,
+          weather: plan?.weather ?? 'sole',
+          regenNonce: plan?.regenNonce ?? 0,
+          slots: [],
+        };
+      } else {
+        if (!plan) return;
+        const plansWithoutToday = { ...state.plans };
+        delete plansWithoutToday[dateISO];
+        newPlan = generateDayPlan(dateISO, plan.weather, plan.regenNonce, {
+          ...ctx,
+          plans: plansWithoutToday,
+        });
+      }
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
     },
   };
 });
