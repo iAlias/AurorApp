@@ -93,3 +93,52 @@ describe('restoreTimer — recovery E1', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 });
+
+describe('sessione "done" non blocca /timer — regressione bug critico', () => {
+  test('CELEBRATION_DONE azzera il timer a null (non resta persistito status:"done")', async () => {
+    const { useApp } = await freshStore();
+    const nowSpy = vi.spyOn(Date, 'now');
+
+    nowSpy.mockReturnValue(0);
+    useApp
+      .getState()
+      .timerDispatch({ type: 'START', meal: 'pranzo', durationMs: 60 * MIN, dateISO: '2026-07-04' });
+
+    nowSpy.mockReturnValue(61 * MIN);
+    useApp.getState().timerDispatch({ type: 'TICK' }); // -> celebrating
+    expect(useApp.getState().timer?.status).toBe('celebrating');
+
+    useApp.getState().timerDispatch({ type: 'CELEBRATION_DONE' });
+
+    // Se restasse persistito {status:'done'}, un mount successivo di
+    // MealTimerPage (es. al pasto seguente) lo tratterebbe erroneamente come
+    // "sessione da mostrare" e non potrebbe più avviarne una nuova: deve
+    // invece diventare null, esattamente come "nessuna sessione".
+    expect(useApp.getState().timer).toBeNull();
+    expect(useApp.getState().progress.mealTimersCompleted).toBe(1); // invariato: già contato a 'celebrating'
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const saved = JSON.parse(raw as string) as StorageEnvelope;
+    expect(saved.timer).toBeNull();
+  });
+
+  test('FINISH_EARLY → CELEBRATION_DONE: stesso comportamento (timer null, pronto per un secondo pasto)', async () => {
+    const { useApp } = await freshStore();
+    const nowSpy = vi.spyOn(Date, 'now');
+
+    nowSpy.mockReturnValue(0);
+    useApp
+      .getState()
+      .timerDispatch({ type: 'START', meal: 'cena', durationMs: 60 * MIN, dateISO: '2026-07-04' });
+    useApp.getState().timerDispatch({ type: 'FINISH_EARLY' });
+    useApp.getState().timerDispatch({ type: 'CELEBRATION_DONE' });
+
+    expect(useApp.getState().timer).toBeNull();
+
+    // Un secondo pasto puo' partire subito senza restare bloccato.
+    useApp
+      .getState()
+      .timerDispatch({ type: 'START', meal: 'cena', durationMs: 45 * MIN, dateISO: '2026-07-04' });
+    expect(useApp.getState().timer?.status).toBe('running');
+  });
+});

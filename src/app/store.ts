@@ -71,11 +71,18 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     const state = get();
     const becameCelebrating =
       nextTimer !== null && nextTimer.status === 'celebrating' && prevStatus !== 'celebrating';
+    // Una sessione con status:'done' equivale a "nessuna sessione attiva":
+    // non va mai persistita come tale, altrimenti dopo CELEBRATION_DONE
+    // l'oggetto 'done' resterebbe in store.timer per sempre e un mount
+    // successivo di /timer (es. per il pasto seguente) lo tratterebbe come
+    // sessione da mostrare invece che come nessuna sessione, bloccando
+    // l'avvio di un nuovo timer.
+    const timerToPersist = nextTimer !== null && nextTimer.status === 'done' ? null : nextTimer;
 
     const env: StorageEnvelope = {
       ...toEnvelope(state),
       savedAt: new Date().toISOString(),
-      timer: nextTimer,
+      timer: timerToPersist,
       progress: becameCelebrating
         ? { ...state.progress, mealTimersCompleted: state.progress.mealTimersCompleted + 1 }
         : state.progress,

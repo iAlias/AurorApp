@@ -21,6 +21,7 @@ export interface CelebrationProps {
 export function Celebration({ session, onDone }: CelebrationProps) {
   const profileName = useApp((s) => s.profile?.name ?? '');
   const timerDispatch = useApp((s) => s.timerDispatch);
+  const soundsOn = useApp((s) => s.settings.meals.soundsOn);
   const reducedMotion = useReducedMotionPref();
   const celebratedRef = useRef(false);
 
@@ -28,8 +29,8 @@ export function Celebration({ session, onDone }: CelebrationProps) {
     if (celebratedRef.current) return;
     celebratedRef.current = true;
     burst({ big: true });
-    audioManager.play('party');
-  }, []);
+    if (soundsOn) audioManager.play('party');
+  }, [soundsOn]);
 
   function handleDone() {
     timerDispatch({ type: 'CELEBRATION_DONE' });
