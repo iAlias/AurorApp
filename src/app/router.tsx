@@ -4,6 +4,7 @@ import { useApp } from './store';
 import { Layout } from './Layout';
 import { UiShowcase } from '../features/dev/UiShowcase';
 import { WizardPage } from '../features/wizard/WizardPage';
+import { MealTimerPage } from '../features/mealTimer/MealTimerPage';
 
 /**
  * `/` non ha un contenuto proprio (FR-1/FR-5): reindirizza subito a `/oggi`
@@ -18,9 +19,10 @@ function RootRedirect() {
 }
 
 /**
- * Segnaposto minimo per le schermate non ancora costruite (Tasks 14/17/19/20
- * possiedono l'implementazione reale). Il testo `"<Nome> (placeholder)"` è
- * distinguibile dalle voci di navigazione di `Layout` (che riportano solo
+ * Segnaposto minimo per le schermate non ancora costruite (Tasks 14/19/20
+ * possiedono l'implementazione reale — `/timer`, Task 17, e' gia' la
+ * feature vera: vedi `MealTimerPage` sotto). Il testo `"<Nome> (placeholder)"`
+ * è distinguibile dalle voci di navigazione di `Layout` (che riportano solo
  * `<Nome>`, senza suffisso) cosi' i test possono asserire sull'uno senza
  * ambiguita' con l'altro.
  *
@@ -59,7 +61,7 @@ export const routes: RouteObject[] = [
       { path: '/dev/ui', element: <UiShowcase /> },
     ],
   },
-  { path: '/timer', element: <Placeholder label="Timer" /> },
+  { path: '/timer', element: <MealTimerPage /> },
   { path: '/wizard', element: <WizardPage /> },
 ];
 
