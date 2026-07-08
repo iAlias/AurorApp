@@ -6,6 +6,8 @@ import { LeFormeGiuste } from './LeFormeGiuste';
 import { GrandeEPiccolo } from './GrandeEPiccolo';
 import { TrovaLIntruso } from './TrovaLIntruso';
 import { CosaVieneDopo } from './CosaVieneDopo';
+import { MemoriaDegliAnimali } from './MemoriaDegliAnimali';
+import { DalPiccoloAlGrande } from './DalPiccoloAlGrande';
 
 /** Voce del catalogo dei giochi: usata sia dalla griglia (`GamesPage`) sia
  * dal routing (`gameId` diventa il segmento `/giochi/:gameId`). */
@@ -68,5 +70,19 @@ export const GAMES: GameDef[] = [
     emoji: '🔁',
     skill: 'Allena: le sequenze',
     Component: CosaVieneDopo,
+  },
+  {
+    id: 'memoria-degli-animali',
+    title: 'Memoria degli animali',
+    emoji: '🐾',
+    skill: 'Allena: la memoria',
+    Component: MemoriaDegliAnimali,
+  },
+  {
+    id: 'dal-piccolo-al-grande',
+    title: 'Dal più piccolo al più grande',
+    emoji: '📏',
+    skill: 'Allena: mettere in ordine',
+    Component: DalPiccoloAlGrande,
   },
 ];
