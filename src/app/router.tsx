@@ -6,6 +6,7 @@ import { UiShowcase } from '../features/dev/UiShowcase';
 import { WizardPage } from '../features/wizard/WizardPage';
 import { MealTimerPage } from '../features/mealTimer/MealTimerPage';
 import { TodayPage } from '../features/today/TodayPage';
+import { CalendarPage } from '../features/calendar/CalendarPage';
 
 /**
  * `/` non ha un contenuto proprio (FR-1/FR-5): reindirizza subito a `/oggi`
@@ -20,12 +21,12 @@ function RootRedirect() {
 }
 
 /**
- * Segnaposto minimo per le schermate non ancora costruite (Tasks 19/20
- * possiedono l'implementazione reale). `/oggi` e `/timer` sono già le
- * feature vere (`TodayPage` Task 14, `MealTimerPage` Task 17). Il testo
- * `"<Nome> (placeholder)"` è distinguibile dalle voci di navigazione di
- * `Layout` (che riportano solo `<Nome>`, senza suffisso) cosi' i test
- * possono asserire sull'uno senza ambiguita' con l'altro.
+ * Segnaposto minimo per le schermate non ancora costruite (Task 20 possiede
+ * l'implementazione reale). `/oggi`, `/calendario` e `/timer` sono già le
+ * feature vere (`TodayPage` Task 14, `CalendarPage` Task 19, `MealTimerPage`
+ * Task 17). Il testo `"<Nome> (placeholder)"` è distinguibile dalle voci di
+ * navigazione di `Layout` (che riportano solo `<Nome>`, senza suffisso) cosi'
+ * i test possono asserire sull'uno senza ambiguita' con l'altro.
  */
 function Placeholder({ label }: { label: string }) {
   return <div>{label} (placeholder)</div>;
@@ -44,7 +45,7 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: '/oggi', element: <TodayPage /> },
-      { path: '/calendario', element: <Placeholder label="Calendario" /> },
+      { path: '/calendario', element: <CalendarPage /> },
       { path: '/impostazioni', element: <Placeholder label="Impostazioni" /> },
       { path: '/dev/ui', element: <UiShowcase /> },
     ],
