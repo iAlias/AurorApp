@@ -126,9 +126,17 @@ describe('updateSettings', () => {
     expect(after.meals.volume).toBe(before.meals.volume);
     expect(after.routine).toEqual(before.routine);
     expect(after.reducedMotion).toBe(before.reducedMotion);
+  });
 
-    // non deve scrivere subito su storage: updateSettings passa dal debounce
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+  test('scrive subito su localStorage (write-through), senza attendere il debounce', async () => {
+    const { useApp } = await freshStore();
+
+    useApp.getState().updateSettings({ meals: { lunchMinutes: 45 } });
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    expect(raw).not.toBeNull();
+    const saved = JSON.parse(raw as string) as StorageEnvelope;
+    expect(saved.settings.meals.lunchMinutes).toBe(45);
   });
 });
 
@@ -213,7 +221,15 @@ describe('initPersistence', () => {
     const { useApp, initPersistence } = await freshStore();
     initPersistence();
 
-    useApp.getState().updateSettings({ meals: { lunchMinutes: 45 } });
+    // `clearNewBadges` è l'unica azione dello store che muta lo stato senza
+    // essere write-through (nessun dominio di persistenza esplicito ha
+    // bisogno di leggere subito `lastNewBadges` da localStorage): usata qui
+    // per esercitare il solo meccanismo di debounce generico di
+    // `initPersistence`, indipendente da qualunque azione write-through.
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    localStorage.clear();
+
+    useApp.getState().clearNewBadges();
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
 
     vi.advanceTimersByTime(300);
@@ -221,7 +237,7 @@ describe('initPersistence', () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     expect(raw).not.toBeNull();
     const saved = JSON.parse(raw as string) as StorageEnvelope;
-    expect(saved.settings.meals.lunchMinutes).toBe(45);
+    expect(saved.profile).toEqual(profileFixture());
   });
 
   test("evento 'storage' di un'altra scheda re-idrata lo stato", async () => {

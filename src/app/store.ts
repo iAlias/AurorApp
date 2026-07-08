@@ -239,14 +239,18 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
         reducedMotion?: Settings['reducedMotion'];
       } = patch;
 
-      set((state) => ({
+      const state = get();
+      const env: StorageEnvelope = {
+        ...toEnvelope(state),
+        savedAt: new Date().toISOString(),
         settings: {
           routine: p.routine ? { ...state.settings.routine, ...p.routine } : state.settings.routine,
           meals: p.meals ? { ...state.settings.meals, ...p.meals } : state.settings.meals,
           reducedMotion: p.reducedMotion ?? state.settings.reducedMotion,
         },
-        savedAt: new Date().toISOString(),
-      }));
+      };
+      saveNow(localStorage, env);
+      set({ settings: env.settings, savedAt: env.savedAt });
     },
 
     importEnvelope(env) {
