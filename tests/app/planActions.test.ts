@@ -201,6 +201,18 @@ describe('setSlotActivity', () => {
     expect(useApp.getState().plans).toEqual({});
   });
 
+  test('nessun effetto se activityId non esiste nel catalogo', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-01');
+    const before = useApp.getState().plans['2026-07-01'];
+    const slotId = before.slots[0].slotId;
+
+    useApp.getState().setSlotActivity('2026-07-01', slotId, 'ID-INESISTENTE');
+
+    expect(useApp.getState().plans['2026-07-01']).toEqual(before);
+  });
+
   test('scrive subito su localStorage (write-through)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());

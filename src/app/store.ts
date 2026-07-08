@@ -347,6 +347,12 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
       if (!plan) return;
       const cur = plan.slots.find((s) => s.slotId === slotId);
       if (!cur || cur.status === 'done') return;
+      // Guardia difensiva: `activityId` deve esistere nel catalogo. Oggi
+      // l'unico chiamante (ActivityPicker) offre solo id reali, ma un id
+      // inventato scriverebbe uno slot che `ACTIVITIES.find(...)` non
+      // troverebbe mai più, facendo sparire silenziosamente la card dalla
+      // timeline (TodayPage fa `return null` per quello slot) — no-op sicuro.
+      if (!ACTIVITIES.some((a) => a.id === activityId)) return;
       const newStatus: SlotStatus = cur.status === 'skipped' ? 'planned' : cur.status;
       const newPlan: DayPlan = {
         ...plan,
