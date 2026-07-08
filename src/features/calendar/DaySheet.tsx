@@ -179,7 +179,9 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
                       <button
                         type="button"
                         onClick={() => setDetailSlotId(slot.slotId)}
-                        aria-label={`Dettagli attività: ${activity.title}`}
+                        aria-label={`Dettagli attività: ${activity.title}${
+                          slot.status === 'done' ? ', fatta' : slot.status === 'skipped' ? ', saltata' : ''
+                        }`}
                         className="flex w-full items-center justify-between gap-2 text-left"
                       >
                         <div className="flex items-center gap-2">
