@@ -24,6 +24,9 @@ const SettingsPage = lazy(() =>
 const MealTimerPage = lazy(() =>
   import('../features/mealTimer/MealTimerPage').then((m) => ({ default: m.MealTimerPage })),
 );
+const CatalogPage = lazy(() =>
+  import('../features/catalog/CatalogPage').then((m) => ({ default: m.CatalogPage })),
+);
 const UiShowcase = lazy(() =>
   import('../features/dev/UiShowcase').then((m) => ({ default: m.UiShowcase })),
 );
@@ -64,6 +67,7 @@ export const routes: RouteObject[] = [
       { path: '/calendario', element: withSuspense(<CalendarPage />) },
       { path: '/timer', element: withSuspense(<MealTimerPage />) },
       { path: '/impostazioni', element: withSuspense(<SettingsPage />) },
+      { path: '/catalogo', element: withSuspense(<CatalogPage />) },
       { path: '/dev/ui', element: withSuspense(<UiShowcase />) },
     ],
   },

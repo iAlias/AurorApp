@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { routes } from '../../src/app/router';
 import { useApp } from '../../src/app/store';
@@ -39,6 +40,18 @@ describe('router: "/" redirect (FR-1)', () => {
     // Task 14: /oggi è ora la vera TodayPage (non più il placeholder) — il
     // selettore meteo è un marcatore stabile della sua presenza.
     expect(screen.getByRole('group', { name: /meteo di oggi/i })).toBeInTheDocument();
+  });
+});
+
+describe('/catalogo', () => {
+  test('la voce di menu "Catalogo" porta alla pagina del catalogo completo', async () => {
+    useApp.setState({ profile: profileFixture() });
+    renderAt('/oggi');
+
+    const bottomNav = screen.getByRole('navigation', { name: /navigazione principale/i });
+    await userEvent.setup().click(within(bottomNav).getByRole('link', { name: /catalogo/i }));
+
+    expect(await screen.findAllByTestId('catalog-item')).not.toHaveLength(0);
   });
 });
 
