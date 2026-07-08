@@ -150,8 +150,10 @@ export function WizardPage() {
         {Array.from({ length: TOTAL_STEPS }, (_, i) => (
           <motion.span
             key={i}
-            animate={{ scale: i === step ? 1.4 : 1 }}
-            transition={springSoft}
+            data-testid={`wizard-step-dot-${i}`}
+            initial={false}
+            animate={reducedMotion ? {} : { scale: i === step ? 1.4 : 1 }}
+            transition={reducedMotion ? { duration: 0 } : springSoft}
             className={`h-2.5 w-2.5 rounded-full ${i === step ? 'bg-sun' : 'bg-deep/20'}`}
           />
         ))}

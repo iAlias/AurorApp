@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { useApp } from '../../src/app/store';
 import { StepWelcome } from '../../src/features/wizard/StepWelcome';
+import { WizardPage } from '../../src/features/wizard/WizardPage';
 import { TouchStars } from '../../src/features/mealTimer/TouchStars';
 
 // jsdom (v25) non implementa il costruttore globale PointerEvent: stesso
@@ -28,6 +30,11 @@ beforeAll(() => {
  * `TimerRun`) e l'illustrazione d'ingresso del wizard (`StepWelcome`).
  * Corrette qui sotto; questi test fissano il comportamento richiesto —
  * con reduced motion attivo, SOLO un fade di opacita', mai `scale`/`y`.
+ *
+ * Follow-up alla revisione del Task 23: nello stesso `WizardPage.tsx` i
+ * pallini indicatori di step (diversi dal page-flip tra step, gia' gated)
+ * avevano uno spring di scala non disattivato da reduced motion. Corretto;
+ * test di regressione qui sotto.
  */
 function setReducedMotion(value: 'on' | 'off') {
   useApp.setState((s) => ({ settings: { ...s.settings, reducedMotion: value } }));
@@ -91,5 +98,37 @@ describe('TouchStars — reduced motion (AC-10)', () => {
     const star = screen.getByText('✦');
     const style = star.getAttribute('style') ?? '';
     expect(style).toContain('scale(0.5)');
+  });
+});
+
+describe('WizardPage — pallini step, reduced motion (AC-10)', () => {
+  test('reducedMotion "on": il pallino attivo non ha scala nello stile', () => {
+    setReducedMotion('on');
+    act(() => {
+      render(
+        <MemoryRouter initialEntries={['/wizard']}>
+          <WizardPage />
+        </MemoryRouter>,
+      );
+    });
+
+    const activeDot = screen.getByTestId('wizard-step-dot-0');
+    const style = activeDot.getAttribute('style') ?? '';
+    expect(style).not.toContain('scale');
+  });
+
+  test('reducedMotion "off": il pallino attivo parte scalato (comportamento pieno invariato)', () => {
+    setReducedMotion('off');
+    act(() => {
+      render(
+        <MemoryRouter initialEntries={['/wizard']}>
+          <WizardPage />
+        </MemoryRouter>,
+      );
+    });
+
+    const activeDot = screen.getByTestId('wizard-step-dot-0');
+    const style = activeDot.getAttribute('style') ?? '';
+    expect(style).toContain('scale(1.4)');
   });
 });
