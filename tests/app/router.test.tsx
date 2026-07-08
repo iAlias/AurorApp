@@ -36,7 +36,9 @@ describe('router: "/" redirect (FR-1)', () => {
   test('con profilo, "/" reindirizza a /oggi', () => {
     useApp.setState({ profile: profileFixture() });
     renderAt('/');
-    expect(screen.getByText(/Oggi \(placeholder\)/i)).toBeInTheDocument();
+    // Task 14: /oggi è ora la vera TodayPage (non più il placeholder) — il
+    // selettore meteo è un marcatore stabile della sua presenza.
+    expect(screen.getByRole('group', { name: /meteo di oggi/i })).toBeInTheDocument();
   });
 });
 

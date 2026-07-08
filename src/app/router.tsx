@@ -5,6 +5,7 @@ import { Layout } from './Layout';
 import { UiShowcase } from '../features/dev/UiShowcase';
 import { WizardPage } from '../features/wizard/WizardPage';
 import { MealTimerPage } from '../features/mealTimer/MealTimerPage';
+import { TodayPage } from '../features/today/TodayPage';
 
 /**
  * `/` non ha un contenuto proprio (FR-1/FR-5): reindirizza subito a `/oggi`
@@ -19,27 +20,14 @@ function RootRedirect() {
 }
 
 /**
- * Segnaposto minimo per le schermate non ancora costruite (Tasks 14/19/20
- * possiedono l'implementazione reale — `/timer`, Task 17, e' gia' la
- * feature vera: vedi `MealTimerPage` sotto). Il testo `"<Nome> (placeholder)"`
- * è distinguibile dalle voci di navigazione di `Layout` (che riportano solo
- * `<Nome>`, senza suffisso) cosi' i test possono asserire sull'uno senza
- * ambiguita' con l'altro.
- *
- * `/oggi` in particolare mostra anche il nome del profilo quando presente:
- * scaffolding minimo per Task 9 (permette al wizard di dimostrare
- * end-to-end che il profilo creato e' quello visibile dopo il redirect),
- * verra' sostituito dalla vera schermata "Oggi" nel Task 14.
+ * Segnaposto minimo per le schermate non ancora costruite (Tasks 19/20
+ * possiedono l'implementazione reale). `/oggi` e `/timer` sono già le
+ * feature vere (`TodayPage` Task 14, `MealTimerPage` Task 17). Il testo
+ * `"<Nome> (placeholder)"` è distinguibile dalle voci di navigazione di
+ * `Layout` (che riportano solo `<Nome>`, senza suffisso) cosi' i test
+ * possono asserire sull'uno senza ambiguita' con l'altro.
  */
 function Placeholder({ label }: { label: string }) {
-  const profile = useApp((s) => s.profile);
-  if (label === 'Oggi' && profile) {
-    return (
-      <div>
-        {label} (placeholder) — ciao <strong data-testid="profile-name">{profile.name}</strong>!
-      </div>
-    );
-  }
   return <div>{label} (placeholder)</div>;
 }
 
@@ -55,7 +43,7 @@ export const routes: RouteObject[] = [
   {
     element: <Layout />,
     children: [
-      { path: '/oggi', element: <Placeholder label="Oggi" /> },
+      { path: '/oggi', element: <TodayPage /> },
       { path: '/calendario', element: <Placeholder label="Calendario" /> },
       { path: '/impostazioni', element: <Placeholder label="Impostazioni" /> },
       { path: '/dev/ui', element: <UiShowcase /> },

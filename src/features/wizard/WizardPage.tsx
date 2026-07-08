@@ -65,15 +65,26 @@ export function WizardPage() {
   const entryStep = entryStepFromQuery(searchParams.get('step'));
   const isRelaunch = entryStep > 0;
 
+  // Rilancio completo (bare `/wizard`, senza `?step=` — es. da
+  // `EndOfSummary` → "Prepara una nuova avventura", Task 14/E10): NON
+  // precompila mai dal profilo esistente, a differenza del rilancio
+  // parziale (`?step=…`, FR-8) che invece riapre gli step coi dati
+  // correnti. La CTA promette esplicitamente "una nuova avventura": dopo
+  // un'intera estate la bimba può avere nuovi interessi, una routine
+  // diversa, ecc. — si riparte da un wizard completamente vuoto, comprese
+  // le date vacanza (che altrimenti resterebbero quelle appena scadute).
+  const profileForPrefill = isRelaunch ? existingProfile : null;
+  const routineForPrefill = isRelaunch ? existingRoutine : null;
+
   const [step, setStep] = useState(entryStep);
-  const [name, setName] = useState(() => existingProfile?.name ?? '');
-  const [avatarId, setAvatarId] = useState(() => existingProfile?.avatarId ?? '');
-  const [birthdate, setBirthdate] = useState(() => existingProfile?.birthdate ?? defaultBirthdate());
-  const [vacationStart, setVacationStart] = useState(() => existingProfile?.vacationStart ?? todayISO());
-  const [vacationEnd, setVacationEnd] = useState(() => existingProfile?.vacationEnd ?? defaultVacationEnd());
-  const [routine, setRoutine] = useState<RoutineSettings>(() => existingRoutine ?? DEFAULT_ROUTINE);
-  const [interests, setInterests] = useState<InterestTag[]>(() => existingProfile?.interests ?? []);
-  const [spaces, setSpaces] = useState<SpaceTag[]>(() => existingProfile?.spaces ?? []);
+  const [name, setName] = useState(() => profileForPrefill?.name ?? '');
+  const [avatarId, setAvatarId] = useState(() => profileForPrefill?.avatarId ?? '');
+  const [birthdate, setBirthdate] = useState(() => profileForPrefill?.birthdate ?? defaultBirthdate());
+  const [vacationStart, setVacationStart] = useState(() => profileForPrefill?.vacationStart ?? todayISO());
+  const [vacationEnd, setVacationEnd] = useState(() => profileForPrefill?.vacationEnd ?? defaultVacationEnd());
+  const [routine, setRoutine] = useState<RoutineSettings>(() => routineForPrefill ?? DEFAULT_ROUTINE);
+  const [interests, setInterests] = useState<InterestTag[]>(() => profileForPrefill?.interests ?? []);
+  const [spaces, setSpaces] = useState<SpaceTag[]>(() => profileForPrefill?.spaces ?? []);
 
   const nameError = validateName(name);
   const nameValid = nameError === null && avatarId !== '';
@@ -112,7 +123,7 @@ export function WizardPage() {
 
   function handleConfirm() {
     const profile: ChildProfile = {
-      id: existingProfile?.id ?? crypto.randomUUID(),
+      id: profileForPrefill?.id ?? crypto.randomUUID(),
       name,
       avatarId,
       birthdate,
@@ -120,7 +131,7 @@ export function WizardPage() {
       spaces,
       vacationStart,
       vacationEnd,
-      createdAt: existingProfile?.createdAt ?? new Date().toISOString(),
+      createdAt: profileForPrefill?.createdAt ?? new Date().toISOString(),
     };
     completeWizard(profile, routine);
     navigate(isRelaunch ? '/impostazioni' : '/oggi', { replace: true });

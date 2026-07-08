@@ -35,7 +35,9 @@ test('con profilo, App mostra il brand AurorApp e reindirizza a Oggi', () => {
   render(<App initialEntries={['/']} />);
 
   expect(screen.getByText(/AurorApp/)).toBeInTheDocument();
-  expect(screen.getByText(/Oggi \(placeholder\)/i)).toBeInTheDocument();
+  // Task 14: /oggi è ora la vera TodayPage (non più il placeholder) — il
+  // selettore meteo è un marcatore stabile della sua presenza.
+  expect(screen.getByRole('group', { name: /meteo di oggi/i })).toBeInTheDocument();
 });
 
 test('senza profilo, App reindirizza al wizard', () => {
