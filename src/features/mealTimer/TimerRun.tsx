@@ -150,9 +150,9 @@ export function TimerRun({ session, onExit }: TimerRunProps) {
         {arcStars.map((key) => (
           <motion.span
             key={key}
-            initial={{ opacity: 1, scale: 0.6, y: 0 }}
-            animate={{ opacity: 0, scale: 1.6, y: -60 }}
-            transition={{ duration: 0.9 }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 0.6, y: 0 }}
+            animate={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.6, y: -60 }}
+            transition={{ duration: reducedMotion ? 0.4 : 0.9 }}
             onAnimationComplete={() => setArcStars((prev) => prev.filter((k) => k !== key))}
             className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 text-4xl"
             aria-hidden="true"

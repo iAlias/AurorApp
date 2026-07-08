@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { motion } from 'framer-motion';
+import { useReducedMotionPref } from '../../ui/motion';
 
 export interface TouchStarsProps {
   className?: string;
@@ -28,6 +29,7 @@ export function TouchStars({ className }: TouchStarsProps) {
   const [stars, setStars] = useState<StarInstance[]>([]);
   const nextSlotRef = useRef(0);
   const nextKeyRef = useRef(0);
+  const reducedMotion = useReducedMotionPref();
 
   function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -57,9 +59,9 @@ export function TouchStars({ className }: TouchStarsProps) {
       {stars.map((s) => (
         <motion.span
           key={s.key}
-          initial={{ opacity: 1, scale: 0.5, y: 0 }}
-          animate={{ opacity: 0, scale: 1.5, y: -36 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 0.5, y: 0 }}
+          animate={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.5, y: -36 }}
+          transition={{ duration: reducedMotion ? 0.4 : 0.7, ease: 'easeOut' }}
           onAnimationComplete={() => remove(s.slot, s.key)}
           style={{ position: 'absolute', left: s.x, top: s.y }}
           className="pointer-events-none text-2xl"

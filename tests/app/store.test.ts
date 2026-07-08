@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS } from '../../src/core/catalog/types';
 import type { ChildProfile, RoutineSettings, StorageEnvelope } from '../../src/core/catalog/types';
 import { STORAGE_KEY, emptyEnvelope } from '../../src/core/storage/envelope';
+import { exportJson, parseBackup } from '../../src/core/storage/exportImport';
 
 function profileFixture(): ChildProfile {
   return {
@@ -142,6 +143,60 @@ describe('importEnvelope', () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     const saved = JSON.parse(raw as string) as StorageEnvelope;
     expect(saved.profile).toEqual(profileFixture());
+  });
+});
+
+describe('round-trip export → azzera → importa (AC-9 §14)', () => {
+  test('con 30 giorni di storia (piani, done, timer in pausa), lo stato dopo export→reset→import è bit-a-bit identico all\'originale', async () => {
+    const { useApp, toEnvelope } = await freshStore();
+
+    // Stato "vissuto": profilo, 30 giorni di piani materializzati, alcune
+    // attività segnate fatte (progress/streak/badge ricalcolati di
+    // conseguenza) e un timer pasto in pausa — non solo l'envelope vuota di
+    // un wizard appena completato, per esercitare davvero il round-trip
+    // dell'intera forma dei dati (AC-9 richiede esplicitamente "30 giorni
+    // di storia").
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-30'); // vacationStart 2026-07-01 → 30 giorni
+    useApp.getState().markSlot('2026-07-01', 'M1', 'done');
+    useApp.getState().markSlot('2026-07-01', 'M2', 'done');
+    useApp.getState().markSlot('2026-07-02', 'M1', 'done');
+    useApp.getState().timerDispatch({
+      type: 'START',
+      meal: 'pranzo',
+      durationMs: 60 * 60_000,
+      dateISO: '2026-07-30',
+    });
+    useApp.getState().timerDispatch({ type: 'PAUSE' });
+
+    const original = toEnvelope(useApp.getState());
+    // Il "profilo di history" richiesto da AC-9: davvero 30 giorni materializzati.
+    expect(Object.keys(original.plans)).toHaveLength(30);
+
+    const json = exportJson(original);
+
+    useApp.getState().resetAll();
+    expect(useApp.getState().profile).toBeNull(); // azzeramento riuscito, non un no-op
+
+    const parsed = parseBackup(json);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    useApp.getState().importEnvelope(parsed.env);
+
+    const restored = toEnvelope(useApp.getState());
+
+    // Confronto bit-a-bit: sia deep-equal strutturale sia identità testuale
+    // della serializzazione JSON (cattura anche differenze di forma che
+    // `toEqual` da solo potrebbe non distinguere, es. chiavi extra/mancanti).
+    expect(restored).toEqual(original);
+    expect(exportJson(restored)).toBe(json);
+
+    // E anche il round-trip via localStorage (non solo lo stato in RAM):
+    // quel che `importEnvelope` ha effettivamente scritto è la stessa
+    // envelope, byte per byte una volta ri-serializzata.
+    const raw = localStorage.getItem(STORAGE_KEY);
+    expect(raw).not.toBeNull();
+    expect(JSON.parse(raw as string)).toEqual(original);
   });
 });
 
