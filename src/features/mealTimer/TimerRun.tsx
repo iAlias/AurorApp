@@ -119,7 +119,7 @@ export function TimerRun({ session, onExit }: TimerRunProps) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-b from-cream to-sky">
+    <div className="relative flex min-h-[calc(100vh-5rem)] flex-col overflow-hidden bg-gradient-to-b from-cream to-sky lg:min-h-screen">
       <TouchStars className="absolute inset-0" />
 
       {almostDone && (

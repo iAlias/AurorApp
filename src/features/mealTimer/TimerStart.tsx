@@ -125,7 +125,7 @@ export function TimerStart() {
   const showCountdown = countdownStartedAt !== null;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-cream px-6 py-10 text-center">
+    <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-8 bg-cream px-6 py-10 text-center lg:min-h-screen">
       {showCountdown ? (
         <div style={{ perspective: 800 }}>
           <AnimatePresence mode="wait">

@@ -40,7 +40,7 @@ export function Celebration({ session, onDone }: CelebrationProps) {
   const mealLabel = session.meal === 'pranzo' ? 'Pranzo delizioso! 🍝' : 'Cena deliziosa! 🍽️';
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-gradient-to-b from-cream to-sun/30 px-6 py-10 text-center">
+    <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-8 bg-gradient-to-b from-cream to-sun/30 px-6 py-10 text-center lg:min-h-screen">
       <motion.div
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}

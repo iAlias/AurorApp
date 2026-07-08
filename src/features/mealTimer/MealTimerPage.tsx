@@ -9,7 +9,9 @@ import { Celebration } from './Celebration';
  * Punto di ingresso della route `/timer` (FR-6): sceglie la schermata giusta
  * in base alla sessione persistita. La route e' dentro `Layout` (tab
  * bar/sidebar sempre visibile), il contenuto resta comunque fullscreen
- * (sfondo a gradiente proprio, `min-h-screen`).
+ * (sfondo a gradiente proprio) — l'altezza minima tiene conto dello spazio
+ * riservato da `Layout` alla tab bar fissa su mobile (`pb-20` = 5rem), cosi'
+ * che l'ultimo controllo di ciascuna schermata non finisca mai coperto.
  * Nessuna sessione → `TimerStart` (schermata di avvio, per l'adulto).
  *
  * Recovery (E1): al mount, `restoreTimer(Date.now())` applica `restore()`

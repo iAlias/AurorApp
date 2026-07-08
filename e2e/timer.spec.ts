@@ -61,3 +61,55 @@ test('child-lock: tap semplice non mette in pausa', async ({ page }) => {
   await expect(page.getByText(/in pausa/i)).toHaveCount(0);
   await expect(page.getByText(/termina alle/i)).toBeVisible();
 });
+
+// Da quando /timer e' dentro `Layout` (commit f6a4079), la tab bar fissa in
+// basso (z-40, `fixed inset-x-0 bottom-0`) e' visibile anche sopra le
+// schermate del timer: verifica geometrica (bounding box reale, non solo
+// "e' nel DOM") che il controllo interattivo piu' in basso di ciascuna
+// schermata resti sopra il bordo superiore della tab bar su viewport
+// mobile — altrimenti risulterebbe presente ma non cliccabile perche'
+// coperto (regressione trovata in review: min-h-screen ridondante annidato
+// dentro il pb-20 di Layout spingeva il contenuto oltre il bordo reale).
+async function expectAboveTabBar(page: import('@playwright/test').Page, control: ReturnType<typeof page.getByRole>) {
+  const nav = page.getByRole('navigation', { name: /navigazione principale/i });
+  const navBox = await nav.boundingBox();
+  const controlBox = await control.boundingBox();
+  expect(navBox).not.toBeNull();
+  expect(controlBox).not.toBeNull();
+  expect(controlBox!.y + controlBox!.height).toBeLessThanOrEqual(navBox!.y);
+}
+
+test('TimerStart: il bottone "Si mangia!" non e\' coperto dalla tab bar (mobile)', async ({ page }) => {
+  await completeWizardFast(page);
+  await page.goto('/timer?pasto=pranzo');
+
+  await expectAboveTabBar(page, page.getByRole('button', { name: /si mangia/i }));
+});
+
+test('TimerRun: il bottone child-lock "abbiamo già finito" non e\' coperto dalla tab bar (mobile)', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await completeWizardFast(page);
+
+  await page.goto('/timer?pasto=pranzo');
+  await page.getByRole('button', { name: /si mangia/i }).click();
+  await page.clock.fastForward('00:05'); // solo il countdown 3-2-1
+  await expect(page.getByText(/termina alle/i)).toBeVisible();
+
+  await expectAboveTabBar(page, page.getByRole('button', { name: /abbiamo già finito/i }));
+});
+
+test('Celebration: il bottone "Abbiamo finito!" non e\' coperto dalla tab bar (mobile)', async ({ page }) => {
+  await page.clock.install();
+  await completeWizardFast(page);
+
+  await page.goto('/timer?pasto=pranzo');
+  await page.getByRole('button', { name: /si mangia/i }).click();
+  await page.clock.fastForward('03:00');
+  await expect(page.getByText(/termina alle/i)).toBeVisible();
+  await page.clock.fastForward('01:05:00');
+  await expect(page.getByRole('heading', { name: /bravissima/i })).toBeVisible();
+
+  await expectAboveTabBar(page, page.getByRole('button', { name: /abbiamo finito/i }));
+});
