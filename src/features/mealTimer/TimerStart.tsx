@@ -6,8 +6,8 @@ import { useApp } from '../../app/store';
 import { Button } from '../../ui/Button';
 import { audioManager } from '../../ui/audio';
 import { useReducedMotionPref } from '../../ui/motion';
-
-type Meal = 'pranzo' | 'cena';
+import type { TimerKind } from '../../core/catalog/types';
+import { TIMER_KINDS, TIMER_KIND_ORDER } from './timerKinds';
 
 const MIN_DURATION = 1;
 const MAX_DURATION = 90;
@@ -15,13 +15,23 @@ const STEP = 5;
 const COUNTDOWN_STEP_MS = 700;
 const COUNTDOWN_STEPS = 3; // "3-2-1"
 
-function isMeal(v: string | null): v is Meal {
-  return v === 'pranzo' || v === 'cena';
+function isTimerKind(v: string | null): v is TimerKind {
+  return (TIMER_KIND_ORDER as string[]).includes(v ?? '');
 }
 
-/** Prima delle 16:00 → pranzo, altrimenti cena (FR-6): euristica semplice sull'ora locale. */
-function defaultMealForNow(now: Date): Meal {
+/** Prima delle 16:00 → pranzo, altrimenti cena (FR-6): euristica semplice
+ * sull'ora locale, usata solo per i due preset pasto storici — gli altri
+ * preset (vestirsi/riordino/libero) si scelgono sempre esplicitamente. */
+function defaultMealForNow(now: Date): TimerKind {
   return now.getHours() < 16 ? 'pranzo' : 'cena';
+}
+
+/** Durata di default per un kind: pranzo/cena leggono da `settings.meals`
+ * (comportamento invariato), gli altri preset da `TIMER_KINDS`. */
+function defaultDurationFor(kind: TimerKind, meals: { lunchMinutes: number; dinnerMinutes: number }): number {
+  if (kind === 'pranzo') return meals.lunchMinutes;
+  if (kind === 'cena') return meals.dinnerMinutes;
+  return TIMER_KINDS[kind].defaultMinutes;
 }
 
 function todayISO(): string {
@@ -95,10 +105,10 @@ export function TimerStart() {
   const reducedMotion = useReducedMotionPref();
 
   const queryMeal = searchParams.get('pasto');
-  const [meal, setMeal] = useState<Meal>(() => (isMeal(queryMeal) ? queryMeal : defaultMealForNow(new Date())));
-  const [durationMin, setDurationMin] = useState(() =>
-    meal === 'pranzo' ? meals.lunchMinutes : meals.dinnerMinutes,
+  const [meal, setMeal] = useState<TimerKind>(() =>
+    isTimerKind(queryMeal) ? queryMeal : defaultMealForNow(new Date()),
   );
+  const [durationMin, setDurationMin] = useState(() => defaultDurationFor(meal, meals));
   const [countdownStartedAt, setCountdownStartedAt] = useState<number | null>(null);
   const [editingDuration, setEditingDuration] = useState(false);
   const [draftDuration, setDraftDuration] = useState('');
@@ -107,9 +117,9 @@ export function TimerStart() {
     timerDispatch({ type: 'START', meal, durationMs: durationMin * 60_000, dateISO: todayISO() });
   });
 
-  function selectMeal(next: Meal) {
+  function selectMeal(next: TimerKind) {
     setMeal(next);
-    setDurationMin(next === 'pranzo' ? meals.lunchMinutes : meals.dinnerMinutes);
+    setDurationMin(defaultDurationFor(next, meals));
   }
 
   function adjustDuration(delta: number) {
@@ -181,25 +191,20 @@ export function TimerStart() {
         </div>
       ) : (
         <>
-          <h1 className="font-display text-3xl text-deep">Che si mangia?</h1>
+          <h1 className="font-display text-3xl text-deep">Che facciamo?</h1>
 
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant={meal === 'pranzo' ? 'primary' : 'secondary'}
-              size="lg"
-              onClick={() => selectMeal('pranzo')}
-            >
-              Pranzo 🍝
-            </Button>
-            <Button
-              type="button"
-              variant={meal === 'cena' ? 'primary' : 'secondary'}
-              size="lg"
-              onClick={() => selectMeal('cena')}
-            >
-              Cena 🍽️
-            </Button>
+          <div className="flex flex-wrap justify-center gap-3">
+            {TIMER_KIND_ORDER.map((kind) => (
+              <Button
+                key={kind}
+                type="button"
+                variant={meal === kind ? 'primary' : 'secondary'}
+                size="lg"
+                onClick={() => selectMeal(kind)}
+              >
+                {TIMER_KINDS[kind].chip} {TIMER_KINDS[kind].emoji}
+              </Button>
+            ))}
           </div>
 
           <div className="flex flex-col items-center gap-2">
@@ -266,7 +271,7 @@ export function TimerStart() {
           </Button>
 
           <Button type="button" size="xl" onClick={handleStart}>
-            Si mangia! 🍝
+            {TIMER_KINDS[meal].startButton}
           </Button>
         </>
       )}

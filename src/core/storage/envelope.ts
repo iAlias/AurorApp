@@ -81,7 +81,7 @@ const DayPlanSchema = z.object({
 });
 
 const TimerSessionSchema = z.object({
-  meal: z.enum(['pranzo', 'cena']),
+  meal: z.enum(['pranzo', 'cena', 'vestirsi', 'riordino', 'libero']),
   dateISO: z.string(),
   startedAt: z.number(),
   durationMs: z.number(),

@@ -134,6 +134,22 @@ test('EnvelopeSchema: rifiuta uno slot con status non valido', () => {
   expect(result.success).toBe(false);
 });
 
+test('EnvelopeSchema: timer.meal accetta i 5 preset (pranzo/cena/vestirsi/riordino/libero)', () => {
+  const env = fullEnvelope();
+  for (const meal of ['pranzo', 'cena', 'vestirsi', 'riordino', 'libero'] as const) {
+    const withMeal = { ...env, timer: { ...env.timer!, meal } };
+    const result = EnvelopeSchema.safeParse(withMeal);
+    expect(result.success).toBe(true);
+  }
+});
+
+test('EnvelopeSchema: rifiuta un timer.meal inventato ("merenda")', () => {
+  const env = fullEnvelope();
+  const broken = { ...env, timer: { ...env.timer!, meal: 'merenda' } };
+  const result = EnvelopeSchema.safeParse(broken);
+  expect(result.success).toBe(false);
+});
+
 test('migrate: schemaVersion 1 passa e restituisce la stessa envelope', () => {
   const env = fullEnvelope();
   expect(migrate(env)).toEqual(env);

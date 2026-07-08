@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import type { ComponentType } from 'react';
@@ -144,5 +144,61 @@ describe('TimerStart — durata minima 1 minuto + inserimento manuale da tastier
 
     expect(screen.getByText(/^33 min$/)).toBeInTheDocument();
     expect(useApp.getState().settings.meals.lunchMinutes).toBe(60);
+  });
+});
+
+describe('TimerStart — 5 preset (Task 1: vestirsi/riordino/campo libero)', () => {
+  test('i 5 chip (Pranzo/Cena/Vestirsi/Riordino/Campo libero) sono tutti visibili', async () => {
+    const { TimerStart } = await freshTimerStart();
+    renderAtLunch(TimerStart);
+
+    expect(screen.getByRole('button', { name: /pranzo/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /cena/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /vestirsi/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /riordino/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /campo libero/i })).toBeInTheDocument();
+  });
+
+  test('selezionare "Riordino" porta la durata al default di 5 min', async () => {
+    const { TimerStart } = await freshTimerStart();
+    const user = userEvent.setup();
+    renderAtLunch(TimerStart);
+
+    await user.click(screen.getByRole('button', { name: /riordino/i }));
+
+    expect(screen.getByText(/^5 min$/)).toBeInTheDocument();
+  });
+
+  test('avviare con "Vestirsi" dispaccia START con meal: "vestirsi" e la durata scelta (dopo il countdown 3-2-1)', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const { useApp, TimerStart } = await freshTimerStart();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      renderAtLunch(TimerStart);
+
+      await user.click(screen.getByRole('button', { name: /vestirsi/i }));
+      await user.click(screen.getByRole('button', { name: /ci vestiamo/i }));
+
+      // Countdown 3-2-1: 3 step da 700ms (§useCountdown), poi dispaccia START.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3 * 700);
+      });
+
+      expect(useApp.getState().timer?.meal).toBe('vestirsi');
+      expect(useApp.getState().timer?.durationMs).toBe(10 * 60_000);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('?pasto=vestirsi preseleziona il chip "Vestirsi" e la durata a 10 min', async () => {
+    const { TimerStart } = await freshTimerStart();
+    render(
+      <MemoryRouter initialEntries={['/timer?pasto=vestirsi']}>
+        <TimerStart />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/^10 min$/)).toBeInTheDocument();
   });
 });

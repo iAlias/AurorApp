@@ -72,8 +72,14 @@ export interface DayPlan {
   slots: PlannedSlot[];       // 5 feriale, 2 weekend, 0 speciale
 }
 
+// Kind di timer arcobaleno riusabile: pranzo/cena (i due storici) + i
+// preset "attività" (vestirsi, riordino giochi, campo libero). Il campo
+// `TimerSession.meal` NON viene rinominato per retrocompatibilità
+// localStorage: si allarga solo l'unione dei valori ammessi.
+export type TimerKind = 'pranzo' | 'cena' | 'vestirsi' | 'riordino' | 'libero';
+
 export interface TimerSession {
-  meal: 'pranzo'|'cena';
+  meal: TimerKind;
   dateISO: string;
   startedAt: number;          // epoch ms — fonte di verità
   durationMs: number;

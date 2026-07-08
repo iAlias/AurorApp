@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { useApp } from '../../../src/app/store';
 import { Celebration } from '../../../src/features/mealTimer/Celebration';
 import { audioManager } from '../../../src/ui/audio';
@@ -10,7 +10,7 @@ import type { TimerSession } from '../../../src/core/catalog/types';
 // comportamento sotto test (il toggle audio), quindi mockiamo burst().
 vi.mock('../../../src/ui/confetti', () => ({ burst: vi.fn() }));
 
-function sessionFixture(): TimerSession {
+function sessionFixture(overrides: Partial<TimerSession> = {}): TimerSession {
   return {
     meal: 'pranzo',
     dateISO: '2026-07-04',
@@ -19,6 +19,7 @@ function sessionFixture(): TimerSession {
     pausedAt: null,
     pausedTotalMs: 0,
     status: 'celebrating',
+    ...overrides,
   };
 }
 
@@ -51,5 +52,23 @@ describe('Celebration — il suono "party" rispetta meals.soundsOn', () => {
 
     expect(playSpy).toHaveBeenCalledTimes(1);
     expect(playSpy).toHaveBeenCalledWith('party');
+  });
+});
+
+describe('Celebration — messaggio finale per kind (Task 1: preset vestirsi/riordino/libero)', () => {
+  test('kind "vestirsi" mostra il messaggio dedicato "Tutta vestita, che brava! 👕"', () => {
+    vi.spyOn(audioManager, 'play').mockImplementation(() => {});
+
+    render(<Celebration session={sessionFixture({ meal: 'vestirsi' })} onDone={() => {}} />);
+
+    expect(screen.getByText('Tutta vestita, che brava! 👕')).toBeInTheDocument();
+  });
+
+  test('kind "pranzo" continua a mostrare "Pranzo delizioso! 🍝" (comportamento invariato)', () => {
+    vi.spyOn(audioManager, 'play').mockImplementation(() => {});
+
+    render(<Celebration session={sessionFixture({ meal: 'pranzo' })} onDone={() => {}} />);
+
+    expect(screen.getByText('Pranzo delizioso! 🍝')).toBeInTheDocument();
   });
 });

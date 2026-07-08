@@ -6,6 +6,7 @@ import { audioManager } from '../../ui/audio';
 import { burst } from '../../ui/confetti';
 import { useReducedMotionPref } from '../../ui/motion';
 import type { TimerSession } from '../../core/catalog/types';
+import { TIMER_KINDS } from './timerKinds';
 
 export interface CelebrationProps {
   session: TimerSession;
@@ -37,7 +38,7 @@ export function Celebration({ session, onDone }: CelebrationProps) {
     onDone();
   }
 
-  const mealLabel = session.meal === 'pranzo' ? 'Pranzo delizioso! 🍝' : 'Cena deliziosa! 🍽️';
+  const mealLabel = TIMER_KINDS[session.meal].celebration;
 
   return (
     <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-8 bg-gradient-to-b from-cream to-sun/30 px-6 py-10 text-center lg:min-h-screen">

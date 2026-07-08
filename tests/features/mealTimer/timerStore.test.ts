@@ -67,6 +67,41 @@ describe('timerDispatch — Step 17.1', () => {
   });
 });
 
+describe('timerDispatch — guardia mealTimersCompleted per kind (Task 1 preset)', () => {
+  test('completare un timer "vestirsi" NON incrementa mealTimersCompleted né sblocca buona-forchetta', async () => {
+    const { useApp } = await freshStore();
+    const nowSpy = vi.spyOn(Date, 'now');
+
+    nowSpy.mockReturnValue(0);
+    useApp
+      .getState()
+      .timerDispatch({ type: 'START', meal: 'vestirsi', durationMs: 10 * MIN, dateISO: '2026-07-04' });
+
+    nowSpy.mockReturnValue(11 * MIN);
+    useApp.getState().timerDispatch({ type: 'TICK' });
+
+    const state = useApp.getState();
+    expect(state.timer?.status).toBe('celebrating');
+    expect(state.progress.mealTimersCompleted).toBe(0);
+    expect(state.progress.badges['buona-forchetta']).toBeUndefined();
+  });
+
+  test('completare un timer "pranzo" continua a incrementare mealTimersCompleted (comportamento invariato)', async () => {
+    const { useApp } = await freshStore();
+    const nowSpy = vi.spyOn(Date, 'now');
+
+    nowSpy.mockReturnValue(0);
+    useApp
+      .getState()
+      .timerDispatch({ type: 'START', meal: 'pranzo', durationMs: 60 * MIN, dateISO: '2026-07-04' });
+
+    nowSpy.mockReturnValue(61 * MIN);
+    useApp.getState().timerDispatch({ type: 'TICK' });
+
+    expect(useApp.getState().progress.mealTimersCompleted).toBe(1);
+  });
+});
+
 describe('restoreTimer — recovery E1', () => {
   test('sessione running scaduta nel frattempo (telefono bloccato/riavviato) salta a celebrating e conta il pasto', async () => {
     const { useApp } = await freshStore();

@@ -1,8 +1,8 @@
-import type { TimerSession } from '../catalog/types';
+import type { TimerKind, TimerSession } from '../catalog/types';
 import { progressOf } from './progress';
 
 export type TimerEvent =
-  | { type: 'START'; meal: 'pranzo' | 'cena'; durationMs: number; dateISO: string }
+  | { type: 'START'; meal: TimerKind; durationMs: number; dateISO: string }
   | { type: 'PAUSE' }
   | { type: 'RESUME' }
   | { type: 'FINISH_EARLY' } // long-press "Abbiamo già finito!"

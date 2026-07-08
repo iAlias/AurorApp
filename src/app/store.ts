@@ -113,12 +113,15 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
    * volta (idempotenza E4: eventi/ricostruzioni non validi ritornano la
    * stessa identità di riferimento da `next`/`restore`, quindi qui sopra
    * non arrivano mai) e ricalcola streak/doneByCategory/badge (Task 18):
-   * un pasto completato può sbloccare 'buona-forchetta'.
+   * un pasto completato può sbloccare 'buona-forchetta'. I preset non-pasto
+   * (vestirsi/riordino/libero) diventano 'celebrating' allo stesso modo ma
+   * NON contano come pasto: 'buona-forchetta' resta legato solo a pranzo/cena.
    */
   function commitTimerTransition(nextTimer: TimerSession | null, prevStatus: TimerSession['status'] | null): void {
     const state = get();
     const becameCelebrating =
       nextTimer !== null && nextTimer.status === 'celebrating' && prevStatus !== 'celebrating';
+    const isMealKind = nextTimer !== null && (nextTimer.meal === 'pranzo' || nextTimer.meal === 'cena');
     // Una sessione con status:'done' equivale a "nessuna sessione attiva":
     // non va mai persistita come tale, altrimenti dopo CELEBRATION_DONE
     // l'oggetto 'done' resterebbe in store.timer per sempre e un mount
@@ -129,7 +132,7 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
 
     let newProgress: ProgressState = state.progress;
     let newBadges: BadgeId[] = [];
-    if (becameCelebrating) {
+    if (becameCelebrating && isMealKind) {
       const bumped: ProgressState = {
         ...state.progress,
         mealTimersCompleted: state.progress.mealTimersCompleted + 1,
