@@ -74,6 +74,15 @@ describe('GameShell — schermata finale', () => {
     expect(screen.getByRole('link', { name: /altri giochi/i })).toHaveAttribute('href', '/giochi');
   });
 
+  test('gioco libero (totalRounds 0): finished non mostra la schermata finale, resta sui children', () => {
+    const playSpy = vi.spyOn(audioManager, 'play').mockImplementation(() => {});
+    renderShell({ finished: true, totalRounds: 0, completedRounds: 0 });
+
+    expect(screen.queryByText('Bravissima! 🎉')).not.toBeInTheDocument();
+    expect(screen.getByText('Contenuto del round')).toBeInTheDocument();
+    expect(playSpy).not.toHaveBeenCalled();
+  });
+
   test('celebrateGameEnd (burst+suono) scatta una sola volta all\'ingresso in finished', () => {
     useApp.setState((s) => ({
       settings: { ...s.settings, meals: { ...s.settings.meals, soundsOn: true } },

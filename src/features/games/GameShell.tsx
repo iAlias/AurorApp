@@ -37,8 +37,15 @@ export function GameShell({
   const soundsOn = useApp((s) => s.settings.meals.soundsOn);
   const celebratedRef = useRef(false);
 
+  // La schermata finale (stelle piene + "Bravissima!" + coriandoli/suono)
+  // vale SOLO per i giochi a round: con `totalRounds === 0` (gioco libero,
+  // es. "Disegna col dito") il contratto del prop promette "niente schermata
+  // finale", quindi l'enforcement sta qui — in un solo posto — e non nella
+  // disciplina di ogni singolo gioco che usa il guscio.
+  const showFinal = finished && totalRounds > 0;
+
   useEffect(() => {
-    if (!finished) {
+    if (!showFinal) {
       // Un "Gioca ancora" riporta finished a false: la guardia si riarma per
       // la prossima volta che il gioco finisce davvero.
       celebratedRef.current = false;
@@ -47,7 +54,7 @@ export function GameShell({
     if (celebratedRef.current) return;
     celebratedRef.current = true;
     celebrateGameEnd(soundsOn);
-  }, [finished, soundsOn]);
+  }, [showFinal, soundsOn]);
 
   const starsFilled = finished ? totalRounds : completedRounds;
 
@@ -78,7 +85,7 @@ export function GameShell({
         </div>
       )}
 
-      {finished ? (
+      {showFinal ? (
         <div className="flex flex-col items-center gap-6 py-10 text-center">
           <h2 className="font-display text-4xl text-deep">Bravissima! 🎉</h2>
           <div className="flex flex-wrap justify-center gap-3">
