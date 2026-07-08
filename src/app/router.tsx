@@ -27,6 +27,9 @@ const MealTimerPage = lazy(() =>
 const CatalogPage = lazy(() =>
   import('../features/catalog/CatalogPage').then((m) => ({ default: m.CatalogPage })),
 );
+const GamesPage = lazy(() =>
+  import('../features/games/GamesPage').then((m) => ({ default: m.GamesPage })),
+);
 const UiShowcase = lazy(() =>
   import('../features/dev/UiShowcase').then((m) => ({ default: m.UiShowcase })),
 );
@@ -68,6 +71,7 @@ export const routes: RouteObject[] = [
       { path: '/timer', element: withSuspense(<MealTimerPage />) },
       { path: '/impostazioni', element: withSuspense(<SettingsPage />) },
       { path: '/catalogo', element: withSuspense(<CatalogPage />) },
+      { path: '/giochi/:gameId?', element: withSuspense(<GamesPage />) },
       { path: '/dev/ui', element: withSuspense(<UiShowcase />) },
     ],
   },

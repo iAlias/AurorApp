@@ -9,11 +9,12 @@ interface NavItem {
   emoji: string;
 }
 
-/** Le 5 destinazioni principali (FR-1): l'ordine qui è l'ordine visivo in tab bar/sidebar. */
+/** Le 6 destinazioni principali (FR-1): l'ordine qui è l'ordine visivo in tab bar/sidebar. */
 const NAV_ITEMS: NavItem[] = [
   { to: '/oggi', label: 'Oggi', emoji: '📅' },
   { to: '/timer', label: 'Timer', emoji: '🌈' },
   { to: '/catalogo', label: 'Catalogo', emoji: '📚' },
+  { to: '/giochi', label: 'Giochi', emoji: '🎲' },
   { to: '/calendario', label: 'Calendario', emoji: '🗓️' },
   { to: '/impostazioni', label: 'Impostazioni', emoji: '⚙️' },
 ];
@@ -34,7 +35,7 @@ function sidebarClasses({ isActive }: NavLinkRenderProps): string {
 
 /**
  * Chrome persistente dell'app (FR-1): tab bar in basso su mobile, sidebar a
- * sinistra da `lg:` in su — stesse 5 voci, stessa destinazione. `/timer` e'
+ * sinistra da `lg:` in su — stesse 6 voci, stessa destinazione. `/timer` e'
  * incluso: la navigazione resta visibile anche durante il timer del pasto.
  * Solo `/wizard` resta FUORI da questo componente (fullscreen, FR-1/FR-6):
  * la sua route non passa da qui.
