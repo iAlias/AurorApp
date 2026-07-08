@@ -21,8 +21,8 @@ const CENTER_Y = 520;
 const OUTER_RADIUS = 380;
 const RADIUS_STEP = 30;
 const STROKE_WIDTH = 26;
-const BASE_COLOR = '#E8E4DA';
-const BASE_OPACITY = 0.6;
+const BASE_COLOR = '#B0A99C';
+const BASE_OPACITY = 0.8;
 
 const SUN_ORBIT_RADIUS = OUTER_RADIUS + 46;
 const SUN_RADIUS = 40;
