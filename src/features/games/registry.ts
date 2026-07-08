@@ -2,6 +2,10 @@ import type { ComponentType } from 'react';
 import { ToccaIlColore } from './ToccaIlColore';
 import { ContaConMe } from './ContaConMe';
 import { TrovaLaLettera } from './TrovaLaLettera';
+import { LeFormeGiuste } from './LeFormeGiuste';
+import { GrandeEPiccolo } from './GrandeEPiccolo';
+import { TrovaLIntruso } from './TrovaLIntruso';
+import { CosaVieneDopo } from './CosaVieneDopo';
 
 /** Voce del catalogo dei giochi: usata sia dalla griglia (`GamesPage`) sia
  * dal routing (`gameId` diventa il segmento `/giochi/:gameId`). */
@@ -36,5 +40,33 @@ export const GAMES: GameDef[] = [
     emoji: '🔤',
     skill: 'Allena: le lettere',
     Component: TrovaLaLettera,
+  },
+  {
+    id: 'le-forme-giuste',
+    title: 'Le forme giuste',
+    emoji: '🔷',
+    skill: 'Allena: le forme',
+    Component: LeFormeGiuste,
+  },
+  {
+    id: 'grande-e-piccolo',
+    title: 'Grande e piccolo',
+    emoji: '🐘',
+    skill: 'Allena: grande e piccolo',
+    Component: GrandeEPiccolo,
+  },
+  {
+    id: 'trova-l-intruso',
+    title: "Trova l'intruso",
+    emoji: '🕵️',
+    skill: 'Allena: la logica',
+    Component: TrovaLIntruso,
+  },
+  {
+    id: 'cosa-viene-dopo',
+    title: 'Cosa viene dopo?',
+    emoji: '🔁',
+    skill: 'Allena: le sequenze',
+    Component: CosaVieneDopo,
   },
 ];
