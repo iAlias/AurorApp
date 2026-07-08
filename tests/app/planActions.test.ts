@@ -171,6 +171,65 @@ describe('regenerate', () => {
   });
 });
 
+// Task 20 (FR-8): al salvataggio di una nuova routine, i giorni da oggi in
+// poi con almeno uno slot non-done vanno rigenerati (i `done` restano).
+describe('regenerateFutureFromToday', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  test('rigenera solo i giorni futuri con slot non-done; lascia intatti passato, oggi-già-pieno e giorni speciali', async () => {
+    vi.setSystemTime(new Date('2026-07-02T10:00:00')); // giovedì: "oggi" feriale, 5 slot
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-04');
+
+    // 07-01 (mercoledì, PASSATO): due slot done, il resto no.
+    const past = useApp.getState().plans['2026-07-01'];
+    useApp.getState().markSlot('2026-07-01', past.slots[0].slotId, 'done');
+    useApp.getState().markSlot('2026-07-01', past.slots[1].slotId, 'done');
+    const pastBefore = useApp.getState().plans['2026-07-01'];
+
+    // 07-02 (OGGI): tutti gli slot done (giorno interamente fatto).
+    for (const s of useApp.getState().plans['2026-07-02'].slots) {
+      useApp.getState().markSlot('2026-07-02', s.slotId, 'done');
+    }
+    const todayBefore = useApp.getState().plans['2026-07-02'];
+
+    // 07-03 (FUTURO, feriale): un solo slot done, gli altri no.
+    const future = useApp.getState().plans['2026-07-03'];
+    useApp.getState().markSlot('2026-07-03', future.slots[0].slotId, 'done');
+    const futureDoneSlotId = future.slots[0].slotId;
+    const futureDoneActivityId = future.slots[0].activityId;
+
+    // 07-04 (FUTURO, giorno speciale): nessuno slot da rigenerare.
+    useApp.getState().setSpecial('2026-07-04', { kind: 'mare' });
+    const specialBefore = useApp.getState().plans['2026-07-04'];
+
+    useApp.getState().regenerateFutureFromToday();
+
+    // Passato: invariato.
+    expect(useApp.getState().plans['2026-07-01']).toEqual(pastBefore);
+    // Oggi interamente fatto: invariato (nulla da rigenerare).
+    expect(useApp.getState().plans['2026-07-02']).toEqual(todayBefore);
+    // Giorno speciale: invariato.
+    expect(useApp.getState().plans['2026-07-04']).toEqual(specialBefore);
+
+    // Futuro parzialmente fatto: rigenerato (nonce+1), lo slot done preservato.
+    const futureAfter = useApp.getState().plans['2026-07-03'];
+    expect(futureAfter.regenNonce).toBe(future.regenNonce + 1);
+    const preservedSlot = futureAfter.slots.find((s) => s.slotId === futureDoneSlotId);
+    expect(preservedSlot?.status).toBe('done');
+    expect(preservedSlot?.activityId).toBe(futureDoneActivityId);
+  });
+
+  test('non fa nulla se il profilo non è ancora impostato', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().regenerateFutureFromToday();
+    expect(useApp.getState().plans).toEqual({});
+  });
+});
+
 describe('setSpecial', () => {
   test('imposta un giorno speciale con slots vuoti', async () => {
     const { useApp } = await freshStore();

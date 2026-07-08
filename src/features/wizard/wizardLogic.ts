@@ -1,5 +1,6 @@
 import { differenceInCalendarDays, differenceInMonths, differenceInYears, parseISO } from 'date-fns';
 import { RoutineSettings, MealSettings } from '../../core/catalog/types';
+import { deriveSlots } from '../../core/planner/slots';
 
 /**
  * Valida il nome del bambino.
@@ -114,11 +115,16 @@ function timeToMinutes(time: string): number {
 
 /**
  * Valida la configurazione della routine.
- * Controlla che gli orari siano in ordine crescente (strettamente).
+ * Controlla che gli orari siano in ordine crescente (strettamente) e — Task 20,
+ * vincolo rimandato dal Task 8 — che ogni slot attività feriale derivato
+ * (`deriveSlots`, §7) lasci almeno 20 minuti per giocare. Un ordine
+ * "tecnicamente" crescente può comunque comprimere uno slot a pochi minuti
+ * (es. M2 di 5 minuti fra merenda e pranzo): questo secondo controllo evita
+ * di salvare una routine formalmente valida ma inutilizzabile.
  */
 export function validateRoutine(
   r: RoutineSettings,
-  _meals: MealSettings,
+  meals: MealSettings,
 ): string | null {
   const times = [
     { name: 'wakeTime', value: r.wakeTime },
@@ -140,6 +146,14 @@ export function validateRoutine(
     if (current >= next) {
       return 'Gli orari della routine devono essere in ordine crescente. Verifica che questo orario lascia troppo poco tempo per giocare.';
     }
+  }
+
+  // Ordine valido: verifica comunque che ogni slot feriale (M1/M2/P1/P2/SERA,
+  // familyDay:false — il caso più stretto, il weekend ha solo M1/P1) lasci
+  // almeno 20 minuti per giocare.
+  const slots = deriveSlots(r, meals, false);
+  if (slots.some((s) => s.durationMin < 20)) {
+    return 'Questo orario lascia troppo poco tempo per giocare.';
   }
 
   return null;

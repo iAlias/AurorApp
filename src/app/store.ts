@@ -68,12 +68,17 @@ export interface AppStore extends StorageEnvelope {
   markSlot(dateISO: string, slotId: SlotId, status: SlotStatus): void;
   swapSlot(dateISO: string, slotId: SlotId): { exhausted: boolean };
   regenerate(dateISO: string): void;
+  regenerateFutureFromToday(): void;
   setWeather(dateISO: string, w: Weather): void;
   setSpecial(dateISO: string, special: DayPlan['special'] | undefined): void;
 }
 
-/** Estrae i soli campi persistibili (StorageEnvelope) da uno stato che li contiene. */
-function toEnvelope(state: StorageEnvelope): StorageEnvelope {
+/**
+ * Estrae i soli campi persistibili (StorageEnvelope) da uno stato che li
+ * contiene. Esportata perché `DataSection` (Task 20, FR-8 Dati) la riusa per
+ * costruire l'envelope da esportare, invece di duplicarne la forma.
+ */
+export function toEnvelope(state: StorageEnvelope): StorageEnvelope {
   return {
     schemaVersion: state.schemaVersion,
     savedAt: state.savedAt,
@@ -330,6 +335,32 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
       if (!plan || !ctx) return;
       const newPlan = regenerateDay(plan, ctx);
       commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+    },
+
+    /**
+     * FR-8: al salvataggio di una nuova routine (Impostazioni), i giorni da
+     * oggi in poi che hanno ancora slot non-`done` vanno rigenerati con le
+     * nuove ancore — i `done` di oggi restano intatti (`regenerateDay`, Task
+     * 12, li preserva già di suo). Da chiamare DOPO `updateSettings({routine})`,
+     * cosi' `genCtx` legge già la routine nuova. Salta i giorni passati, i
+     * giorni speciali (nessuno slot da rigenerare) e i giorni già interamente
+     * `done` (nulla da cambiare, evita un incremento di `regenNonce` a vuoto).
+     */
+    regenerateFutureFromToday() {
+      const state = get();
+      const ctx = genCtx(state);
+      if (!ctx) return;
+      const today = todayISO();
+      const updated: Record<string, DayPlan> = {};
+      for (const [dateISO, plan] of Object.entries(state.plans)) {
+        if (dateISO < today) continue;
+        if (plan.special) continue;
+        const fullyDone = plan.slots.length > 0 && plan.slots.every((s) => s.status === 'done');
+        if (fullyDone) continue;
+        updated[dateISO] = regenerateDay(plan, ctx);
+      }
+      if (Object.keys(updated).length === 0) return;
+      commitPlansAndProgress(state, { ...state.plans, ...updated });
     },
 
     /** Delega ad `applyWeather` (Task 12), che già non tocca mai gli slot `done`. */

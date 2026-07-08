@@ -7,6 +7,7 @@ import { WizardPage } from '../features/wizard/WizardPage';
 import { MealTimerPage } from '../features/mealTimer/MealTimerPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { CalendarPage } from '../features/calendar/CalendarPage';
+import { SettingsPage } from '../features/settings/SettingsPage';
 
 /**
  * `/` non ha un contenuto proprio (FR-1/FR-5): reindirizza subito a `/oggi`
@@ -21,23 +22,12 @@ function RootRedirect() {
 }
 
 /**
- * Segnaposto minimo per le schermate non ancora costruite (Task 20 possiede
- * l'implementazione reale). `/oggi`, `/calendario` e `/timer` sono già le
- * feature vere (`TodayPage` Task 14, `CalendarPage` Task 19, `MealTimerPage`
- * Task 17). Il testo `"<Nome> (placeholder)"` è distinguibile dalle voci di
- * navigazione di `Layout` (che riportano solo `<Nome>`, senza suffisso) cosi'
- * i test possono asserire sull'uno senza ambiguita' con l'altro.
- */
-function Placeholder({ label }: { label: string }) {
-  return <div>{label} (placeholder)</div>;
-}
-
-/**
  * Tabella delle route (FR-1/FR-5/FR-6/FR-7/FR-8). `/timer` e `/wizard` sono
  * volutamente FUORI dal gruppo con `Layout` come elemento: sono fullscreen,
  * senza tab bar/sidebar. Le altre schermate principali (`/oggi`,
  * `/calendario`, `/impostazioni`) e la pagina di servizio `/dev/ui` sono
- * dentro `Layout`.
+ * dentro `Layout`. `/impostazioni` e' `SettingsPage` (Task 20: FR-8 completa
+ * + recap progressi FR-9), che chiude la Milestone M6.
  */
 export const routes: RouteObject[] = [
   { path: '/', element: <RootRedirect /> },
@@ -46,7 +36,7 @@ export const routes: RouteObject[] = [
     children: [
       { path: '/oggi', element: <TodayPage /> },
       { path: '/calendario', element: <CalendarPage /> },
-      { path: '/impostazioni', element: <Placeholder label="Impostazioni" /> },
+      { path: '/impostazioni', element: <SettingsPage /> },
       { path: '/dev/ui', element: <UiShowcase /> },
     ],
   },

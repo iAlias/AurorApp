@@ -192,6 +192,26 @@ describe('wizardLogic', () => {
       const error = validateRoutine(invalid, DEFAULT_MEALS);
       expect(error).toMatch(/orario/i);
     });
+
+    // Task 20: vincolo rimandato dal Task 8 — ordine crescente valido ma uno
+    // slot derivato (M2, fra merenda mattutina e pranzo) resta troppo corto.
+    test('rifiuta ordine valido che lascia uno slot <20min (M2 troppo corto)', () => {
+      const tooTight = {
+        ...DEFAULT_ROUTINE,
+        morningSnackEnd: '12:30', // lunchStart 13:00 → M2 dura 780-20-750=10min
+      };
+      // Precondizione: l'ordine resta valido (nessun errore di sequenza).
+      expect(tooTight.morningSnackStart < tooTight.morningSnackEnd).toBe(true);
+      expect(tooTight.morningSnackEnd < tooTight.lunchStart).toBe(true);
+
+      const error = validateRoutine(tooTight, DEFAULT_MEALS);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/troppo poco tempo per giocare/i);
+    });
+
+    test('accetta la routine di default (tutti gli slot ≥20min)', () => {
+      expect(validateRoutine(DEFAULT_ROUTINE, DEFAULT_MEALS)).toBeNull();
+    });
   });
 
   describe('AVATARS', () => {
