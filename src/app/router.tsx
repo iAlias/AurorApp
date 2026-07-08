@@ -77,7 +77,10 @@ export const routes: RouteObject[] = [
  * ne' dall'URL corrente di jsdom.
  */
 export function createAppRouter(initialEntries?: string[]) {
+  // `BASE_URL` riflette `base` in vite.config.ts (es. '/aurorapp/'): serve
+  // solo al router del browser reale — i test usano `createMemoryRouter`
+  // con percorsi assoluti indipendenti dalla sottocartella di deploy.
   return initialEntries
     ? createMemoryRouter(routes, { initialEntries })
-    : createBrowserRouter(routes);
+    : createBrowserRouter(routes, { basename: import.meta.env.BASE_URL });
 }
