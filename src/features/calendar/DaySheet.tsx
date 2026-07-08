@@ -44,33 +44,39 @@ function capitalize(s: string): string {
  * (si vede subito l'effetto sul piano, come "Rigenera domani" in
  * `TomorrowPreview`) — chiude solo Esc/backdrop/cambio giorno.
  *
- * `confirmingRegenerate`/`pickingSpecial` aprono una `Modal` ANNIDATA dentro
- * questo stesso componente (non dentro `<Sheet>`, ma comunque montata mentre
- * lo sheet resta aperto): la `Sheet` e la `Modal` hanno ciascuna un proprio
- * listener `keydown` globale per Esc, quindi un Esc con la modale aperta
- * farebbe scattare ANCHE l'handler dello sheet. `handleSheetClose` sotto
- * ignora la richiesta di chiusura mentre una delle due modali interne è
- * aperta, così Esc chiude prima la modale (comportamento atteso) e solo un
- * secondo Esc chiude lo sheet.
+ * `confirmingRegenerate`/`pickingSpecial`/`confirmingSpecialLoss` aprono una
+ * `Modal` ANNIDATA dentro questo stesso componente (non dentro `<Sheet>`, ma
+ * comunque montata mentre lo sheet resta aperto): la `Sheet` e la `Modal`
+ * hanno ciascuna un proprio listener `keydown` globale per Esc, quindi un Esc
+ * con la modale aperta farebbe scattare ANCHE l'handler dello sheet.
+ * `handleSheetClose` sotto ignora la richiesta di chiusura mentre una delle
+ * modali interne è aperta, così Esc chiude prima la modale (comportamento
+ * atteso) e solo un secondo Esc chiude lo sheet. Le tre modali non sono mai
+ * aperte insieme: `confirmingSpecialLoss` sostituisce `pickingSpecial` (non
+ * si affianca) quando scatta, cosi' resta sempre un solo backdrop/listener
+ * attivo alla volta.
  */
 export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
   const [pickingSpecial, setPickingSpecial] = useState(false);
   const [specialKind, setSpecialKind] = useState<SpecialKind>('mare');
   const [specialLabel, setSpecialLabel] = useState('');
   const [confirmingRegenerate, setConfirmingRegenerate] = useState(false);
+  const [confirmingSpecialLoss, setConfirmingSpecialLoss] = useState(false);
 
   const open = dateISO !== null;
   const readOnly = dateISO !== null && dateISO < todayISO;
+  const hasDone = plan?.slots.some((s) => s.status === 'done') ?? false;
 
   function resetInnerState() {
     setPickingSpecial(false);
     setSpecialKind('mare');
     setSpecialLabel('');
     setConfirmingRegenerate(false);
+    setConfirmingSpecialLoss(false);
   }
 
   function handleSheetClose() {
-    if (confirmingRegenerate || pickingSpecial) return; // Esc chiude prima la modale interna
+    if (confirmingRegenerate || pickingSpecial || confirmingSpecialLoss) return; // Esc chiude prima la modale interna
     resetInnerState();
     onClose();
   }
@@ -82,17 +88,32 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
   }
 
   function handleRegenerateClick() {
-    const hasDone = plan?.slots.some((s) => s.status === 'done') ?? false;
     if (hasDone) setConfirmingRegenerate(true);
     else doRegenerate();
   }
 
-  function handleConfirmSpecial() {
+  function doApplySpecial() {
     if (!dateISO) return;
     useApp.getState().setSpecial(dateISO, { kind: specialKind, label: specialLabel.trim() || undefined });
     setPickingSpecial(false);
+    setConfirmingSpecialLoss(false);
     setSpecialKind('mare');
     setSpecialLabel('');
+  }
+
+  /**
+   * `setSpecial` (Task 13) sostituisce SEMPRE gli slot con `[]`, anche quelli
+   * già `done` — a differenza di "Rigenera" che li preserva davvero. Se il
+   * giorno ha attività fatte, quindi, prima di applicare serve un avviso
+   * onesto (non lo stesso testo di "Rigenera": qui si perdono per davvero).
+   */
+  function handleConfirmSpecial() {
+    if (hasDone) {
+      setPickingSpecial(false);
+      setConfirmingSpecialLoss(true);
+      return;
+    }
+    doApplySpecial();
   }
 
   function handleBackToNormal() {
@@ -187,6 +208,27 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
               Sì, rigenera
             </Button>
             <Button type="button" variant="ghost" onClick={() => setConfirmingRegenerate(false)}>
+              Annulla
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={confirmingSpecialLoss}
+        onClose={() => setConfirmingSpecialLoss(false)}
+        title="Diventare un giorno speciale?"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="font-body text-sm text-deep">
+            Hai già segnato delle attività fatte oggi: diventando un giorno speciale non si vedranno più
+            nel piano. Continuare?
+          </p>
+          <div className="flex gap-2">
+            <Button type="button" onClick={doApplySpecial}>
+              Sì, rendi speciale
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => setConfirmingSpecialLoss(false)}>
               Annulla
             </Button>
           </div>
