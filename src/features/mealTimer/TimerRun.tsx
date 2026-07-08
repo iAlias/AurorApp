@@ -336,7 +336,7 @@ export function TimerRun({ session, onExit }: TimerRunProps) {
       </button>
 
       <Modal open={confirmExit} onClose={() => setConfirmExit(false)} title="Uscire dal timer?">
-        <p className="mb-4 font-body text-stone">Il tempo di questo pasto andrà perso.</p>
+        <p className="mb-4 font-body text-stone">Il tempo andrà perso e si ricomincia da capo.</p>
         <div className="flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={() => setConfirmExit(false)}>
             Annulla
