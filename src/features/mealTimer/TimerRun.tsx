@@ -67,10 +67,11 @@ function RingButton({ emoji, label, onLongPress }: RingButtonProps) {
 }
 
 /**
- * Schermata "per la bimba" del timer pasto (FR-6), fullscreen, niente
- * navigazione: arcobaleno + sole al centro, stelline al tocco (delight),
- * controlli adulto protetti da child-lock (long-press 3s), riga discreta
- * "termina alle HH:mm" in basso.
+ * Schermata "per la bimba" del timer pasto (FR-6), fullscreen nel proprio
+ * sfondo/contenuto (la tab bar/sidebar di `Layout` resta visibile intorno):
+ * arcobaleno + sole al centro, stelline al tocco (delight), controlli adulto
+ * protetti da child-lock (long-press 3s), riga discreta "termina alle HH:mm"
+ * in basso.
  */
 export function TimerRun({ session, onExit }: TimerRunProps) {
   const timerDispatch = useApp((s) => s.timerDispatch);

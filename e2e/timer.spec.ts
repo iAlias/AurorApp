@@ -23,8 +23,24 @@ test('timer 60min: avvio, blocco "telefono", ripresa, celebrazione', async ({ pa
   // che il primo salto sopra non ha lasciato "avanzo" di sessione corsa):
   // deve bastare a far scattare `TICK` → celebrating.
   await page.clock.fastForward('01:05:00');
-  await expect(page.getByText(/bravissima/i)).toBeVisible(); // celebrazione col nome
-  await expect(page.getByText('Aurora', { exact: false })).toBeVisible();
+  // Scoped al titolo (non a `page` intero): da quando /timer e' dentro
+  // `Layout` la sidebar desktop contiene il testo "AurorApp", che altrimenti
+  // farebbe fallire in strict mode un `getByText('Aurora')` non ancorato
+  // (substring-match case-insensitive: "AurorApp" contiene "Aurora").
+  await expect(page.getByRole('heading', { name: /bravissima/i })).toBeVisible(); // celebrazione col nome
+  await expect(page.getByRole('heading', { name: /bravissima/i })).toContainText('Aurora');
+});
+
+test('/timer mostra la navigazione principale (tab bar/sidebar di Layout)', async ({ page }) => {
+  await completeWizardFast(page);
+
+  await page.goto('/timer?pasto=pranzo');
+  await expect(page.getByRole('navigation', { name: /navigazione principale/i })).toBeVisible();
+  await expect(
+    page
+      .getByRole('navigation', { name: /navigazione principale/i })
+      .getByRole('link', { name: /timer/i }),
+  ).toBeVisible();
 });
 
 test('child-lock: tap semplice non mette in pausa', async ({ page }) => {

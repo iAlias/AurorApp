@@ -6,8 +6,10 @@ import { TimerRun } from './TimerRun';
 import { Celebration } from './Celebration';
 
 /**
- * Punto di ingresso della route `/timer` (FR-6, fullscreen fuori da
- * `Layout`): sceglie la schermata giusta in base alla sessione persistita.
+ * Punto di ingresso della route `/timer` (FR-6): sceglie la schermata giusta
+ * in base alla sessione persistita. La route e' dentro `Layout` (tab
+ * bar/sidebar sempre visibile), il contenuto resta comunque fullscreen
+ * (sfondo a gradiente proprio, `min-h-screen`).
  * Nessuna sessione → `TimerStart` (schermata di avvio, per l'adulto).
  *
  * Recovery (E1): al mount, `restoreTimer(Date.now())` applica `restore()`

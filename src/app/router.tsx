@@ -45,12 +45,15 @@ function RootRedirect() {
 }
 
 /**
- * Tabella delle route (FR-1/FR-5/FR-6/FR-7/FR-8). `/timer` e `/wizard` sono
- * volutamente FUORI dal gruppo con `Layout` come elemento: sono fullscreen,
+ * Tabella delle route (FR-1/FR-5/FR-6/FR-7/FR-8). Solo `/wizard` e'
+ * volutamente FUORI dal gruppo con `Layout` come elemento: e' fullscreen,
  * senza tab bar/sidebar. Le altre schermate principali (`/oggi`,
- * `/calendario`, `/impostazioni`) e la pagina di servizio `/dev/ui` sono
- * dentro `Layout`. `/impostazioni` e' `SettingsPage` (Task 20: FR-8 completa
- * + recap progressi FR-9), che chiude la Milestone M6.
+ * `/calendario`, `/timer`, `/impostazioni`) e la pagina di servizio `/dev/ui`
+ * sono dentro `Layout`, cosi' la tab bar/sidebar resta visibile anche
+ * durante il timer del pasto (`/timer` resta fullscreen nel proprio
+ * contenuto/sfondo, ma con la navigazione principale sempre raggiungibile).
+ * `/impostazioni` e' `SettingsPage` (Task 20: FR-8 completa + recap
+ * progressi FR-9), che chiude la Milestone M6.
  */
 export const routes: RouteObject[] = [
   { path: '/', element: <RootRedirect /> },
@@ -59,11 +62,11 @@ export const routes: RouteObject[] = [
     children: [
       { path: '/oggi', element: <TodayPage /> },
       { path: '/calendario', element: withSuspense(<CalendarPage />) },
+      { path: '/timer', element: withSuspense(<MealTimerPage />) },
       { path: '/impostazioni', element: withSuspense(<SettingsPage />) },
       { path: '/dev/ui', element: withSuspense(<UiShowcase />) },
     ],
   },
-  { path: '/timer', element: withSuspense(<MealTimerPage />) },
   { path: '/wizard', element: <WizardPage /> },
 ];
 

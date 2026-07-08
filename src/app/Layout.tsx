@@ -33,9 +33,10 @@ function sidebarClasses({ isActive }: NavLinkRenderProps): string {
 
 /**
  * Chrome persistente dell'app (FR-1): tab bar in basso su mobile, sidebar a
- * sinistra da `lg:` in su — stesse 4 voci, stessa destinazione. `/timer` e
- * `/wizard` restano FUORI da questo componente (fullscreen, FR-1/FR-6): le
- * loro route non passano da qui.
+ * sinistra da `lg:` in su — stesse 4 voci, stessa destinazione. `/timer` e'
+ * incluso: la navigazione resta visibile anche durante il timer del pasto.
+ * Solo `/wizard` resta FUORI da questo componente (fullscreen, FR-1/FR-6):
+ * la sua route non passa da qui.
  */
 export function Layout() {
   return (
