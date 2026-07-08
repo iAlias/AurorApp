@@ -1,9 +1,12 @@
 import { create } from 'zustand';
 import type { StoreApi, UseBoundStore } from 'zustand';
+import { format } from 'date-fns';
 import type {
+  BadgeId,
   ChildProfile,
   DayPlan,
   MealSettings,
+  ProgressState,
   RoutineSettings,
   Settings,
   SlotId,
@@ -18,6 +21,7 @@ import { loadEnvelope, makeDebouncedSave, saveNow } from '../core/storage/persis
 import { next } from '../core/timer/timerMachine';
 import type { TimerEvent } from '../core/timer/timerMachine';
 import { restore } from '../core/timer/progress';
+import { checkUnlocks } from '../core/progress/badges';
 import {
   applyWeather,
   generateDayPlan,
@@ -28,12 +32,30 @@ import {
 } from '../core/planner/generator';
 import type { GenContext } from '../core/planner/generator';
 
+/** "Oggi" secondo l'orologio di sistema, in ISO `yyyy-MM-dd` (fonte per streak/badge). */
+function todayISO(): string {
+  return format(new Date(), 'yyyy-MM-dd');
+}
+
 // ——— Stato di idratazione ———
 export type StorageStatus = 'ready' | 'corrupted';
 
 export interface AppStore extends StorageEnvelope {
   storageStatus: StorageStatus;
   corruptedRaw: string | null;
+  /**
+   * Badge appena sbloccati dall'ultima azione che ha ricalcolato il
+   * progresso (`markSlot`/`timerDispatch`), non persistiti (canale
+   * effimero solo per la UI corrente): la UI li legge per mostrare
+   * Modal+play('badge')+burst e poi li consuma con `clearNewBadges`. Se
+   * arriva un nuovo sblocco prima che il precedente sia stato consumato,
+   * l'array si sostituisce (non si accumula) — evento raro (richiede due
+   * sblocchi nella stessa manciata di secondi) e comunque la UI successiva
+   * mostrerebbe entrambi solo se li accumulasse in coda, complessità non
+   * giustificata qui.
+   */
+  lastNewBadges: BadgeId[];
+  clearNewBadges(): void;
   completeWizard(profile: ChildProfile, routine: RoutineSettings): void;
   updateSettings(
     patch: Partial<Settings> | { routine?: Partial<RoutineSettings>; meals?: Partial<MealSettings> },
@@ -48,7 +70,6 @@ export interface AppStore extends StorageEnvelope {
   regenerate(dateISO: string): void;
   setWeather(dateISO: string, w: Weather): void;
   setSpecial(dateISO: string, special: DayPlan['special'] | undefined): void;
-  // azioni progresso aggiunte nel task 18 — firme definite lì
 }
 
 /** Estrae i soli campi persistibili (StorageEnvelope) da uno stato che li contiene. */
@@ -85,7 +106,8 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
    * non lo era già, incrementa `progress.mealTimersCompleted` una sola
    * volta (idempotenza E4: eventi/ricostruzioni non validi ritornano la
    * stessa identità di riferimento da `next`/`restore`, quindi qui sopra
-   * non arrivano mai).
+   * non arrivano mai) e ricalcola streak/doneByCategory/badge (Task 18):
+   * un pasto completato può sbloccare 'buona-forchetta'.
    */
   function commitTimerTransition(nextTimer: TimerSession | null, prevStatus: TimerSession['status'] | null): void {
     const state = get();
@@ -99,16 +121,31 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     // l'avvio di un nuovo timer.
     const timerToPersist = nextTimer !== null && nextTimer.status === 'done' ? null : nextTimer;
 
+    let newProgress: ProgressState = state.progress;
+    let newBadges: BadgeId[] = [];
+    if (becameCelebrating) {
+      const bumped: ProgressState = {
+        ...state.progress,
+        mealTimersCompleted: state.progress.mealTimersCompleted + 1,
+      };
+      const unlocked = checkUnlocks(bumped, state.plans, ACTIVITIES, todayISO(), new Date().toISOString());
+      newProgress = unlocked.state;
+      newBadges = unlocked.newBadges;
+    }
+
     const env: StorageEnvelope = {
       ...toEnvelope(state),
       savedAt: new Date().toISOString(),
       timer: timerToPersist,
-      progress: becameCelebrating
-        ? { ...state.progress, mealTimersCompleted: state.progress.mealTimersCompleted + 1 }
-        : state.progress,
+      progress: newProgress,
     };
     saveNow(localStorage, env);
-    set({ timer: env.timer, progress: env.progress, savedAt: env.savedAt });
+    set((s) => ({
+      timer: env.timer,
+      progress: env.progress,
+      savedAt: env.savedAt,
+      lastNewBadges: newBadges.length > 0 ? newBadges : s.lastNewBadges,
+    }));
   }
 
   /**
@@ -134,10 +171,44 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     set({ plans: env.plans, savedAt: env.savedAt });
   }
 
+  /**
+   * Come `commitPlans`, ma ricalcola anche `progress` (streak/doneByCategory/
+   * badge, Task 18) dai piani aggiornati — fonte di verità, non incrementale
+   * — e scrive entrambi in un solo write-through. Se emergono nuovi badge li
+   * espone in `lastNewBadges` perché la UI li mostri.
+   */
+  function commitPlansAndProgress(state: StorageEnvelope, plans: Record<string, DayPlan>): void {
+    const { state: newProgress, newBadges } = checkUnlocks(
+      state.progress,
+      plans,
+      ACTIVITIES,
+      todayISO(),
+      new Date().toISOString(),
+    );
+    const env: StorageEnvelope = {
+      ...toEnvelope(state),
+      savedAt: new Date().toISOString(),
+      plans,
+      progress: newProgress,
+    };
+    saveNow(localStorage, env);
+    set((s) => ({
+      plans: env.plans,
+      progress: env.progress,
+      savedAt: env.savedAt,
+      lastNewBadges: newBadges.length > 0 ? newBadges : s.lastNewBadges,
+    }));
+  }
+
   return {
     ...initialEnv,
     storageStatus: initialStatus,
     corruptedRaw: initialCorruptedRaw,
+    lastNewBadges: [],
+
+    clearNewBadges() {
+      set({ lastNewBadges: [] });
+    },
 
     completeWizard(profile, routine) {
       const state = get();
@@ -221,12 +292,12 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     },
 
     /**
-     * Aggiorna lo stato di un solo slot. Puro store: nessun side-effect
-     * audio (di competenza della UI) e nessun ricalcolo di `progress`
-     * (streak/badge arrivano nel Task 18). Idempotente (E4): se lo slot è
-     * già nello stato richiesto non scrive nulla, così una doppia chiamata
-     * consecutiva lascia lo stato — e la sua identità di riferimento —
-     * invariato dopo la 2ª chiamata quanto dopo la 1ª.
+     * Aggiorna lo stato di un solo slot. Nessun side-effect audio (di
+     * competenza della UI). Dopo la scrittura ricalcola `progress`
+     * (streak/doneByCategory/badge, Task 18) dai piani aggiornati. Idempotente
+     * (E4): se lo slot è già nello stato richiesto non scrive nulla, così una
+     * doppia chiamata consecutiva lascia lo stato — e la sua identità di
+     * riferimento — invariato dopo la 2ª chiamata quanto dopo la 1ª.
      */
     markSlot(dateISO, slotId, status) {
       const state = get();
@@ -238,7 +309,7 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
         ...plan,
         slots: plan.slots.map((s) => (s.slotId === slotId ? { ...s, status } : s)),
       };
-      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
+      commitPlansAndProgress(state, { ...state.plans, [dateISO]: newPlan });
     },
 
     swapSlot(dateISO, slotId) {
