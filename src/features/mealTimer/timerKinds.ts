@@ -21,7 +21,7 @@ export const TIMER_KINDS: Record<TimerKind, TimerKindCopy> = {
   cena:     { emoji: '🍽️', chip: 'Cena',         startButton: 'Si mangia! 🍽️',  celebration: 'Cena deliziosa! 🍽️',         defaultMinutes: 60 },
   vestirsi: { emoji: '👕', chip: 'Vestirsi',     startButton: 'Ci vestiamo! 👕', celebration: 'Tutta vestita, che brava! 👕', defaultMinutes: 10 },
   riordino: { emoji: '🧸', chip: 'Riordino',     startButton: 'Si riordina! 🧸', celebration: 'Tutto in ordine! 🧸',          defaultMinutes: 5 },
-  libero:   { emoji: '⭐', chip: 'Campo libero', startButton: 'Via! ⭐',         celebration: 'Ce l’abbiamo fatta! ⭐',  defaultMinutes: 15 },
+  libero:   { emoji: '⭐', chip: 'Altro',         startButton: 'Via! ⭐',         celebration: 'Ce l’abbiamo fatta! ⭐',  defaultMinutes: 15 },
 };
 
 export const TIMER_KIND_ORDER: TimerKind[] = ['pranzo', 'cena', 'vestirsi', 'riordino', 'libero'];

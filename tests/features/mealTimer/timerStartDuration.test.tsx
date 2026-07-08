@@ -148,7 +148,7 @@ describe('TimerStart — durata minima 1 minuto + inserimento manuale da tastier
 });
 
 describe('TimerStart — 5 preset (Task 1: vestirsi/riordino/campo libero)', () => {
-  test('i 5 chip (Pranzo/Cena/Vestirsi/Riordino/Campo libero) sono tutti visibili', async () => {
+  test('i 5 chip (Pranzo/Cena/Vestirsi/Riordino/Altro) sono tutti visibili', async () => {
     const { TimerStart } = await freshTimerStart();
     renderAtLunch(TimerStart);
 
@@ -156,7 +156,7 @@ describe('TimerStart — 5 preset (Task 1: vestirsi/riordino/campo libero)', () 
     expect(screen.getByRole('button', { name: /cena/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /vestirsi/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /riordino/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /campo libero/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /altro/i })).toBeInTheDocument();
   });
 
   test('selezionare "Riordino" porta la durata al default di 5 min', async () => {
