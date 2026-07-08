@@ -19,29 +19,34 @@ const OPTIONS: { value: Weather; emoji: string; label: string }[] = [
  */
 export function WeatherSelector({ weather, onChange }: WeatherSelectorProps) {
   return (
-    <div className="flex gap-2" role="group" aria-label="Meteo di oggi">
-      {OPTIONS.map((opt) => {
-        const selected = opt.value === weather;
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            aria-label={opt.label}
-            aria-pressed={selected}
-            onClick={() => {
-              if (opt.value === weather) return;
-              onChange(opt.value);
-            }}
-            className={[
-              'flex h-12 w-12 items-center justify-center rounded-full text-xl shadow-soft',
-              'transition-transform duration-150 ease-out active:scale-[.97]',
-              selected ? 'bg-sun' : 'bg-card',
-            ].join(' ')}
-          >
-            <span aria-hidden="true">{opt.emoji}</span>
-          </button>
-        );
-      })}
+    <div className="flex flex-col gap-1.5">
+      <span className="font-body text-xs font-semibold text-stone">
+        Che tempo fa oggi? Cambia le attività proposte
+      </span>
+      <div className="flex gap-2" role="group" aria-label="Meteo di oggi">
+        {OPTIONS.map((opt) => {
+          const selected = opt.value === weather;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              aria-label={opt.label}
+              aria-pressed={selected}
+              onClick={() => {
+                if (opt.value === weather) return;
+                onChange(opt.value);
+              }}
+              className={[
+                'flex h-12 w-12 items-center justify-center rounded-full text-xl shadow-soft',
+                'transition-transform duration-150 ease-out active:scale-[.97]',
+                selected ? 'bg-sun' : 'bg-card',
+              ].join(' ')}
+            >
+              <span aria-hidden="true">{opt.emoji}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
