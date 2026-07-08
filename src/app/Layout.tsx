@@ -12,9 +12,9 @@ interface NavItem {
 /** Le 5 destinazioni principali (FR-1): l'ordine qui è l'ordine visivo in tab bar/sidebar. */
 const NAV_ITEMS: NavItem[] = [
   { to: '/oggi', label: 'Oggi', emoji: '📅' },
-  { to: '/calendario', label: 'Calendario', emoji: '🗓️' },
   { to: '/timer', label: 'Timer', emoji: '🌈' },
   { to: '/catalogo', label: 'Catalogo', emoji: '📚' },
+  { to: '/calendario', label: 'Calendario', emoji: '🗓️' },
   { to: '/impostazioni', label: 'Impostazioni', emoji: '⚙️' },
 ];
 
