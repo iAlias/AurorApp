@@ -205,7 +205,10 @@ function EndOfSummary({ profile, plans, progress }: { profile: ChildProfile; pla
  * Schermata "Oggi" (FR-5), la vista principale dell'app. Materializza sempre
  * fino a domani incluso (`ensurePlansUpTo`, che genera anche oggi in un solo
  * giro grazie all'ordine cronologico di Task 12) cosi' la sezione "Domani"
- * ha sempre un piano pronto. Se il periodo vacanza e' finito (E10) non
+ * ha sempre un piano pronto — a meno che il periodo vacanza non sia già
+ * finito (E10, `todayISO > vacationEnd`): in quel caso l'effect non chiama
+ * più `ensurePlansUpTo` (altrimenti `materializeUpTo`, senza limite
+ * superiore, continuerebbe a generare piani per sempre) e il componente non
  * renderizza affatto la timeline: mostra `EndOfSummary`.
  */
 export function TodayPage() {
@@ -220,8 +223,14 @@ export function TodayPage() {
 
   useEffect(() => {
     if (!profile) return;
+    // E10: periodo vacanza finito (stesso bordo del render-guard più sotto,
+    // `vacationEnd` incluso) — non materializzare più nulla, altrimenti
+    // `materializeUpTo` (Task 12, senza limite superiore) genererebbe e
+    // scriverebbe su localStorage un DayPlan per ogni giorno trascorso da
+    // `vacationStart` a "domani", una quantità che cresce indefinitamente.
+    if (todayISO > profile.vacationEnd) return;
     useApp.getState().ensurePlansUpTo(tomorrowISO);
-  }, [profile, tomorrowISO]);
+  }, [profile, todayISO, tomorrowISO]);
 
   const [detailSlotId, setDetailSlotId] = useState<SlotId | null>(null);
   const [toast, setToast] = useState<string | null>(null);
