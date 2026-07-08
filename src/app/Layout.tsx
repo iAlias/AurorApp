@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import type { NavLinkRenderProps } from 'react-router-dom';
 import { PageFlip3D } from '../ui/PageFlip3D';
+import { UpdatePrompt } from './UpdatePrompt';
 
 interface NavItem {
   to: string;
@@ -70,6 +71,8 @@ export function Layout() {
           </NavLink>
         ))}
       </nav>
+
+      <UpdatePrompt />
     </div>
   );
 }
