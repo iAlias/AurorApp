@@ -51,6 +51,12 @@ export function StepSummary({ name, avatarEmoji, onConfirm }: StepSummaryProps) 
 
   function handleClick() {
     burst({ big: true });
+    // Un secondo getto poco dopo il primo (mentre scorrono le frasi di
+    // generazione): rende la celebrazione del riepilogo più prolungata e
+    // visibile invece di un unico lampo istantaneo. `burst()` è già no-op
+    // sotto `prefers-reduced-motion`/impostazione ridotta, quindi anche
+    // questa seconda chiamata eredita automaticamente quella garanzia.
+    window.setTimeout(() => burst({ big: true }), 500);
     setGenerating(true);
   }
 

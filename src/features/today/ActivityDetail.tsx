@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
+import { MarkDoneButton } from './MarkDoneButton';
 import type { Activity, PlannedSlot } from '../../core/catalog/types';
 
 export interface ActivityDetailProps {
@@ -107,11 +108,7 @@ export function ActivityDetail({
         )}
 
         <div className="flex flex-wrap gap-2">
-          {slot.status !== 'done' && (
-            <Button type="button" onClick={onMarkDone}>
-              Fatta! ⭐
-            </Button>
-          )}
+          {slot.status !== 'done' && <MarkDoneButton onClick={onMarkDone} />}
           <Button type="button" variant="secondary" onClick={onMarkSkipped}>
             Saltata
           </Button>

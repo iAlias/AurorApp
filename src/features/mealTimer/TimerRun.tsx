@@ -22,6 +22,7 @@ const ALMOST_DONE_MS = 5 * 60_000;
 const LONG_PRESS_MS = 3000;
 const RING_RADIUS = 26;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const TICK_INTERVAL_MS = 1000;
 
 interface RingButtonProps {
   emoji: string;
@@ -107,6 +108,18 @@ export function TimerRun({ session, onExit }: TimerRunProps) {
       if (meals.soundsOn) audioManager.play('almost');
     }
   }, [remainingMs, session.status, meals.soundsOn]);
+
+  // Ticchettio discreto mentre il timer corre davvero (mai durante il
+  // countdown 3-2-1, che vive in TimerStart e non passa mai da qui): parte
+  // solo se `running` e si ferma da solo in pausa o allo smontaggio, senza
+  // lasciare intervalli orfani (stesso stile di cleanup di `useLongPress`).
+  useEffect(() => {
+    if (session.status !== 'running' || !meals.soundsOn) return undefined;
+    const id = setInterval(() => {
+      audioManager.play('tick');
+    }, TICK_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [session.status, meals.soundsOn]);
 
   function handlePauseToggle() {
     timerDispatch({ type: session.status === 'running' ? 'PAUSE' : 'RESUME' });

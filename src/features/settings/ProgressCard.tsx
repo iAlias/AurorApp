@@ -7,6 +7,8 @@ import { CATEGORIES } from '../../core/catalog/categories';
 import { BADGES, doneByCategory } from '../../core/progress/badges';
 import type { BadgeId, CategoryId, DayPlan } from '../../core/catalog/types';
 import { Card } from '../../ui/Card';
+import { audioManager } from '../../ui/audio';
+import { burst } from '../../ui/confetti';
 import { useReducedMotionPref } from '../../ui/motion';
 
 interface WeeklyRecap {
@@ -80,6 +82,11 @@ export function ProgressCard() {
 
   useEffect(() => {
     if (lastNewBadges.length === 0) return;
+    // Delight one-shot allo sblocco (oltre al flip 3D delle card badge, già
+    // gestito nel JSX sotto): stesso guard `meals.soundsOn` di tutti gli
+    // altri suoni dell'app, `burst()` è già no-op sotto reduced-motion.
+    if (useApp.getState().settings.meals.soundsOn) audioManager.play('badge');
+    burst();
     useApp.getState().clearNewBadges();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- consumo one-shot al mount, non ad ogni cambio
   }, []);

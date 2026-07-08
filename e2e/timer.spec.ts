@@ -100,6 +100,26 @@ test('TimerRun: il bottone child-lock "abbiamo già finito" non e\' coperto dall
   await expectAboveTabBar(page, page.getByRole('button', { name: /abbiamo già finito/i }));
 });
 
+test('TimerStart: inserimento manuale della durata da tastiera (icona matita)', async ({ page }) => {
+  await completeWizardFast(page);
+  await page.goto('/timer?pasto=pranzo');
+
+  await expect(page.getByText('60 min')).toBeVisible();
+
+  await page.getByRole('button', { name: /modifica durata da tastiera/i }).click();
+  const input = page.getByRole('spinbutton', { name: /durata in minuti/i });
+  await expect(input).toHaveValue('60');
+  await input.fill('1');
+  await input.press('Enter');
+
+  await expect(page.getByText(/^1 min$/)).toBeVisible();
+
+  // Lo stepper "Riduci" da 1 min non deve andare sotto 1 (nuovo minimo,
+  // prima era 15): resta clampato a 1.
+  await page.getByRole('button', { name: /riduci durata/i }).click();
+  await expect(page.getByText(/^1 min$/)).toBeVisible();
+});
+
 test('Celebration: il bottone "Abbiamo finito!" non e\' coperto dalla tab bar (mobile)', async ({ page }) => {
   await page.clock.install();
   await completeWizardFast(page);

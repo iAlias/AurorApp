@@ -101,4 +101,19 @@ describe('audioManager', () => {
     expect(instance.createOscillator).toHaveBeenCalledTimes(1);
     expect(instance.createGain).toHaveBeenCalledTimes(1);
   });
+
+  // Ticchettio del timer in corso (§FR-6): un pattern brevissimo pensato per
+  // ripetersi ogni secondo senza infastidire — verifichiamo solo che sia
+  // registrato ed esegua lo stesso percorso sicuro degli altri suoni.
+  test('play("tick") dopo unlock() crea un solo oscillatore/gain e non lancia', async () => {
+    installFakeAudioContext();
+    const { audioManager } = await freshAudio();
+
+    audioManager.unlock();
+    const instance = FakeAudioContext.instances[0];
+
+    expect(() => audioManager.play('tick')).not.toThrow();
+    expect(instance.createOscillator).toHaveBeenCalledTimes(1);
+    expect(instance.createGain).toHaveBeenCalledTimes(1);
+  });
 });

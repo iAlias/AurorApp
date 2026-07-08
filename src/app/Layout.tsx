@@ -41,7 +41,7 @@ function sidebarClasses({ isActive }: NavLinkRenderProps): string {
 export function Layout() {
   return (
     <div className="min-h-screen bg-cream lg:flex">
-      <aside className="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:gap-1 lg:border-r lg:border-deep/10 lg:bg-card lg:p-6">
+      <aside className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:shrink-0 lg:flex-col lg:gap-1 lg:overflow-y-auto lg:border-r lg:border-deep/10 lg:bg-card lg:p-6">
         <span className="mb-6 font-display text-2xl text-deep">AurorApp 🌈</span>
         <nav className="flex flex-col gap-1">
           {NAV_ITEMS.map((item) => (

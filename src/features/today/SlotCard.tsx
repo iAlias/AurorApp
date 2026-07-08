@@ -1,5 +1,6 @@
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
+import { MarkDoneButton } from './MarkDoneButton';
 import { CATEGORIES } from '../../core/catalog/categories';
 import { toHHMM } from '../../core/planner/slots';
 import type { SlotDef } from '../../core/planner/slots';
@@ -107,9 +108,7 @@ export function SlotCard({
 
         {!done && (
           <div className="mt-3 flex gap-2">
-            <Button type="button" size="md" onClick={onMarkDone}>
-              Fatta! ⭐
-            </Button>
+            <MarkDoneButton onClick={onMarkDone} size="md" />
             <Button type="button" variant="secondary" size="md" onClick={onSwap}>
               🔄 Cambiala
             </Button>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../../app/store';
@@ -8,7 +9,7 @@ import { useReducedMotionPref } from '../../ui/motion';
 
 type Meal = 'pranzo' | 'cena';
 
-const MIN_DURATION = 15;
+const MIN_DURATION = 1;
 const MAX_DURATION = 90;
 const STEP = 5;
 const COUNTDOWN_STEP_MS = 700;
@@ -99,6 +100,8 @@ export function TimerStart() {
     meal === 'pranzo' ? meals.lunchMinutes : meals.dinnerMinutes,
   );
   const [countdownStartedAt, setCountdownStartedAt] = useState<number | null>(null);
+  const [editingDuration, setEditingDuration] = useState(false);
+  const [draftDuration, setDraftDuration] = useState('');
 
   const countdown = useCountdown(countdownStartedAt, () => {
     timerDispatch({ type: 'START', meal, durationMs: durationMin * 60_000, dateISO: todayISO() });
@@ -111,6 +114,41 @@ export function TimerStart() {
 
   function adjustDuration(delta: number) {
     setDurationMin((d) => clampDuration(d + delta));
+  }
+
+  /**
+   * Inserimento manuale da tastiera (accanto agli stepper +/-, oltre ad
+   * essi): apre un campo numerico precompilato col valore corrente. Invio o
+   * blur confermano (passando SEMPRE per `clampDuration`, 1-90 min), Esc o
+   * il bottone ✕ annullano senza toccare `durationMin`. Come gli stepper,
+   * il risultato vive solo in questo stato di sessione — mai in
+   * `settings.meals` (E3).
+   */
+  function openDurationEdit() {
+    setDraftDuration(String(durationMin));
+    setEditingDuration(true);
+  }
+
+  function commitDurationEdit() {
+    const parsed = Number(draftDuration);
+    if (Number.isFinite(parsed)) {
+      setDurationMin(clampDuration(Math.round(parsed)));
+    }
+    setEditingDuration(false);
+  }
+
+  function cancelDurationEdit() {
+    setEditingDuration(false);
+  }
+
+  function handleDurationKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commitDurationEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelDurationEdit();
+    }
   }
 
   function toggleSounds() {
@@ -166,25 +204,61 @@ export function TimerStart() {
 
           <div className="flex flex-col items-center gap-2">
             <span className="font-body text-sm font-semibold text-stone">Durata</span>
-            <div className="flex items-center gap-4">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => adjustDuration(-STEP)}
-                aria-label="Riduci durata"
-              >
-                −
-              </Button>
-              <span className="font-display text-2xl text-deep">{durationMin} min</span>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => adjustDuration(STEP)}
-                aria-label="Aumenta durata"
-              >
-                +
-              </Button>
-            </div>
+            {editingDuration ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={MIN_DURATION}
+                  max={MAX_DURATION}
+                  autoFocus
+                  value={draftDuration}
+                  onChange={(e) => setDraftDuration(e.target.value)}
+                  onKeyDown={handleDurationKeyDown}
+                  onBlur={commitDurationEdit}
+                  aria-label="Durata in minuti"
+                  className="w-20 rounded-full border-2 border-deep/20 bg-card px-3 py-1.5 text-center font-display text-xl text-deep"
+                />
+                <span className="font-body text-sm text-stone">min</span>
+                <button
+                  type="button"
+                  aria-label="Annulla modifica durata"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={cancelDurationEdit}
+                  className="font-body text-lg text-stone"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => adjustDuration(-STEP)}
+                  aria-label="Riduci durata"
+                >
+                  −
+                </Button>
+                <span className="font-display text-2xl text-deep">{durationMin} min</span>
+                <button
+                  type="button"
+                  aria-label="Modifica durata da tastiera"
+                  onClick={openDurationEdit}
+                  className="font-body text-lg text-stone hover:text-deep"
+                >
+                  ✏️
+                </button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => adjustDuration(STEP)}
+                  aria-label="Aumenta durata"
+                >
+                  +
+                </Button>
+              </div>
+            )}
           </div>
 
           <Button type="button" variant="ghost" onClick={toggleSounds}>

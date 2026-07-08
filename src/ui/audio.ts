@@ -1,6 +1,6 @@
 // Sintesi WebAudio per i suoni dell'app (nessun asset mp3): oscillatori sine
 // con inviluppo (attack/decay) per pattern brevi e dolci (xilofono/campanella).
-export type SoundName = 'pop' | 'arc' | 'almost' | 'party' | 'done-day' | 'badge';
+export type SoundName = 'pop' | 'arc' | 'almost' | 'party' | 'done-day' | 'badge' | 'tick';
 
 interface Note {
   freq: number;
@@ -12,6 +12,9 @@ interface Note {
 // consonanti tra loro, mai stridenti, adatte a un'orecchia di 3 anni.
 const PATTERNS: Record<SoundName, Note[]> = {
   pop: [{ freq: 880, startSec: 0, durSec: 0.08 }],
+  // Ticchettio del timer in corso: piu' breve e neutro di 'pop' (che segna
+  // un evento), pensato per ripetersi ogni secondo senza risultare invadente.
+  tick: [{ freq: 1200, startSec: 0, durSec: 0.03 }],
   arc: [
     { freq: 659.25, startSec: 0, durSec: 0.12 },
     { freq: 880, startSec: 0.1, durSec: 0.16 },
