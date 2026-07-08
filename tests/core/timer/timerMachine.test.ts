@@ -183,6 +183,38 @@ describe('timerMachine — next()', () => {
     const e: TimerEvent = { type: 'PAUSE' };
     expect(next(null, e, 0)).toBeNull();
   });
+
+  test('FAST_FORWARD da running sposta startedAt indietro di `ms`, senza toccare altri campi', () => {
+    const t0 = 1_000_000;
+    const running = next(null, { type: 'START', meal: 'pranzo', durationMs: 60 * MIN, dateISO: '2026-07-04' }, t0)!;
+    const fastForwarded = next(running, { type: 'FAST_FORWARD', ms: 5000 }, t0 + 10_000);
+    expect(fastForwarded).toEqual({ ...running, startedAt: t0 - 5000 });
+  });
+
+  test('FAST_FORWARD fa avanzare progressOf come se fosse trascorso più tempo reale', () => {
+    const t0 = 0;
+    const running = next(null, { type: 'START', meal: 'pranzo', durationMs: 60 * MIN, dateISO: '2026-07-04' }, t0)!;
+    const before = progressOf(running, 5 * MIN);
+    const fastForwarded = next(running, { type: 'FAST_FORWARD', ms: 25 * MIN }, 5 * MIN)!;
+    const after = progressOf(fastForwarded, 5 * MIN);
+    expect(after).toBeGreaterThan(before);
+    expect(after).toBeCloseTo(30 / 60, 5);
+  });
+
+  test('FAST_FORWARD è un no-op da paused/celebrating/done/null', () => {
+    const t0 = 0;
+    const running = next(null, { type: 'START', meal: 'pranzo', durationMs: 60 * MIN, dateISO: '2026-07-04' }, t0)!;
+    const paused = next(running, { type: 'PAUSE' }, 10 * MIN)!;
+    expect(next(paused, { type: 'FAST_FORWARD', ms: 1000 }, 20 * MIN)).toBe(paused);
+
+    const celebrating = next(running, { type: 'FINISH_EARLY' }, 10 * MIN)!;
+    expect(next(celebrating, { type: 'FAST_FORWARD', ms: 1000 }, 20 * MIN)).toBe(celebrating);
+
+    const done = next(celebrating, { type: 'CELEBRATION_DONE' }, 12 * MIN)!;
+    expect(next(done, { type: 'FAST_FORWARD', ms: 1000 }, 20 * MIN)).toBe(done);
+
+    expect(next(null, { type: 'FAST_FORWARD', ms: 1000 }, 0)).toBeNull();
+  });
 });
 
 describe('progress — elapsedMs / progressOf', () => {

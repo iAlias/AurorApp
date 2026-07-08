@@ -8,7 +8,8 @@ export type TimerEvent =
   | { type: 'FINISH_EARLY' } // long-press "Abbiamo già finito!"
   | { type: 'TICK' } // valutato dal loop rAF: running→celebrating se progress≥1
   | { type: 'CELEBRATION_DONE' } // → done
-  | { type: 'EXIT' }; // abbandono esplicito (long-press) → null
+  | { type: 'EXIT' } // abbandono esplicito (long-press) → null
+  | { type: 'FAST_FORWARD'; ms: number }; // demo/test: sposta startedAt indietro, mai un secondo orologio
 
 /**
  * Macchina a stati pura del timer pasto. Nessun accesso diretto all'orologio:
@@ -63,5 +64,13 @@ export function next(s: TimerSession | null, e: TimerEvent, now: number): TimerS
 
     case 'EXIT':
       return null;
+
+    // Nessun contatore parallelo: si "riscrive la storia" spostando indietro
+    // startedAt, cosi' elapsedMs/progressOf (già calcolati sempre da
+    // Date.now() rispetto a startedAt) risultano già più avanti da soli,
+    // senza introdurre un secondo orologio (solo per demo/test, §FAST_FORWARD).
+    case 'FAST_FORWARD':
+      if (s === null || s.status !== 'running') return s;
+      return { ...s, startedAt: s.startedAt - e.ms };
   }
 }
