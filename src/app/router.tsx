@@ -1,13 +1,36 @@
+import { Suspense, lazy } from 'react';
 import { Navigate, createBrowserRouter, createMemoryRouter } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import { useApp } from './store';
 import { Layout } from './Layout';
-import { UiShowcase } from '../features/dev/UiShowcase';
 import { WizardPage } from '../features/wizard/WizardPage';
-import { MealTimerPage } from '../features/mealTimer/MealTimerPage';
 import { TodayPage } from '../features/today/TodayPage';
-import { CalendarPage } from '../features/calendar/CalendarPage';
-import { SettingsPage } from '../features/settings/SettingsPage';
+import { RouteLoading } from './RouteLoading';
+
+/**
+ * `/calendario`, `/impostazioni`, `/timer` e la pagina di servizio `/dev/ui`
+ * non sono la prima cosa vista dall'utente all'avvio (quella e' `/oggi` o
+ * `/wizard`, che restano import statici) — sono caricate pigramente
+ * (Task 22, §M7 performance) cosi' il bundle iniziale non le include.
+ * `Suspense` con `RouteLoading` (spinner a tema sole) copre il breve
+ * intervallo di rete/parsing del chunk mentre arriva.
+ */
+const CalendarPage = lazy(() =>
+  import('../features/calendar/CalendarPage').then((m) => ({ default: m.CalendarPage })),
+);
+const SettingsPage = lazy(() =>
+  import('../features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
+);
+const MealTimerPage = lazy(() =>
+  import('../features/mealTimer/MealTimerPage').then((m) => ({ default: m.MealTimerPage })),
+);
+const UiShowcase = lazy(() =>
+  import('../features/dev/UiShowcase').then((m) => ({ default: m.UiShowcase })),
+);
+
+function withSuspense(element: JSX.Element): JSX.Element {
+  return <Suspense fallback={<RouteLoading />}>{element}</Suspense>;
+}
 
 /**
  * `/` non ha un contenuto proprio (FR-1/FR-5): reindirizza subito a `/oggi`
@@ -35,12 +58,12 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: '/oggi', element: <TodayPage /> },
-      { path: '/calendario', element: <CalendarPage /> },
-      { path: '/impostazioni', element: <SettingsPage /> },
-      { path: '/dev/ui', element: <UiShowcase /> },
+      { path: '/calendario', element: withSuspense(<CalendarPage />) },
+      { path: '/impostazioni', element: withSuspense(<SettingsPage />) },
+      { path: '/dev/ui', element: withSuspense(<UiShowcase />) },
     ],
   },
-  { path: '/timer', element: <MealTimerPage /> },
+  { path: '/timer', element: withSuspense(<MealTimerPage />) },
   { path: '/wizard', element: <WizardPage /> },
 ];
 

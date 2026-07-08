@@ -43,9 +43,12 @@ describe('router: "/" redirect (FR-1)', () => {
 });
 
 describe('/dev/ui', () => {
-  test('renderizza componenti del kit UI (smoke)', () => {
+  test('renderizza componenti del kit UI (smoke)', async () => {
     renderAt('/dev/ui');
-    expect(screen.getByText('Primario')).toBeInTheDocument();
+    // Task 22: `/dev/ui` e' ora lazy (`React.lazy` + `Suspense`) — il
+    // contenuto arriva dopo il chunk dinamico, quindi `findBy*` (che
+    // attende) al posto di `getBy*` (sincrono).
+    expect(await screen.findByText('Primario')).toBeInTheDocument();
     expect(screen.getByText(/Animali/)).toBeInTheDocument();
     expect(screen.getByLabelText(/sveglia/i)).toBeInTheDocument();
     expect(screen.getByText(/Apri Modal/i)).toBeInTheDocument();
