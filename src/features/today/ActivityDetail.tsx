@@ -13,6 +13,13 @@ export interface ActivityDetailProps {
   onMarkSkipped: () => void;
   onSwap: () => void;
   onPickManual: () => void;
+  /**
+   * Giorno passato (dal Calendario, FR-7): il dettaglio resta consultabile
+   * ma senza azioni che modificano il piano. Default `false` — i chiamanti
+   * esistenti (`TodayPage`, sempre su "oggi") non passano la prop e il
+   * comportamento resta identico.
+   */
+  readOnly?: boolean;
 }
 
 /**
@@ -22,7 +29,7 @@ export interface ActivityDetailProps {
  * "In più", nota di sicurezza evidenziata se presente, azioni Fatta/Saltata/
  * Cambiala/Scelgo io (chiudono sempre il dettaglio dopo l'azione — "Scelgo
  * io" chiude il dettaglio e apre l'`ActivityPicker` al suo posto, gestito dal
- * chiamante).
+ * chiamante). Con `readOnly` l'intera riga di azioni non viene renderizzata.
  */
 export function ActivityDetail({
   open,
@@ -33,6 +40,7 @@ export function ActivityDetail({
   onMarkSkipped,
   onSwap,
   onPickManual,
+  readOnly = false,
 }: ActivityDetailProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
@@ -107,18 +115,20 @@ export function ActivityDetail({
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2">
-          {slot.status !== 'done' && <MarkDoneButton onClick={onMarkDone} />}
-          <Button type="button" variant="secondary" onClick={onMarkSkipped}>
-            Saltata
-          </Button>
-          <Button type="button" variant="ghost" onClick={onSwap}>
-            🔄 Cambiala
-          </Button>
-          <Button type="button" variant="ghost" onClick={onPickManual}>
-            📚 Scelgo io
-          </Button>
-        </div>
+        {!readOnly && (
+          <div className="flex flex-wrap gap-2">
+            {slot.status !== 'done' && <MarkDoneButton onClick={onMarkDone} />}
+            <Button type="button" variant="secondary" onClick={onMarkSkipped}>
+              Saltata
+            </Button>
+            <Button type="button" variant="ghost" onClick={onSwap}>
+              🔄 Cambiala
+            </Button>
+            <Button type="button" variant="ghost" onClick={onPickManual}>
+              📚 Scelgo io
+            </Button>
+          </div>
+        )}
       </div>
     </Modal>
   );

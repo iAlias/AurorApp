@@ -7,7 +7,9 @@ import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { ACTIVITIES } from '../../core/catalog/activities';
 import { useApp } from '../../app/store';
-import type { DayPlan } from '../../core/catalog/types';
+import { ActivityDetail } from '../today/ActivityDetail';
+import { ActivityPicker } from '../today/ActivityPicker';
+import type { DayPlan, SlotId } from '../../core/catalog/types';
 
 export interface DaySheetProps {
   /** ISO del giorno selezionato, `null` = sheet chiuso. */
@@ -55,6 +57,14 @@ function capitalize(s: string): string {
  * aperte insieme: `confirmingSpecialLoss` sostituisce `pickingSpecial` (non
  * si affianca) quando scatta, cosi' resta sempre un solo backdrop/listener
  * attivo alla volta.
+ *
+ * `detailSlotId`/`pickingSlotId` riusano `ActivityDetail`/`ActivityPicker`
+ * (stessi componenti di `TodayPage`, stesso pattern) per il tap su una card
+ * attività: stesso discorso Esc di sopra, quindi entrano nella stessa guardia.
+ * `ActivityPicker` in più è internamente una `Sheet` come questo componente:
+ * due `Sheet` aperte insieme hanno due listener Esc indipendenti, quindi un
+ * Esc con `ActivityPicker` aperta farebbe scattare ANCHE l'handler di questo
+ * sheet esterno — stessa guardia, stesso rimedio.
  */
 export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
   const [pickingSpecial, setPickingSpecial] = useState(false);
@@ -62,6 +72,8 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
   const [specialLabel, setSpecialLabel] = useState('');
   const [confirmingRegenerate, setConfirmingRegenerate] = useState(false);
   const [confirmingSpecialLoss, setConfirmingSpecialLoss] = useState(false);
+  const [detailSlotId, setDetailSlotId] = useState<SlotId | null>(null);
+  const [pickingSlotId, setPickingSlotId] = useState<SlotId | null>(null);
 
   const open = dateISO !== null;
   const readOnly = dateISO !== null && dateISO < todayISO;
@@ -73,10 +85,15 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
     setSpecialLabel('');
     setConfirmingRegenerate(false);
     setConfirmingSpecialLoss(false);
+    setDetailSlotId(null);
+    setPickingSlotId(null);
   }
 
   function handleSheetClose() {
-    if (confirmingRegenerate || pickingSpecial || confirmingSpecialLoss) return; // Esc chiude prima la modale interna
+    // Esc chiude prima l'overlay interno (Modal di conferma/scelta speciale,
+    // ActivityDetail, o la Sheet di ActivityPicker)
+    if (confirmingRegenerate || pickingSpecial || confirmingSpecialLoss) return;
+    if (detailSlotId !== null || pickingSlotId !== null) return;
     resetInnerState();
     onClose();
   }
@@ -121,12 +138,21 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
     useApp.getState().setSpecial(dateISO, undefined);
   }
 
+  function handlePickActivity(activityId: string) {
+    if (dateISO && pickingSlotId) useApp.getState().setSlotActivity(dateISO, pickingSlotId, activityId);
+    setPickingSlotId(null);
+  }
+
   if (!dateISO) {
     // Nessun giorno selezionato: sheet chiuso, nessun contenuto da preparare.
     return <Sheet open={false} onClose={handleSheetClose}><span /></Sheet>;
   }
 
   const dayLabel = capitalize(format(parseISO(dateISO), 'EEEE d MMMM', { locale: it }));
+
+  const detailSlot = detailSlotId ? (plan?.slots.find((s) => s.slotId === detailSlotId) ?? null) : null;
+  const detailActivity = detailSlot ? (ACTIVITIES.find((a) => a.id === detailSlot.activityId) ?? null) : null;
+  const pickingSlot = pickingSlotId ? (plan?.slots.find((s) => s.slotId === pickingSlotId) ?? null) : null;
 
   return (
     <>
@@ -149,21 +175,28 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
                 if (!activity) return null;
                 return (
                   <div key={slot.slotId} data-testid="day-sheet-slot">
-                    <Card className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span aria-hidden="true">{activity.emoji}</span>
-                        <span className="font-body text-sm text-deep">{activity.title}</span>
-                      </div>
-                      {slot.status === 'done' && (
-                        <span aria-label="Fatta" className="text-lg text-aqua">
-                          ✅
-                        </span>
-                      )}
-                      {slot.status === 'skipped' && (
-                        <span aria-label="Saltata" className="text-lg text-stone">
-                          ⏭️
-                        </span>
-                      )}
+                    <Card>
+                      <button
+                        type="button"
+                        onClick={() => setDetailSlotId(slot.slotId)}
+                        aria-label={`Dettagli attività: ${activity.title}`}
+                        className="flex w-full items-center justify-between gap-2 text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden="true">{activity.emoji}</span>
+                          <span className="font-body text-sm text-deep">{activity.title}</span>
+                        </div>
+                        {slot.status === 'done' && (
+                          <span aria-label="Fatta" className="text-lg text-aqua">
+                            ✅
+                          </span>
+                        )}
+                        {slot.status === 'skipped' && (
+                          <span aria-label="Saltata" className="text-lg text-stone">
+                            ⏭️
+                          </span>
+                        )}
+                      </button>
                     </Card>
                   </div>
                 );
@@ -193,6 +226,37 @@ export function DaySheet({ dateISO, todayISO, plan, onClose }: DaySheetProps) {
           )}
         </div>
       </Sheet>
+
+      <ActivityDetail
+        open={detailSlotId !== null}
+        activity={detailActivity}
+        slot={detailSlot}
+        readOnly={readOnly}
+        onClose={() => setDetailSlotId(null)}
+        onMarkDone={() => {
+          if (dateISO && detailSlotId) useApp.getState().markSlot(dateISO, detailSlotId, 'done');
+          setDetailSlotId(null);
+        }}
+        onMarkSkipped={() => {
+          if (dateISO && detailSlotId) useApp.getState().markSlot(dateISO, detailSlotId, 'skipped');
+          setDetailSlotId(null);
+        }}
+        onSwap={() => {
+          if (dateISO && detailSlotId) useApp.getState().swapSlot(dateISO, detailSlotId);
+          setDetailSlotId(null);
+        }}
+        onPickManual={() => {
+          if (detailSlotId) setPickingSlotId(detailSlotId);
+          setDetailSlotId(null);
+        }}
+      />
+
+      <ActivityPicker
+        open={pickingSlotId !== null}
+        currentActivityId={pickingSlot?.activityId}
+        onClose={() => setPickingSlotId(null)}
+        onPick={handlePickActivity}
+      />
 
       <Modal
         open={confirmingRegenerate}
