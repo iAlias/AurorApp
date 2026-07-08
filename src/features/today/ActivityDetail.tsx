@@ -11,6 +11,7 @@ export interface ActivityDetailProps {
   onMarkDone: () => void;
   onMarkSkipped: () => void;
   onSwap: () => void;
+  onPickManual: () => void;
 }
 
 /**
@@ -18,7 +19,9 @@ export interface ActivityDetailProps {
  * checklist materiali (solo delight per l'adulto che li raccoglie — stato
  * locale, non persistito, si azzera a ogni nuova attività), passi numerati,
  * "In più", nota di sicurezza evidenziata se presente, azioni Fatta/Saltata/
- * Cambiala (chiudono sempre il dettaglio dopo l'azione).
+ * Cambiala/Scelgo io (chiudono sempre il dettaglio dopo l'azione — "Scelgo
+ * io" chiude il dettaglio e apre l'`ActivityPicker` al suo posto, gestito dal
+ * chiamante).
  */
 export function ActivityDetail({
   open,
@@ -28,6 +31,7 @@ export function ActivityDetail({
   onMarkDone,
   onMarkSkipped,
   onSwap,
+  onPickManual,
 }: ActivityDetailProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
@@ -113,6 +117,9 @@ export function ActivityDetail({
           </Button>
           <Button type="button" variant="ghost" onClick={onSwap}>
             🔄 Cambiala
+          </Button>
+          <Button type="button" variant="ghost" onClick={onPickManual}>
+            📚 Scelgo io
           </Button>
         </div>
       </div>

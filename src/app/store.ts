@@ -67,6 +67,7 @@ export interface AppStore extends StorageEnvelope {
   ensurePlansUpTo(dateISO: string): void;
   markSlot(dateISO: string, slotId: SlotId, status: SlotStatus): void;
   swapSlot(dateISO: string, slotId: SlotId): { exhausted: boolean };
+  setSlotActivity(dateISO: string, slotId: SlotId, activityId: string): void;
   regenerate(dateISO: string): void;
   regenerateFutureFromToday(): void;
   setWeather(dateISO: string, w: Weather): void;
@@ -326,6 +327,34 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
       if (newPlan === plan) return { exhausted }; // slot inesistente o già esaurito: nessuna scrittura
       commitPlans(state, { ...state.plans, [dateISO]: newPlan });
       return { exhausted };
+    },
+
+    /**
+     * Scelta manuale del genitore (ActivityPicker): sostituisce l'attività
+     * dello slot con `activityId` SENZA alcun filtro di compatibilità
+     * (energia/meteo/luogo/durata) — a differenza di `swapSlot`, è una
+     * decisione deliberata, non un pick algoritmico. `swapCount` torna a 0:
+     * è una scelta nuova, non uno swap automatico, quindi non consuma il
+     * budget di "Cambiala". Uno slot `skipped` torna `planned`: scegliere
+     * a mano un'attività per uno slot saltato ha il significato pratico di
+     * rimetterlo in gioco per la giornata. No-op sicuro se profilo/piano/
+     * slot non esistono o lo slot è già `done` (a quel punto l'unica via
+     * è il dettaglio, coerente con `SlotCard`).
+     */
+    setSlotActivity(dateISO, slotId, activityId) {
+      const state = get();
+      const plan = state.plans[dateISO];
+      if (!plan) return;
+      const cur = plan.slots.find((s) => s.slotId === slotId);
+      if (!cur || cur.status === 'done') return;
+      const newStatus: SlotStatus = cur.status === 'skipped' ? 'planned' : cur.status;
+      const newPlan: DayPlan = {
+        ...plan,
+        slots: plan.slots.map((s) =>
+          s.slotId === slotId ? { ...s, activityId, swapCount: 0, status: newStatus } : s,
+        ),
+      };
+      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
     },
 
     regenerate(dateISO) {

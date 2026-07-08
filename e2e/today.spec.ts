@@ -44,6 +44,30 @@ test.describe('Vista Oggi (FR-5)', () => {
     );
   });
 
+  test('"Scelgo io" permette di scegliere manualmente un\'attività per categoria', async ({ page }) => {
+    await page.clock.install({ time: WEEKDAY });
+    await completeWizardFast(page);
+
+    const firstCard = page.getByTestId('slot-card').first();
+    const titleBefore = await firstCard.getByTestId('slot-title').innerText();
+
+    await firstCard.getByRole('button', { name: /scelgo io/i }).click();
+
+    // Cambia categoria (tab "Calma e libri" 🌙, quasi certamente diversa da
+    // quella dello slot attuale) e sceglie una delle attività elencate lì.
+    await page.getByRole('tab', { name: /calma e libri/i }).click();
+    const items = page.getByTestId('activity-picker-item');
+    await expect(items.first()).toBeVisible();
+    // Esclude eventuali item con lo stesso titolo di prima, così l'attività
+    // scelta è garantita diversa (evita un falso negativo se lo slot attuale
+    // fosse già di categoria CAL).
+    await items.filter({ hasNotText: titleBefore }).first().click();
+
+    await expect(page.getByTestId('slot-card').first().getByTestId('slot-title')).not.toHaveText(
+      titleBefore,
+    );
+  });
+
   test('meteo pioggia: nessuna card mostra il badge "esterno"', async ({ page }) => {
     await page.clock.install({ time: WEEKDAY });
     await completeWizardFast(page);

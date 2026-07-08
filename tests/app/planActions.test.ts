@@ -151,6 +151,74 @@ describe('swapSlot', () => {
   });
 });
 
+describe('setSlotActivity', () => {
+  test('cambia l\'attività dello slot e azzera swapCount', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-01');
+    const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
+    useApp.getState().swapSlot('2026-07-01', slotId); // swapCount passa a 1
+
+    useApp.getState().setSlotActivity('2026-07-01', slotId, 'CAL-01');
+
+    const slot = useApp.getState().plans['2026-07-01'].slots.find((s) => s.slotId === slotId);
+    expect(slot?.activityId).toBe('CAL-01');
+    expect(slot?.swapCount).toBe(0);
+  });
+
+  test('riporta uno slot skipped a planned (la scelta manuale lo rimette in gioco)', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-01');
+    const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
+    useApp.getState().markSlot('2026-07-01', slotId, 'skipped');
+
+    useApp.getState().setSlotActivity('2026-07-01', slotId, 'CAL-01');
+
+    const slot = useApp.getState().plans['2026-07-01'].slots.find((s) => s.slotId === slotId);
+    expect(slot?.status).toBe('planned');
+    expect(slot?.activityId).toBe('CAL-01');
+  });
+
+  test('nessun effetto se lo slot è già done', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-01');
+    const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
+    useApp.getState().markSlot('2026-07-01', slotId, 'done');
+    const before = useApp.getState().plans['2026-07-01'];
+
+    useApp.getState().setSlotActivity('2026-07-01', slotId, 'CAL-01');
+
+    expect(useApp.getState().plans['2026-07-01']).toEqual(before);
+  });
+
+  test('nessun effetto se il giorno o lo slot non esistono', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+
+    useApp.getState().setSlotActivity('2026-07-01', 'M1', 'CAL-01'); // nessun piano ancora materializzato
+    expect(useApp.getState().plans).toEqual({});
+  });
+
+  test('scrive subito su localStorage (write-through)', async () => {
+    const { useApp } = await freshStore();
+    useApp.getState().completeWizard(profileFixture(), routineFixture());
+    useApp.getState().ensurePlansUpTo('2026-07-01');
+    const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
+
+    useApp.getState().setSlotActivity('2026-07-01', slotId, 'CAL-01');
+
+    const raw = localStorage.getItem('aurorapp.state.v1');
+    const saved = JSON.parse(raw as string) as {
+      plans: Record<string, { slots: { slotId: string; activityId: string; swapCount: number }[] }>;
+    };
+    const savedSlot = saved.plans['2026-07-01'].slots.find((s) => s.slotId === slotId);
+    expect(savedSlot?.activityId).toBe('CAL-01');
+    expect(savedSlot?.swapCount).toBe(0);
+  });
+});
+
 describe('regenerate', () => {
   test('incrementa regenNonce e preserva gli slot già done', async () => {
     const { useApp } = await freshStore();

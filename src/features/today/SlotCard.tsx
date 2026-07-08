@@ -11,6 +11,7 @@ export interface SlotCardProps {
   activity: Activity;
   onMarkDone: () => void;
   onSwap: () => void;
+  onPickManual: () => void;
   onOpenDetail: () => void;
   innerRef?: (el: HTMLDivElement | null) => void;
 }
@@ -22,8 +23,8 @@ const MAX_MATERIALS = 3;
  * titolo, orario derivato dallo `SlotDef` (non dall'attività — lo slot ha
  * un orario fisso, l'attività può durare meno), chip materiali (primi 3 +
  * "…"), stati visivi (`skipped` attenuata, `done` con spunta) e le due
- * azioni rapide "Fatta! ⭐"/"🔄 Cambiala" (nascoste una volta `done`: a
- * quel punto l'unica via per tornare indietro è il dettaglio).
+ * azioni rapide "Fatta! ⭐"/"🔄 Cambiala"/"📚 Scelgo io" (nascoste una volta
+ * `done`: a quel punto l'unica via per tornare indietro è il dettaglio).
  *
  * Il tap sulla zona titolo/emoji/orario apre `ActivityDetail` (`onOpenDetail`);
  * è un `<button>` dedicato, SIBLING della riga "Fatta!"/"Cambiala" — non un
@@ -32,7 +33,16 @@ const MAX_MATERIALS = 3;
  * ambiguo, doppio match nei test/screen reader). Bottoni reali affiancati,
  * mai annidati.
  */
-export function SlotCard({ slot, def, activity, onMarkDone, onSwap, onOpenDetail, innerRef }: SlotCardProps) {
+export function SlotCard({
+  slot,
+  def,
+  activity,
+  onMarkDone,
+  onSwap,
+  onPickManual,
+  onOpenDetail,
+  innerRef,
+}: SlotCardProps) {
   const done = slot.status === 'done';
   const skipped = slot.status === 'skipped';
   const materials = activity.materials.slice(0, MAX_MATERIALS);
@@ -102,6 +112,9 @@ export function SlotCard({ slot, def, activity, onMarkDone, onSwap, onOpenDetail
             </Button>
             <Button type="button" variant="secondary" size="md" onClick={onSwap}>
               🔄 Cambiala
+            </Button>
+            <Button type="button" variant="ghost" size="md" onClick={onPickManual}>
+              📚 Scelgo io
             </Button>
           </div>
         )}

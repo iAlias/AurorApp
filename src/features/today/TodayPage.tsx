@@ -28,6 +28,7 @@ import { AVATARS } from '../wizard/wizardLogic';
 import { AnchorPill } from './AnchorPill';
 import { SlotCard } from './SlotCard';
 import { ActivityDetail } from './ActivityDetail';
+import { ActivityPicker } from './ActivityPicker';
 import { WeatherSelector } from './WeatherSelector';
 import { MealCard } from './MealCard';
 import { TomorrowPreview } from './TomorrowPreview';
@@ -233,6 +234,7 @@ export function TodayPage() {
   }, [profile, todayISO, tomorrowISO]);
 
   const [detailSlotId, setDetailSlotId] = useState<SlotId | null>(null);
+  const [pickingSlotId, setPickingSlotId] = useState<SlotId | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasScrolledRef = useRef(false);
@@ -296,8 +298,15 @@ export function TodayPage() {
     setDetailSlotId(slotId);
   }
 
+  function handlePickActivity(activityId: string) {
+    if (pickingSlotId) useApp.getState().setSlotActivity(todayISO, pickingSlotId, activityId);
+    setPickingSlotId(null);
+  }
+
   const detailSlot = detailSlotId ? (plan?.slots.find((s) => s.slotId === detailSlotId) ?? null) : null;
   const detailActivity = detailSlot ? (ACTIVITIES.find((a) => a.id === detailSlot.activityId) ?? null) : null;
+
+  const pickingSlot = pickingSlotId ? (plan?.slots.find((s) => s.slotId === pickingSlotId) ?? null) : null;
 
   const doneCount = plan.slots.filter((s) => s.status === 'done').length;
   const tomorrowPlan = plans[tomorrowISO];
@@ -370,6 +379,7 @@ export function TodayPage() {
                             activity={activity}
                             onMarkDone={() => handleMarkDone(item.slot.slotId)}
                             onSwap={() => handleSwap(item.slot.slotId)}
+                            onPickManual={() => setPickingSlotId(item.slot.slotId)}
                             onOpenDetail={() => openDetail(item.slot.slotId)}
                             innerRef={(el) => {
                               if (el) slotRefs.current.set(item.key, el);
@@ -415,6 +425,17 @@ export function TodayPage() {
           if (detailSlotId) handleSwap(detailSlotId);
           setDetailSlotId(null);
         }}
+        onPickManual={() => {
+          if (detailSlotId) setPickingSlotId(detailSlotId);
+          setDetailSlotId(null);
+        }}
+      />
+
+      <ActivityPicker
+        open={pickingSlotId !== null}
+        currentActivityId={pickingSlot?.activityId}
+        onClose={() => setPickingSlotId(null)}
+        onPick={handlePickActivity}
       />
 
       {toast && (
