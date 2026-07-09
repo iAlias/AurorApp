@@ -8,6 +8,7 @@ import { TrovaLIntruso } from './TrovaLIntruso';
 import { CosaVieneDopo } from './CosaVieneDopo';
 import { MemoriaDegliAnimali } from './MemoriaDegliAnimali';
 import { DalPiccoloAlGrande } from './DalPiccoloAlGrande';
+import { DisegnaColDito } from './DisegnaColDito';
 
 /** Voce del catalogo dei giochi: usata sia dalla griglia (`GamesPage`) sia
  * dal routing (`gameId` diventa il segmento `/giochi/:gameId`). */
@@ -19,8 +20,8 @@ export interface GameDef {
   Component: ComponentType;
 }
 
-/** Registro dei giochi disponibili: parte vuoto (Task 2, solo
- * infrastruttura) — i Task 3-6 aggiungono qui le loro 10 voci. */
+/** Registro dei 10 giochi disponibili (Task 2 infrastruttura, Task 3-6 le
+ * voci): l'ordine qui è l'ordine visivo della griglia in `GamesPage`. */
 export const GAMES: GameDef[] = [
   {
     id: 'tocca-il-colore',
@@ -84,5 +85,12 @@ export const GAMES: GameDef[] = [
     emoji: '📏',
     skill: 'Allena: mettere in ordine',
     Component: DalPiccoloAlGrande,
+  },
+  {
+    id: 'disegna-col-dito',
+    title: 'Disegna col dito',
+    emoji: '🎨',
+    skill: 'Allena: la fantasia',
+    Component: DisegnaColDito,
   },
 ];
