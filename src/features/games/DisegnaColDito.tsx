@@ -135,7 +135,7 @@ export function DisegnaColDito() {
               aria-label={color.label}
               aria-pressed={selectedId === color.id}
               onClick={() => setSelectedId(color.id)}
-              className={`h-11 w-11 min-h-11 min-w-11 rounded-full shadow-soft transition-transform active:scale-[.97] ${
+              className={`h-16 w-16 min-h-16 min-w-16 rounded-full shadow-soft transition-transform active:scale-[.97] ${
                 selectedId === color.id ? 'ring-4 ring-deep ring-offset-2' : ''
               }`}
               style={{ backgroundColor: color.hex }}
@@ -147,7 +147,7 @@ export function DisegnaColDito() {
             aria-label="Gomma"
             aria-pressed={selectedId === ERASER_ID}
             onClick={() => setSelectedId(ERASER_ID)}
-            className={`flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-stone bg-white text-xl shadow-soft transition-transform active:scale-[.97] ${
+            className={`flex h-16 w-16 min-h-16 min-w-16 items-center justify-center rounded-full border-2 border-stone bg-white text-xl shadow-soft transition-transform active:scale-[.97] ${
               selectedId === ERASER_ID ? 'ring-4 ring-deep ring-offset-2' : ''
             }`}
           >
