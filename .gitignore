@@ -5,3 +5,6 @@ coverage/
 *.local
 test-results/
 playwright-report/
+
+# artefatti delle sessioni browser
+.playwright-mcp/
