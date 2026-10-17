@@ -1,24 +1,65 @@
 # AurorApp 🌈
 
-**L'estate della tua bimba, un giorno alla volta.**
+**L'estate della tua bimba, un giorno alla volta.** PWA offline che genera il piano
+giornaliero di attività di una bambina di tre anni per tutti e tre i mesi delle vacanze,
+più un timer dei pasti a arcobaleno pensato per essere letto dagli occhi di una bimba.
 
-Web app (PWA offline, mobile-first) che genera un piano giornaliero di attività per una bimba di 3 anni durante i 3 mesi di vacanze estive — mai la stessa attività entro 14 giorni, con la struttura pedagogica di una maestra d'asilo — più un **timer pasti a arcobaleno** pensato per essere letto dagli occhi di una bimba.
+![React](https://img.shields.io/badge/React-19-61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
+![PWA](https://img.shields.io/badge/PWA-offline-5a0fc8)
+![Test](https://img.shields.io/badge/test-93%20file-2a6e4e)
+![Stato](https://img.shields.io/badge/stato-finita%2C%20non%20pubblicata-9c4330)
 
-## Documenti di progetto
+## Cosa fa
 
-| Documento | Contenuto |
+- **Un piano al giorno per tutta l'estate**, mai la stessa attività entro 14 giorni.
+- **150 attività in 10 categorie**, con la struttura pedagogica di una maestra d'asilo:
+  istruzioni, materiali, obiettivo di sviluppo e note di sicurezza per ognuna.
+- **Timer dei pasti a arcobaleno**, leggibile da una bambina che non sa ancora leggere.
+- **Cento per cento locale**: nessun account, nessuna chiamata di rete, nessun dato che
+  esce dal dispositivo. Funziona in aereo e in spiaggia senza campo.
+
+## Stack
+
+React + TypeScript + Vite, React Router, Framer Motion, date-fns. PWA con service worker
+per l'uso offline.
+
+## Avvio in locale
+
+```bash
+npm install
+npm run dev          # sviluppo
+npm run build        # build di produzione (dist/)
+npm run preview      # anteprima della build
+```
+
+Qualità:
+
+```bash
+npm run test         # Vitest (93 file di test)
+npm run e2e          # Playwright
+npm run typecheck
+npm run lint
+```
+
+## Struttura
+
+| Percorso | Cosa contiene |
 |---|---|
-| [`docs/superpowers/specs/2026-07-04-aurorapp-design.md`](docs/superpowers/specs/2026-07-04-aurorapp-design.md) | **Specifiche complete**: requisiti, architettura, modello dati, algoritmo del generatore, timer, design system, wireframe, edge case, testing, milestone M0–M7 |
-| [`docs/superpowers/specs/2026-07-04-aurorapp-catalogo-attivita.md`](docs/superpowers/specs/2026-07-04-aurorapp-catalogo-attivita.md) | **Catalogo normativo delle 150 attività** (10 categorie × 15), con istruzioni, materiali, obiettivi di sviluppo e note di sicurezza |
+| `src/app/` | shell dell'app e routing |
+| `src/features/` | le funzionalità: piano, timer, catalogo |
+| `src/core/` | logica pura: generatore del piano, regole, date |
+| `src/ui/`, `src/styles/` | componenti e design system |
+| `docs/superpowers/specs/` | specifiche complete e **catalogo normativo delle 150 attività** |
+| `e2e/` | test end-to-end Playwright |
 
-## Stack (deciso in fase di design)
+## Stato
 
-React 18 + TypeScript strict + Vite · Tailwind CSS · Framer Motion · Zustand · zod · PWA (`vite-plugin-pwa`) · dati 100% locali (localStorage), zero backend, zero account.
+**Finita e non pubblicata.** 63 commit, 93 file di test, nessuna dipendenza da servizi
+esterni. Ha una finestra d'uso stagionale: riapre a giugno.
 
-## Come sviluppare
+Pubblicarla costa mezz'ora di GitHub Pages. Finché non è online, nessuno può usarla.
 
-Una milestone alla volta (M0 → M7), ognuna in una sessione con Claude Code. Prompt suggerito:
+## Licenza
 
-> Leggi `docs/superpowers/specs/2026-07-04-aurorapp-design.md` e il catalogo attività collegato, poi implementa la **milestone M0** rispettando i criteri di accettazione del §13. Esegui `npm run check` prima di dichiarare finito.
-
-Chiudi una milestone solo con `npm run check` verde e criteri di accettazione soddisfatti.
+Codice privato. Tutti i diritti riservati.
