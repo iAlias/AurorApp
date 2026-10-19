@@ -8,7 +8,9 @@ più un timer dei pasti a arcobaleno pensato per essere letto dagli occhi di una
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
 ![PWA](https://img.shields.io/badge/PWA-offline-5a0fc8)
 ![Test](https://img.shields.io/badge/test-93%20file-2a6e4e)
-![Stato](https://img.shields.io/badge/stato-finita%2C%20non%20pubblicata-9c4330)
+![Stato](https://img.shields.io/badge/stato-online-2a6e4e)
+
+🌐 **Sito:** <https://ialias.github.io/AurorApp/>
 
 ## Cosa fa
 

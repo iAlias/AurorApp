@@ -11,7 +11,7 @@ export default defineConfig(({ command }) => ({
   // Playwright, che puntano a localhost:5173/) restano sulla radice, così il
   // flusso di sviluppo locale non cambia. React Router legge lo stesso
   // valore da `import.meta.env.BASE_URL` (vedi `src/app/router.tsx`).
-  base: command === 'build' ? '/aurorapp/' : '/',
+  base: command === 'build' ? (process.env.BASE_PATH || '/aurorapp/') : '/',
   plugins: [
     react(),
     // Task 21 (FR-10): app installabile e utilizzabile offline. `registerType:
