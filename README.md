@@ -64,4 +64,5 @@ Pubblicarla costa mezz'ora di GitHub Pages. Finché non è online, nessuno può 
 
 ## Licenza
 
-Codice privato. Tutti i diritti riservati.
+Codice pubblico su GitHub, **nessuna licenza d'uso concessa**: tutti i diritti riservati.
+Puoi leggere e imparare, non usare o ridistribuire senza permesso.
