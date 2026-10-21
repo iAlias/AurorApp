@@ -21,6 +21,8 @@
     "@capacitor/android": "^8.5.3",
     "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
     "@fontsource-variable/baloo-2": "^5.1.0",
     "@fontsource-variable/nunito": "^5.1.0",
     "canvas-confetti": "^1.9.3",

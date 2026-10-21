@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import { format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { useApp, toEnvelope } from '../../app/store';
@@ -27,9 +30,21 @@ export function DataSection() {
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [resetNameInput, setResetNameInput] = useState('');
 
-  function handleExport() {
+  async function handleExport() {
     const env = toEnvelope(useApp.getState());
     const json = exportJson(env);
+    if (Capacitor.isNativePlatform()) {
+      // App Android: la WebView ignora i download, il file passa dal menu
+      // Condividi (Drive, WhatsApp, email...).
+      const { uri } = await Filesystem.writeFile({
+        path: backupFilename(new Date()),
+        data: json,
+        directory: Directory.Cache,
+        encoding: Encoding.UTF8,
+      });
+      await Share.share({ title: 'Backup di Arcobimbi', files: [uri] }).catch(() => {}); // condivisione annullata
+      return;
+    }
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -99,7 +114,7 @@ export function DataSection() {
         <p className="font-body text-sm text-stone">
           Esporta un backup di tutto (profilo, routine, piani e progressi) in un file da conservare dove vuoi.
         </p>
-        <Button type="button" onClick={handleExport} className="self-start">
+        <Button type="button" onClick={() => void handleExport()} className="self-start">
           📤 Esporta backup
         </Button>
       </div>
