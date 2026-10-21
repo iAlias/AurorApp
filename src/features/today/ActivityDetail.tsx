@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
 import { MarkDoneButton } from './MarkDoneButton';
+import { usePersonalize } from '../../app/usePersonalize';
 import type { Activity, PlannedSlot } from '../../core/catalog/types';
 
 export interface ActivityDetailProps {
@@ -14,10 +15,8 @@ export interface ActivityDetailProps {
   onSwap: () => void;
   onPickManual: () => void;
   /**
-   * Giorno passato (dal Calendario, FR-7): il dettaglio resta consultabile
-   * ma senza azioni che modificano il piano. Default `false` — i chiamanti
-   * esistenti (`TodayPage`, sempre su "oggi") non passano la prop e il
-   * comportamento resta identico.
+   * Sola consultazione (dal Catalogo): il dettaglio resta leggibile ma senza
+   * azioni che modificano il piano. Default `false` (`TodayPage`).
    */
   readOnly?: boolean;
 }
@@ -43,6 +42,7 @@ export function ActivityDetail({
   readOnly = false,
 }: ActivityDetailProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const g = usePersonalize();
 
   useEffect(() => {
     setChecked(new Set());
@@ -96,14 +96,14 @@ export function ActivityDetail({
           <p className="mb-1 font-display text-base text-deep">Come si fa</p>
           <ol className="flex list-decimal flex-col gap-1 pl-5 font-body text-sm text-deep">
             {activity.steps.map((s, i) => (
-              <li key={i}>{s}</li>
+              <li key={i}>{g(s)}</li>
             ))}
           </ol>
         </div>
 
         <p className="font-body text-sm text-stone">
           <span className="font-semibold text-deep">In più: </span>
-          {activity.variation}
+          {g(activity.variation)}
         </p>
 
         {activity.safety && (
@@ -111,7 +111,7 @@ export function ActivityDetail({
             role="alert"
             className="rounded-card bg-coral/10 px-4 py-2 font-body text-sm font-semibold text-coral"
           >
-            ⚠️ {activity.safety}
+            ⚠️ {g(activity.safety)}
           </p>
         )}
 

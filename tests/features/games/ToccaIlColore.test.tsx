@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ToccaIlColore } from '../../../src/features/games/ToccaIlColore';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocka burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -36,7 +37,7 @@ describe('ToccaIlColore', () => {
     const { container } = renderGame();
 
     expect(findTargetLabel(container)).toEqual(expect.any(String));
-    expect(screen.getAllByRole('button')).toHaveLength(4);
+    expect(optionButtons()).toHaveLength(4);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
   });
 
@@ -57,8 +58,7 @@ describe('ToccaIlColore', () => {
   test('risposta sbagliata: il round non avanza e si puo\' ritentare', () => {
     const { container } = renderGame();
     const label = findTargetLabel(container);
-    const wrongButton = screen
-      .getAllByRole('button')
+    const wrongButton = optionButtons()
       .find((btn) => btn.getAttribute('aria-label') !== label);
     expect(wrongButton).toBeDefined();
 

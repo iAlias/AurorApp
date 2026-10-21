@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { TrovaLaLettera } from '../../../src/features/games/TrovaLaLettera';
 import { useApp } from '../../../src/app/store';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocka burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -26,7 +27,7 @@ describe('TrovaLaLettera (smoke)', () => {
     );
 
     expect(container.querySelector('p')?.textContent ?? '').toMatch(/^Trova la /);
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(optionButtons()).toHaveLength(3);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
   });
 
@@ -53,12 +54,10 @@ describe('TrovaLaLettera (smoke)', () => {
       profile: {
         id: 'p1',
         name: 'Zoe',
-        avatarId: 'avatar-1',
+        avatarId: 'avatar-1', gender: 'f',
         birthdate: '2023-01-01',
         interests: ['movimento'],
         spaces: ['casa'],
-        vacationStart: '2026-07-01',
-        vacationEnd: '2026-08-31',
         createdAt: '2026-07-01T00:00:00.000Z',
       },
     });
@@ -69,6 +68,6 @@ describe('TrovaLaLettera (smoke)', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(optionButtons()).toHaveLength(3);
   });
 });

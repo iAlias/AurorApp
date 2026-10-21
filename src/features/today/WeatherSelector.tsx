@@ -9,10 +9,11 @@ const OPTIONS: { value: Weather; emoji: string; label: string }[] = [
   { value: 'sole', emoji: '☀️', label: 'Sole' },
   { value: 'pioggia', emoji: '🌧️', label: 'Pioggia' },
   { value: 'caldo', emoji: '🥵', label: 'Caldo' },
+  { value: 'freddo', emoji: '❄️', label: 'Freddo' },
 ];
 
 /**
- * Selettore meteo a 3 stati (FR-5). Il tap su un'opzione diversa da quella
+ * Selettore meteo a 4 stati (FR-5). Il tap su un'opzione diversa da quella
  * corrente chiama `onChange` (il chiamante fa `setWeather` — che rigenera
  * SOLO gli slot non `done` incompatibili, §FR-4); il tap sull'opzione già
  * selezionata è un no-op silenzioso (evita una rigenerazione inutile).

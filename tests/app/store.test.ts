@@ -6,19 +6,18 @@ import { exportJson, parseBackup } from '../../src/core/storage/exportImport';
 function profileFixture(): ChildProfile {
   return {
     id: 'child-1',
-    name: 'Aurora',
-    avatarId: 'volpina',
+    name: 'Sofia',
+    avatarId: 'volpina', gender: 'f',
     birthdate: '2023-05-10',
     interests: ['animali', 'disegno'],
     spaces: ['casa', 'giardino'],
-    vacationStart: '2026-07-01',
-    vacationEnd: '2026-08-31',
     createdAt: '2026-07-04T09:00:00.000Z',
   };
 }
 
 function routineFixture(): RoutineSettings {
   return {
+    school: false,
     wakeTime: '08:00',
     breakfastEnd: '08:45',
     morningSnackStart: '10:30',
@@ -165,7 +164,7 @@ describe('round-trip export → azzera → importa (AC-9 §14)', () => {
     // dell'intera forma dei dati (AC-9 richiede esplicitamente "30 giorni
     // di storia").
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-30'); // vacationStart 2026-07-01 → 30 giorni
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-30'); // 30 giorni
     useApp.getState().markSlot('2026-07-01', 'M1', 'done');
     useApp.getState().markSlot('2026-07-01', 'M2', 'done');
     useApp.getState().markSlot('2026-07-02', 'M1', 'done');

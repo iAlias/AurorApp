@@ -8,16 +8,13 @@ import { TodayPage } from '../features/today/TodayPage';
 import { RouteLoading } from './RouteLoading';
 
 /**
- * `/calendario`, `/impostazioni`, `/timer` e la pagina di servizio `/dev/ui`
+ * `/impostazioni`, `/timer`, `/catalogo`, `/giochi` e la pagina di servizio `/dev/ui`
  * non sono la prima cosa vista dall'utente all'avvio (quella e' `/oggi` o
  * `/wizard`, che restano import statici) — sono caricate pigramente
  * (Task 22, §M7 performance) cosi' il bundle iniziale non le include.
  * `Suspense` con `RouteLoading` (spinner a tema sole) copre il breve
  * intervallo di rete/parsing del chunk mentre arriva.
  */
-const CalendarPage = lazy(() =>
-  import('../features/calendar/CalendarPage').then((m) => ({ default: m.CalendarPage })),
-);
 const SettingsPage = lazy(() =>
   import('../features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
@@ -54,7 +51,7 @@ function RootRedirect() {
  * Tabella delle route (FR-1/FR-5/FR-6/FR-7/FR-8). Solo `/wizard` e'
  * volutamente FUORI dal gruppo con `Layout` come elemento: e' fullscreen,
  * senza tab bar/sidebar. Le altre schermate principali (`/oggi`,
- * `/calendario`, `/timer`, `/impostazioni`) e la pagina di servizio `/dev/ui`
+ * `/timer`, `/impostazioni`, …) e la pagina di servizio `/dev/ui`
  * sono dentro `Layout`, cosi' la tab bar/sidebar resta visibile anche
  * durante il timer del pasto (`/timer` resta fullscreen nel proprio
  * contenuto/sfondo, ma con la navigazione principale sempre raggiungibile).
@@ -67,12 +64,12 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: '/oggi', element: <TodayPage /> },
-      { path: '/calendario', element: withSuspense(<CalendarPage />) },
       { path: '/timer', element: withSuspense(<MealTimerPage />) },
       { path: '/impostazioni', element: withSuspense(<SettingsPage />) },
       { path: '/catalogo', element: withSuspense(<CatalogPage />) },
       { path: '/giochi/:gameId?', element: withSuspense(<GamesPage />) },
-      { path: '/dev/ui', element: withSuspense(<UiShowcase />) },
+      // Pagina di servizio del design system: solo in sviluppo, mai nell'app pubblicata.
+      ...(import.meta.env.DEV ? [{ path: '/dev/ui', element: withSuspense(<UiShowcase />) }] : []),
     ],
   },
   { path: '/wizard', element: <WizardPage /> },
@@ -85,7 +82,7 @@ export const routes: RouteObject[] = [
  * ne' dall'URL corrente di jsdom.
  */
 export function createAppRouter(initialEntries?: string[]) {
-  // `BASE_URL` riflette `base` in vite.config.ts (es. '/aurorapp/'): serve
+  // `BASE_URL` riflette `base` in vite.config.ts (es. '/arcobimbi/'): serve
   // solo al router del browser reale — i test usano `createMemoryRouter`
   // con percorsi assoluti indipendenti dalla sottocartella di deploy.
   return initialEntries

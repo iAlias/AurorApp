@@ -4,13 +4,11 @@ import type { ChildProfile, RoutineSettings } from '../../src/core/catalog/types
 function profileFixture(overrides: Partial<ChildProfile> = {}): ChildProfile {
   return {
     id: 'child-1',
-    name: 'Aurora',
-    avatarId: 'volpina',
+    name: 'Sofia',
+    avatarId: 'volpina', gender: 'f',
     birthdate: '2023-05-10',
     interests: ['animali', 'disegno'],
     spaces: ['casa', 'giardino'],
-    vacationStart: '2026-07-01', // mercoledì
-    vacationEnd: '2026-08-31',
     createdAt: '2026-07-04T09:00:00.000Z',
     ...overrides,
   };
@@ -33,12 +31,12 @@ beforeEach(() => {
   vi.resetModules();
 });
 
-describe('ensurePlansUpTo', () => {
-  test('materializza in ordine da vacationStart fino a dateISO incluso', async () => {
+describe('ensurePlans', () => {
+  test('materializza in ordine da fromISO a toISO inclusi', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
 
-    useApp.getState().ensurePlansUpTo('2026-07-03');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-03');
 
     const { plans } = useApp.getState();
     expect(Object.keys(plans).sort()).toEqual(['2026-07-01', '2026-07-02', '2026-07-03']);
@@ -48,7 +46,7 @@ describe('ensurePlansUpTo', () => {
     }
 
     // write-through: la scrittura è immediata, non serve il debounce.
-    const raw = localStorage.getItem('aurorapp.state.v1');
+    const raw = localStorage.getItem('arcobimbi.state.v1');
     expect(raw).not.toBeNull();
     const saved = JSON.parse(raw as string) as { plans: Record<string, unknown> };
     expect(Object.keys(saved.plans).sort()).toEqual(['2026-07-01', '2026-07-02', '2026-07-03']);
@@ -56,17 +54,17 @@ describe('ensurePlansUpTo', () => {
 
   test('non fa nulla se il profilo non è ancora impostato', async () => {
     const { useApp } = await freshStore();
-    useApp.getState().ensurePlansUpTo('2026-07-03');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-03');
     expect(useApp.getState().plans).toEqual({});
   });
 
   test('non rigenera i giorni già presenti (secondo giro no-op)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-03');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-03');
     const first = useApp.getState().plans;
 
-    useApp.getState().ensurePlansUpTo('2026-07-03');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-03');
     const second = useApp.getState().plans;
 
     expect(second).toEqual(first);
@@ -77,7 +75,7 @@ describe('markSlot', () => {
   test('doppio markSlot(done) consecutivo produce lo stesso stato della 1ª chiamata (idempotenza E4)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
 
     useApp.getState().markSlot('2026-07-01', slotId, 'done');
@@ -94,12 +92,12 @@ describe('markSlot', () => {
   test('scrive subito su localStorage (write-through)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
 
     useApp.getState().markSlot('2026-07-01', slotId, 'done');
 
-    const raw = localStorage.getItem('aurorapp.state.v1');
+    const raw = localStorage.getItem('arcobimbi.state.v1');
     const saved = JSON.parse(raw as string) as {
       plans: Record<string, { slots: { slotId: string; status: string }[] }>;
     };
@@ -120,7 +118,7 @@ describe('setWeather', () => {
   test('non tocca mai gli slot già done', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const before = useApp.getState().plans['2026-07-01'];
     const doneSlotId = before.slots[0].slotId;
     const doneActivityId = before.slots[0].activityId;
@@ -140,7 +138,7 @@ describe('swapSlot', () => {
   test('incrementa swapCount e cambia l\'attività dello slot', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
 
     const result = useApp.getState().swapSlot('2026-07-01', slotId);
@@ -155,7 +153,7 @@ describe('setSlotActivity', () => {
   test('cambia l\'attività dello slot e azzera swapCount', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
     useApp.getState().swapSlot('2026-07-01', slotId); // swapCount passa a 1
 
@@ -169,7 +167,7 @@ describe('setSlotActivity', () => {
   test('riporta uno slot skipped a planned (la scelta manuale lo rimette in gioco)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
     useApp.getState().markSlot('2026-07-01', slotId, 'skipped');
 
@@ -183,7 +181,7 @@ describe('setSlotActivity', () => {
   test('nessun effetto se lo slot è già done', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
     useApp.getState().markSlot('2026-07-01', slotId, 'done');
     const before = useApp.getState().plans['2026-07-01'];
@@ -204,7 +202,7 @@ describe('setSlotActivity', () => {
   test('nessun effetto se activityId non esiste nel catalogo', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const before = useApp.getState().plans['2026-07-01'];
     const slotId = before.slots[0].slotId;
 
@@ -216,12 +214,12 @@ describe('setSlotActivity', () => {
   test('scrive subito su localStorage (write-through)', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const slotId = useApp.getState().plans['2026-07-01'].slots[0].slotId;
 
     useApp.getState().setSlotActivity('2026-07-01', slotId, 'CAL-01');
 
-    const raw = localStorage.getItem('aurorapp.state.v1');
+    const raw = localStorage.getItem('arcobimbi.state.v1');
     const saved = JSON.parse(raw as string) as {
       plans: Record<string, { slots: { slotId: string; activityId: string; swapCount: number }[] }>;
     };
@@ -235,7 +233,7 @@ describe('regenerate', () => {
   test('incrementa regenNonce e preserva gli slot già done', async () => {
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-01');
     const before = useApp.getState().plans['2026-07-01'];
     const doneSlotId = before.slots[0].slotId;
     const doneActivityId = before.slots[0].activityId;
@@ -262,7 +260,7 @@ describe('regenerateFutureFromToday', () => {
     vi.setSystemTime(new Date('2026-07-02T10:00:00')); // giovedì: "oggi" feriale, 5 slot
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-04');
+    useApp.getState().ensurePlans('2026-07-01', '2026-07-04');
 
     // 07-01 (mercoledì, PASSATO): due slot done, il resto no.
     const past = useApp.getState().plans['2026-07-01'];
@@ -282,8 +280,9 @@ describe('regenerateFutureFromToday', () => {
     const futureDoneSlotId = future.slots[0].slotId;
     const futureDoneActivityId = future.slots[0].activityId;
 
-    // 07-04 (FUTURO, giorno speciale): nessuno slot da rigenerare.
-    useApp.getState().setSpecial('2026-07-04', { kind: 'mare' });
+    // 07-04 (FUTURO, giorno speciale — da un backup: l'app non li crea più): nessuno slot da rigenerare.
+    const plans = useApp.getState().plans;
+    useApp.setState({ plans: { ...plans, '2026-07-04': { ...plans['2026-07-04'], special: { kind: 'mare' }, slots: [] } } });
     const specialBefore = useApp.getState().plans['2026-07-04'];
 
     useApp.getState().regenerateFutureFromToday();
@@ -307,34 +306,5 @@ describe('regenerateFutureFromToday', () => {
     const { useApp } = await freshStore();
     useApp.getState().regenerateFutureFromToday();
     expect(useApp.getState().plans).toEqual({});
-  });
-});
-
-describe('setSpecial', () => {
-  test('imposta un giorno speciale con slots vuoti', async () => {
-    const { useApp } = await freshStore();
-    useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
-
-    useApp.getState().setSpecial('2026-07-01', { kind: 'mare' });
-
-    const plan = useApp.getState().plans['2026-07-01'];
-    expect(plan.special).toEqual({ kind: 'mare' });
-    expect(plan.slots).toEqual([]);
-  });
-
-  test('undefined torna a un giorno normale con slot rigenerati', async () => {
-    const { useApp } = await freshStore();
-    useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo('2026-07-01');
-    const before = useApp.getState().plans['2026-07-01'];
-
-    useApp.getState().setSpecial('2026-07-01', { kind: 'mare' });
-    useApp.getState().setSpecial('2026-07-01', undefined);
-
-    const after = useApp.getState().plans['2026-07-01'];
-    expect(after.special).toBeUndefined();
-    expect(after.slots.length).toBe(before.slots.length);
-    expect(after.regenNonce).toBe(before.regenNonce);
   });
 });

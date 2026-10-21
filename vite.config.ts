@@ -1,17 +1,19 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { version as appVersion } from './package.json';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, mode }) => ({
   // Solo la build di produzione va servita da una sottocartella dell'hosting
-  // statico dell'utente (tuosito.it/aurorapp/): asset/manifest/service worker
-  // devono referenziare quel prefisso. `npm run dev` (e quindi anche gli e2e
-  // Playwright, che puntano a localhost:5173/) restano sulla radice, così il
-  // flusso di sviluppo locale non cambia. React Router legge lo stesso
-  // valore da `import.meta.env.BASE_URL` (vedi `src/app/router.tsx`).
-  base: command === 'build' ? (process.env.BASE_PATH || '/aurorapp/') : '/',
+  // statico (tuosito.it/arcobimbi/): asset/manifest/service worker devono
+  // referenziare quel prefisso. `npm run dev` (e quindi anche gli e2e
+  // Playwright, che puntano a localhost:5173/) restano sulla radice. Chi
+  // pubblica altrove lo sovrascrive da riga di comando con `--base` (GitHub
+  // Pages: nome del repo). L'app Android (`--mode android`, servita da
+  // Capacitor su https://localhost/) sta alla radice. React Router legge lo
+  // stesso valore da `import.meta.env.BASE_URL` (vedi `src/app/router.tsx`).
+  base: command === 'build' && mode !== 'android' ? '/arcobimbi/' : '/',
   plugins: [
     react(),
     // Task 21 (FR-10): app installabile e utilizzabile offline. `registerType:
@@ -19,11 +21,16 @@ export default defineConfig(({ command }) => ({
     // `UpdatePrompt` e decide quando ricaricare. Icone generate a
     // `scripts/gen-icons.mjs` (build-time, non committate come sorgente).
     VitePWA({
+      // Nell'app Android i file sono già nel pacchetto e gli aggiornamenti
+      // arrivano dallo store: niente service worker né avviso di aggiornamento
+      // (con `disable` il modulo `virtual:pwa-register` resta, ma non fa nulla).
+      disable: mode === 'android',
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'AurorApp',
-        short_name: 'AurorApp',
+        name: 'Arcobimbi',
+        short_name: 'Arcobimbi',
+        description: 'Giornate piene di gioco per bambini dai 2 ai 5 anni: attività, timer arcobaleno e minigiochi. Tutto offline.',
         lang: 'it',
         display: 'standalone',
         orientation: 'any',

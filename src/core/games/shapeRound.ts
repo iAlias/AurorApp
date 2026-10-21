@@ -18,6 +18,16 @@ export const SHAPE_LABELS: Record<ShapeId, string> = {
   rombo: 'ROMBO',
 };
 
+/** Articolo per la consegna: "il CERCHIO" ma "la STELLA". */
+export const SHAPE_ARTICLES: Record<ShapeId, string> = {
+  cerchio: 'il',
+  quadrato: 'il',
+  triangolo: 'il',
+  stella: 'la',
+  cuore: 'il',
+  rombo: 'il',
+};
+
 export interface ShapeOption {
   shape: ShapeId;
   colorHex: string;

@@ -35,7 +35,8 @@ function makeSlot(
 
 /**
  * Deriva gli slot attività della giornata dalle ancore della routine (FR-2).
- * Feriale: M1, M2, P1, P2, SERA. Weekend (familyDay:true): solo M1, P1.
+ * Feriale: M1, M2, P1, P2, SERA — solo P1, P2, SERA se la mattina è al
+ * nido/asilo (`routine.school`). Weekend (familyDay:true): solo M1, P1.
  */
 export function deriveSlots(
   r: RoutineSettings,
@@ -64,5 +65,6 @@ export function deriveSlots(
   });
 
   if (familyDay) return [m1, p1];
+  if (r.school) return [p1, p2, sera];
   return [m1, m2, p1, p2, sera];
 }

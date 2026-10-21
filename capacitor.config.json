@@ -1,0 +1,12 @@
+{
+  "appId": "it.digitstudio.arcobimbi",
+  "appName": "Arcobimbi",
+  "webDir": "dist",
+  "backgroundColor": "#FFF8E7",
+  "plugins": {
+    "SystemBars": {
+      "style": "LIGHT",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}

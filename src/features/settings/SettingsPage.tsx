@@ -69,7 +69,7 @@ function MealStepper({ label, testId, value, onDecrease, onIncrease }: MealStepp
  * effetto collaterale non banale (rigenerazione) — merita quindi un gesto di
  * conferma esplicito invece di scrivere ad ogni singola modifica di orario.
  *
- * NESSUN redirect se `profile` è `null` (a differenza di `/oggi`/`/calendario`):
+ * NESSUN redirect se `profile` è `null` (a differenza di `/oggi`):
  * dopo un "Azzera tutto" la sezione Dati → Importa deve restare raggiungibile
  * per ripristinare un backup (AC-9 §14), altrimenti l'unica via sarebbe
  * rifare tutto il wizard. Le sezioni che davvero richiedono un profilo
@@ -209,10 +209,16 @@ export function SettingsPage() {
         <p className="font-body text-sm text-stone">Versione catalogo: {CATALOG_VERSION}</p>
         <p className="font-body text-xs text-stone">
           {profile
-            ? `AurorApp è fatta con cura per ${profile.name} e per chi le vuole bene.`
-            : 'AurorApp è fatta con cura per i più piccoli e per chi li accompagna.'}{' '}
+            ? `Arcobimbi è fatta con cura per ${profile.name} e per tutta la sua famiglia.`
+            : 'Arcobimbi è fatta con cura per i più piccoli e per chi li accompagna.'}{' '}
           Nessun dato lascia mai questo dispositivo.
         </p>
+        <a
+          href={`${import.meta.env.BASE_URL}privacy.html`}
+          className="w-fit font-body text-xs font-semibold text-deep underline"
+        >
+          Informativa privacy
+        </a>
       </Card>
     </div>
   );

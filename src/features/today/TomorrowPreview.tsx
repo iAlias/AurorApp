@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../ui/Button';
-import { ACTIVITIES } from '../../core/catalog/activities';
+import { useCatalog } from '../../app/usePersonalize';
 import type { DayPlan } from '../../core/catalog/types';
 
 export interface TomorrowPreviewProps {
@@ -19,9 +19,10 @@ const SPECIAL_LABELS: Record<'mare' | 'nonni' | 'viaggio' | 'altro', string> = {
  * Sezione "Domani" collassata in fondo alla timeline (FR-5): espandendola si
  * vede il piano di domani in sola lettura (nessuna azione sugli slot — sono
  * il domani, non l'oggi) più "Rigenera domani". `plan` può mancare solo in
- * un istante transitorio prima che `ensurePlansUpTo` lo materializzi.
+ * un istante transitorio prima che `ensurePlans` lo materializzi.
  */
 export function TomorrowPreview({ plan, onRegenerate }: TomorrowPreviewProps) {
+  const catalog = useCatalog();
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,7 +47,7 @@ export function TomorrowPreview({ plan, onRegenerate }: TomorrowPreviewProps) {
             <p className="font-body text-sm text-stone">Nessuna attività pianificata.</p>
           ) : (
             plan.slots.map((s) => {
-              const activity = ACTIVITIES.find((a) => a.id === s.activityId);
+              const activity = catalog.find((a) => a.id === s.activityId);
               if (!activity) return null;
               return (
                 <div

@@ -10,6 +10,7 @@ import { Card } from '../../ui/Card';
 import { audioManager } from '../../ui/audio';
 import { burst } from '../../ui/confetti';
 import { useReducedMotionPref } from '../../ui/motion';
+import { usePersonalize } from '../../app/usePersonalize';
 
 interface WeeklyRecap {
   weekStartISO: string;
@@ -77,6 +78,7 @@ export function ProgressCard() {
   const plans = useApp((s) => s.plans);
   const lastNewBadges = useApp((s) => s.lastNewBadges);
   const reducedMotion = useReducedMotionPref();
+  const g = usePersonalize();
 
   const [justUnlocked] = useState<Set<BadgeId>>(() => new Set(lastNewBadges));
 
@@ -114,7 +116,7 @@ export function ProgressCard() {
             return (
               <motion.div
                 key={b.id}
-                title={`${b.name} — ${b.description}`}
+                title={`${g(b.name)} — ${g(b.description)}`}
                 data-testid={`badge-${b.id}`}
                 data-unlocked={unlocked}
                 initial={flip ? { rotateY: 180, opacity: 0 } : false}
@@ -128,7 +130,7 @@ export function ProgressCard() {
                 <span className="text-2xl" aria-hidden="true">
                   {b.emoji}
                 </span>
-                <span className="font-body text-[10px] leading-tight text-deep">{b.name}</span>
+                <span className="font-body text-[10px] leading-tight text-deep">{g(b.name)}</span>
               </motion.div>
             );
           })}

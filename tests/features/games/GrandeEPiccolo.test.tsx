@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { GrandeEPiccolo } from '../../../src/features/games/GrandeEPiccolo';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocka burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -21,7 +22,7 @@ describe('GrandeEPiccolo (smoke)', () => {
   test('mostra il prompt e 3 bottoni con la stessa emoji a scale diverse', () => {
     renderGame();
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = optionButtons();
     expect(buttons).toHaveLength(3);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
 

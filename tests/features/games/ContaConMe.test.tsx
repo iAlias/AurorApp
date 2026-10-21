@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ContaConMe } from '../../../src/features/games/ContaConMe';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocka burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -26,7 +27,7 @@ describe('ContaConMe (smoke)', () => {
     );
 
     expect(screen.getByText('Quanti sono?')).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(optionButtons()).toHaveLength(3);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
   });
 

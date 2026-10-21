@@ -1,6 +1,7 @@
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { MarkDoneButton } from './MarkDoneButton';
+import { usePersonalize } from '../../app/usePersonalize';
 import { CATEGORIES } from '../../core/catalog/categories';
 import { toHHMM } from '../../core/planner/slots';
 import type { SlotDef } from '../../core/planner/slots';
@@ -44,6 +45,7 @@ export function SlotCard({
   onOpenDetail,
   innerRef,
 }: SlotCardProps) {
+  const g = usePersonalize();
   const done = slot.status === 'done';
   const skipped = slot.status === 'skipped';
   const materials = activity.materials.slice(0, MAX_MATERIALS);
@@ -102,7 +104,7 @@ export function SlotCard({
 
         {freePlay && (
           <p className="mt-2 font-body text-xs italic text-stone">
-            poi gioco libero: lascia che sia lei a guidare
+            {g('poi gioco libero: lascia che sia {lei|lui} a guidare')}
           </p>
         )}
 

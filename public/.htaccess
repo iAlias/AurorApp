@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /aurorapp/
+  RewriteBase /arcobimbi/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /aurorapp/index.html [L]
+  RewriteRule . /arcobimbi/index.html [L]
 </IfModule>

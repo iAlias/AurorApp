@@ -5,11 +5,11 @@ import { useApp } from '../../app/store';
 import { Button } from '../../ui/Button';
 import { pageFlipVariants, springSoft, useReducedMotionPref } from '../../ui/motion';
 import { DEFAULT_MEALS, DEFAULT_ROUTINE } from '../../core/catalog/types';
-import type { ChildProfile, InterestTag, RoutineSettings, SpaceTag } from '../../core/catalog/types';
-import { AVATARS, ageLabel, ageWarning, validateName, validateRoutine, validateVacation } from './wizardLogic';
+import type { ChildProfile, Gender, InterestTag, RoutineSettings, SpaceTag } from '../../core/catalog/types';
+import { AVATARS, ageLabel, ageWarning, validateName, validateRoutine } from './wizardLogic';
 import { StepWelcome } from './StepWelcome';
 import { StepName } from './StepName';
-import { StepDates } from './StepDates';
+import { StepBirthdate } from './StepBirthdate';
 import { StepRoutine } from './StepRoutine';
 import { StepInterests } from './StepInterests';
 import { StepSummary } from './StepSummary';
@@ -25,12 +25,6 @@ function todayISO(): string {
 function defaultBirthdate(): string {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 3);
-  return d.toISOString().slice(0, 10);
-}
-
-function defaultVacationEnd(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 92);
   return d.toISOString().slice(0, 10);
 }
 
@@ -65,32 +59,26 @@ export function WizardPage() {
   const entryStep = entryStepFromQuery(searchParams.get('step'));
   const isRelaunch = entryStep > 0;
 
-  // Rilancio completo (bare `/wizard`, senza `?step=` — es. da
-  // `EndOfSummary` → "Prepara una nuova avventura", Task 14/E10): NON
-  // precompila mai dal profilo esistente, a differenza del rilancio
-  // parziale (`?step=…`, FR-8) che invece riapre gli step coi dati
-  // correnti. La CTA promette esplicitamente "una nuova avventura": dopo
-  // un'intera estate la bimba può avere nuovi interessi, una routine
-  // diversa, ecc. — si riparte da un wizard completamente vuoto, comprese
-  // le date vacanza (che altrimenti resterebbero quelle appena scadute).
+  // Wizard completo (bare `/wizard`, senza `?step=` — primo avvio o dopo
+  // "Azzera tutto"): NON precompila mai dal profilo esistente, a differenza
+  // del rilancio parziale (`?step=…`, FR-8) che invece riapre gli step coi
+  // dati correnti.
   const profileForPrefill = isRelaunch ? existingProfile : null;
   const routineForPrefill = isRelaunch ? existingRoutine : null;
 
   const [step, setStep] = useState(entryStep);
   const [name, setName] = useState(() => profileForPrefill?.name ?? '');
+  const [gender, setGender] = useState<Gender | ''>(() => profileForPrefill?.gender ?? '');
   const [avatarId, setAvatarId] = useState(() => profileForPrefill?.avatarId ?? '');
   const [birthdate, setBirthdate] = useState(() => profileForPrefill?.birthdate ?? defaultBirthdate());
-  const [vacationStart, setVacationStart] = useState(() => profileForPrefill?.vacationStart ?? todayISO());
-  const [vacationEnd, setVacationEnd] = useState(() => profileForPrefill?.vacationEnd ?? defaultVacationEnd());
   const [routine, setRoutine] = useState<RoutineSettings>(() => routineForPrefill ?? DEFAULT_ROUTINE);
   const [interests, setInterests] = useState<InterestTag[]>(() => profileForPrefill?.interests ?? []);
   const [spaces, setSpaces] = useState<SpaceTag[]>(() => profileForPrefill?.spaces ?? []);
 
   const nameError = validateName(name);
-  const nameValid = nameError === null && avatarId !== '';
+  const nameValid = nameError === null && gender !== '' && avatarId !== '';
 
-  const vacationError = validateVacation(vacationStart, vacationEnd);
-  const datesValid = birthdate !== '' && vacationError === null;
+  const birthdateValid = birthdate !== '';
   const ageLabelText = birthdate ? ageLabel(birthdate, todayISO()) : '';
   const ageWarningText = birthdate ? ageWarning(birthdate, todayISO()) : null;
 
@@ -99,7 +87,7 @@ export function WizardPage() {
 
   const interestsValid = interests.length >= 1 && spaces.length >= 1;
 
-  const stepValidity = [true, nameValid, datesValid, routineValid, interestsValid, true];
+  const stepValidity = [true, nameValid, birthdateValid, routineValid, interestsValid, true];
   const canAdvance = stepValidity[step];
 
   function toggleInterest(tag: InterestTag) {
@@ -122,15 +110,15 @@ export function WizardPage() {
   const avatarEmoji = AVATARS.find((a) => a.id === avatarId)?.emoji ?? '❓';
 
   function handleConfirm() {
+    if (gender === '') return; // irraggiungibile: lo step 2 non avanza senza genere
     const profile: ChildProfile = {
       id: profileForPrefill?.id ?? crypto.randomUUID(),
       name,
       avatarId,
+      gender,
       birthdate,
       interests,
       spaces,
-      vacationStart,
-      vacationEnd,
       createdAt: profileForPrefill?.createdAt ?? new Date().toISOString(),
     };
     completeWizard(profile, routine);
@@ -176,21 +164,18 @@ export function WizardPage() {
                 name={name}
                 onNameChange={setName}
                 nameError={nameError}
+                gender={gender}
+                onGenderChange={setGender}
                 avatarId={avatarId}
                 onAvatarChange={setAvatarId}
               />
             )}
             {step === 2 && (
-              <StepDates
+              <StepBirthdate
                 birthdate={birthdate}
                 onBirthdateChange={setBirthdate}
-                vacationStart={vacationStart}
-                onVacationStartChange={setVacationStart}
-                vacationEnd={vacationEnd}
-                onVacationEndChange={setVacationEnd}
                 ageLabelText={ageLabelText}
                 ageWarningText={ageWarningText}
-                vacationError={vacationError}
               />
             )}
             {step === 3 && (
@@ -210,7 +195,7 @@ export function WizardPage() {
       </div>
 
       {showFooterNav && (
-        <div className="flex items-center justify-between px-6 pb-8">
+        <div className="flex items-center justify-between px-6 pb-[calc(2rem+env(safe-area-inset-bottom))]">
           {showBack ? (
             <Button type="button" variant="ghost" onClick={goBack}>
               Indietro
@@ -225,7 +210,7 @@ export function WizardPage() {
       )}
 
       {step === TOTAL_STEPS - 1 && showBackOnSummary && (
-        <div className="px-6 pb-4">
+        <div className="px-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button type="button" variant="ghost" onClick={goBack}>
             Indietro
           </Button>

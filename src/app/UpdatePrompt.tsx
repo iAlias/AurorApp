@@ -20,7 +20,7 @@ export function UpdatePrompt() {
       {needRefreshFlag && (
         <motion.div
           role="status"
-          className="fixed inset-x-4 bottom-24 z-50 flex items-center justify-between gap-3 rounded-card bg-deep px-4 py-3 text-cream shadow-lift lg:inset-x-auto lg:right-6 lg:w-96"
+          className="fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 flex items-center justify-between gap-3 rounded-card bg-deep px-4 py-3 text-cream shadow-lift lg:inset-x-auto lg:right-6 lg:w-96"
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
           animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}

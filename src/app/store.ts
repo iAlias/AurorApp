@@ -16,7 +16,7 @@ import type {
   Weather,
 } from '../core/catalog/types';
 import { ACTIVITIES } from '../core/catalog/activities';
-import { STORAGE_KEY, emptyEnvelope } from '../core/storage/envelope';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY, emptyEnvelope } from '../core/storage/envelope';
 import { loadEnvelope, makeDebouncedSave, saveNow } from '../core/storage/persist';
 import { next } from '../core/timer/timerMachine';
 import type { TimerEvent } from '../core/timer/timerMachine';
@@ -24,9 +24,7 @@ import { restore } from '../core/timer/progress';
 import { checkUnlocks } from '../core/progress/badges';
 import {
   applyWeather,
-  generateDayPlan,
-  isFamilyDay,
-  materializeUpTo,
+  materializeRange,
   regenerateDay,
   swapActivity,
 } from '../core/planner/generator';
@@ -64,14 +62,13 @@ export interface AppStore extends StorageEnvelope {
   resetAll(): void;
   timerDispatch(e: TimerEvent): void;
   restoreTimer(now: number): void;
-  ensurePlansUpTo(dateISO: string): void;
+  ensurePlans(fromISO: string, toISO: string): void;
   markSlot(dateISO: string, slotId: SlotId, status: SlotStatus): void;
   swapSlot(dateISO: string, slotId: SlotId): { exhausted: boolean };
   setSlotActivity(dateISO: string, slotId: SlotId, activityId: string): void;
   regenerate(dateISO: string): void;
   regenerateFutureFromToday(): void;
   setWeather(dateISO: string, w: Weather): void;
-  setSpecial(dateISO: string, special: DayPlan['special'] | undefined): void;
 }
 
 /**
@@ -264,6 +261,8 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     resetAll() {
       const env = emptyEnvelope();
       saveNow(localStorage, env);
+      // "Azzera tutto" deve cancellare anche l'eventuale copia col vecchio nome.
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
       set({ ...env, storageStatus: 'ready', corruptedRaw: null });
     },
 
@@ -290,16 +289,16 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
     },
 
     /**
-     * Materializza (Task 12: `materializeUpTo`) tutti i giorni mancanti da
-     * `profile.vacationStart` fino a `dateISO` incluso e li unisce ai piani
-     * esistenti. No-op se il profilo non è ancora impostato o se non ci sono
+     * Genera i piani mancanti da `fromISO` a `toISO` inclusi, in ordine
+     * cronologico, e li unisce ai piani esistenti (la pagina Oggi chiede oggi
+     * e domani). No-op se il profilo non è ancora impostato o se non ci sono
      * giorni nuovi da aggiungere (evita scritture inutili).
      */
-    ensurePlansUpTo(dateISO) {
+    ensurePlans(fromISO, toISO) {
       const state = get();
       const ctx = genCtx(state);
       if (!ctx) return;
-      const newPlans = materializeUpTo(dateISO, ctx);
+      const newPlans = materializeRange(fromISO, toISO, ctx);
       if (Object.keys(newPlans).length === 0) return;
       commitPlans(state, { ...state.plans, ...newPlans });
     },
@@ -412,42 +411,6 @@ export const useApp: UseBoundStore<StoreApi<AppStore>> = create<AppStore>((set, 
       const ctx = genCtx(state);
       if (!plan || !ctx) return;
       const newPlan = applyWeather(plan, w, ctx);
-      commitPlans(state, { ...state.plans, [dateISO]: newPlan });
-    },
-
-    /**
-     * `special` impostato → il giorno diventa "speciale" (slots: []).
-     * `special: undefined` → torna un giorno normale: rigenera gli slot con
-     * `generateDayPlan` mantenendo lo stesso `regenNonce`. Il piano corrente
-     * per `dateISO` viene escluso dal `plans` passato al generatore, perché
-     * `buildDay` altrimenti rileggerebbe da lì lo `special` appena rimosso
-     * (fallback interno per rigenerazioni "in place").
-     */
-    setSpecial(dateISO, special) {
-      const state = get();
-      const ctx = genCtx(state);
-      if (!ctx) return;
-      const plan = state.plans[dateISO];
-
-      let newPlan: DayPlan;
-      if (special) {
-        newPlan = {
-          date: dateISO,
-          familyDay: plan?.familyDay ?? isFamilyDay(dateISO),
-          special,
-          weather: plan?.weather ?? 'sole',
-          regenNonce: plan?.regenNonce ?? 0,
-          slots: [],
-        };
-      } else {
-        if (!plan) return;
-        const plansWithoutToday = { ...state.plans };
-        delete plansWithoutToday[dateISO];
-        newPlan = generateDayPlan(dateISO, plan.weather, plan.regenNonce, {
-          ...ctx,
-          plans: plansWithoutToday,
-        });
-      }
       commitPlans(state, { ...state.plans, [dateISO]: newPlan });
     },
   };

@@ -3,7 +3,10 @@ import { DEFAULT_SETTINGS } from '../catalog/types';
 import type { StorageEnvelope } from '../catalog/types';
 
 // ——— Chiave localStorage ———
-export const STORAGE_KEY = 'aurorapp.state.v1';
+export const STORAGE_KEY = 'arcobimbi.state.v1';
+/** Chiave del vecchio nome dell'app: letta solo se manca quella nuova, così
+ * chi aggiorna non perde profilo e progressi (la prima scrittura migra). */
+export const LEGACY_STORAGE_KEY = 'aurorapp.state.v1';
 
 // ——— Zod schema, campo per campo, speculare a StorageEnvelope (spec §6.2) ———
 
@@ -14,7 +17,7 @@ const InterestTagSchema = z.enum([
 
 const SpaceTagSchema = z.enum(['casa', 'giardino', 'terrazzo', 'parco']);
 
-const WeatherSchema = z.enum(['sole', 'pioggia', 'caldo']);
+const WeatherSchema = z.enum(['sole', 'pioggia', 'caldo', 'freddo']);
 
 const SlotIdSchema = z.enum(['M1', 'M2', 'P1', 'P2', 'SERA']);
 
@@ -24,15 +27,18 @@ const ChildProfileSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatarId: z.string(),
+  // Assente nei dati salvati prima della scelta bambina/bambino: erano tutti
+  // profili di bambine, quindi 'f' preserva i testi che vedevano.
+  gender: z.enum(['f', 'm']).default('f'),
   birthdate: z.string(),
   interests: z.array(InterestTagSchema),
   spaces: z.array(SpaceTagSchema),
-  vacationStart: z.string(),
-  vacationEnd: z.string(),
   createdAt: z.string(),
 });
 
 const RoutineSettingsSchema = z.object({
+  // Assente nei salvataggi precedenti all'opzione nido/asilo.
+  school: z.boolean().default(false),
   wakeTime: z.string(),
   breakfastEnd: z.string(),
   morningSnackStart: z.string(),
@@ -121,7 +127,7 @@ const ProgressStateSchema = z.object({
   mealTimersCompleted: z.number(),
 });
 
-export const EnvelopeSchema: z.ZodType<StorageEnvelope> = z.object({
+export const EnvelopeSchema: z.ZodType<StorageEnvelope, z.ZodTypeDef, unknown> = z.object({
   schemaVersion: z.literal(1),
   savedAt: z.string(),
   profile: ChildProfileSchema.nullable(),

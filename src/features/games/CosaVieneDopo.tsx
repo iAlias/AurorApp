@@ -71,6 +71,7 @@ export function CosaVieneDopo() {
   return (
     <GameShell
       title="Cosa viene dopo?"
+      prompt="Cosa viene dopo?"
       emoji="🔁"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

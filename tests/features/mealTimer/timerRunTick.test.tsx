@@ -24,7 +24,7 @@ function sessionFixture(overrides: Partial<TimerSession> = {}): TimerSession {
 }
 
 function tickCallCount(playSpy: ReturnType<typeof vi.spyOn>): number {
-  return playSpy.mock.calls.filter((call) => call[0] === 'tick').length;
+  return playSpy.mock.calls.filter((call: unknown[]) => call[0] === 'tick').length;
 }
 
 beforeEach(() => {

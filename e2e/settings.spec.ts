@@ -17,11 +17,14 @@ test.describe('Impostazioni (FR-8) + progressi (FR-9)', () => {
     // e dipenderebbe dal debounce di persistenza da 300ms): lo store in
     // memoria ha già il nuovo valore, il tab "Timer" lo riflette subito.
     await page.getByRole('link', { name: /timer/i }).first().click();
+    // React Router 7 tiene a schermo la pagina precedente finché quella nuova
+    // (caricata pigramente) non è pronta: si aspetta che Impostazioni sparisca.
+    await expect(page.getByRole('heading', { name: 'Impostazioni' })).toBeHidden();
     await page.getByRole('button', { name: /pranzo/i }).click();
     await expect(page.getByText('45 min')).toBeVisible();
   });
 
-  test('esporta backup: scarica un file aurorapp-backup-*.json', async ({ page }) => {
+  test('esporta backup: scarica un file arcobimbi-backup-*.json', async ({ page }) => {
     await completeWizardFast(page);
     await page.goto('/impostazioni');
 
@@ -30,7 +33,7 @@ test.describe('Impostazioni (FR-8) + progressi (FR-9)', () => {
       page.getByRole('button', { name: /esporta backup/i }).click(),
     ]);
 
-    expect(download.suggestedFilename()).toMatch(/^aurorapp-backup-\d{4}-\d{2}-\d{2}\.json$/);
+    expect(download.suggestedFilename()).toMatch(/^arcobimbi-backup-\d{4}-\d{2}-\d{2}\.json$/);
   });
 
   test('azzera tutto: la doppia conferma richiede il nome esatto, poi torna al wizard', async ({ page }) => {
@@ -44,8 +47,8 @@ test.describe('Impostazioni (FR-8) + progressi (FR-9)', () => {
     await page.getByLabel(/scrivi il nome/i).fill('Nomesbagliato');
     await expect(confirmButton).toBeDisabled();
 
-    // Case-insensitive/trim: "aurora " con spazio e minuscolo deve comunque abilitare.
-    await page.getByLabel(/scrivi il nome/i).fill('aurora ');
+    // Case-insensitive/trim: "sofia " con spazio e minuscolo deve comunque abilitare.
+    await page.getByLabel(/scrivi il nome/i).fill('sofia ');
     await expect(confirmButton).toBeEnabled();
 
     await confirmButton.click();
@@ -60,12 +63,12 @@ test.describe('Impostazioni (FR-8) + progressi (FR-9)', () => {
       page.waitForEvent('download'),
       page.getByRole('button', { name: /esporta backup/i }).click(),
     ]);
-    const savedPath = `${test.info().outputDir}/aurorapp-backup.json`;
+    const savedPath = `${test.info().outputDir}/arcobimbi-backup.json`;
     await download.saveAs(savedPath);
 
     // Azzera tutto (stessa doppia conferma della prova precedente).
     await page.getByRole('button', { name: /^azzera tutto$/i }).click();
-    await page.getByLabel(/scrivi il nome/i).fill('Aurora');
+    await page.getByLabel(/scrivi il nome/i).fill('Sofia');
     await page.getByRole('button', { name: /conferma azzeramento/i }).click();
     await expect(page.getByRole('button', { name: /iniziamo/i })).toBeVisible();
 
@@ -75,11 +78,11 @@ test.describe('Impostazioni (FR-8) + progressi (FR-9)', () => {
 
     const preview = page.getByText(/backup del/i);
     await expect(preview).toBeVisible();
-    await expect(preview).toContainText('Aurora');
+    await expect(preview).toContainText('Sofia');
     await page.getByRole('button', { name: /^conferma$/i }).click();
 
     // Stato ripristinato: profilo di nuovo presente, si atterra su Oggi.
     await expect(page).toHaveURL(/oggi/);
-    await expect(page.getByTestId('profile-name')).toHaveText('Aurora');
+    await expect(page.getByTestId('profile-name')).toHaveText('Sofia');
   });
 });

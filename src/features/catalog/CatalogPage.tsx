@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '../../ui/Card';
 import { CATEGORIES } from '../../core/catalog/categories';
-import { ACTIVITIES } from '../../core/catalog/activities';
+import { useCatalog } from '../../app/usePersonalize';
 import { ActivityDetail } from '../today/ActivityDetail';
 import type { Activity, CategoryId, Energy, Place, PlannedSlot } from '../../core/catalog/types';
 
@@ -51,6 +51,7 @@ function fakeSlot(activityId: string): PlannedSlot {
  * qui non c'è uno slot reale da segnare Fatta/Saltata/Cambiala.
  */
 export function CatalogPage() {
+  const catalog = useCatalog();
   const [category, setCategory] = useState<CategoryFilter>(ALL_CATEGORIES);
   const [energy, setEnergy] = useState<Energy | null>(null);
   const [place, setPlace] = useState<Place | null>(null);
@@ -58,14 +59,14 @@ export function CatalogPage() {
   const [detailActivity, setDetailActivity] = useState<Activity | null>(null);
 
   const filtered = useMemo(() => {
-    return ACTIVITIES.filter((a) => {
+    return catalog.filter((a) => {
       if (category !== ALL_CATEGORIES && a.category !== category) return false;
       if (energy !== null && a.energy !== energy) return false;
       if (place !== null && a.place !== place) return false;
       if (mess !== null && a.mess !== mess) return false;
       return true;
     });
-  }, [category, energy, place, mess]);
+  }, [catalog, category, energy, place, mess]);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-4 pb-8">

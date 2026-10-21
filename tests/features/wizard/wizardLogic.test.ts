@@ -1,7 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import {
   validateName,
-  validateVacation,
   ageLabel,
   ageWarning,
   validateRoutine,
@@ -11,8 +10,8 @@ import { DEFAULT_ROUTINE, DEFAULT_MEALS } from '../../../src/core/catalog/types'
 
 describe('wizardLogic', () => {
   describe('validateName', () => {
-    test('accetta nomi validi: Aurora', () => {
-      expect(validateName('Aurora')).toBeNull();
+    test('accetta nomi validi: Sofia', () => {
+      expect(validateName('Sofia')).toBeNull();
     });
 
     test('accetta nomi validi: Anna Lisa', () => {
@@ -36,7 +35,7 @@ describe('wizardLogic', () => {
     });
 
     test('rifiuta nome con emoji: 😀', () => {
-      expect(validateName('Aurora😀')).not.toBeNull();
+      expect(validateName('Sofia😀')).not.toBeNull();
     });
 
     test('accetta nome con accenti: Àlice', () => {
@@ -45,28 +44,6 @@ describe('wizardLogic', () => {
 
     test('accetta nome di esattamente 20 caratteri', () => {
       expect(validateName('A'.repeat(20))).toBeNull();
-    });
-  });
-
-  describe('validateVacation', () => {
-    test('accetta vacanza valida', () => {
-      expect(validateVacation('2026-07-01', '2026-07-15')).toBeNull();
-    });
-
-    test('rifiuta vacanza con end < start', () => {
-      expect(validateVacation('2026-07-15', '2026-07-01')).not.toBeNull();
-    });
-
-    test('rifiuta vacanza con end = start', () => {
-      expect(validateVacation('2026-07-01', '2026-07-01')).not.toBeNull();
-    });
-
-    test('rifiuta vacanza > 180 giorni', () => {
-      expect(validateVacation('2026-01-01', '2026-07-01')).not.toBeNull();
-    });
-
-    test('accetta vacanza di esattamente 180 giorni', () => {
-      expect(validateVacation('2026-01-01', '2026-06-30')).toBeNull();
     });
   });
 
@@ -222,7 +199,7 @@ describe('wizardLogic', () => {
     test('volpina ha emoji 🦊', () => {
       const volpina = AVATARS.find(a => a.id === 'volpina');
       expect(volpina?.emoji).toBe('🦊');
-      expect(volpina?.label).toBe('volpina');
+      expect(volpina?.label).toBe('volpe');
     });
 
     test('coniglietta ha emoji 🐰', () => {

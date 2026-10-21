@@ -26,9 +26,9 @@ export function StepWelcome({ onNext }: StepWelcomeProps) {
       >
         🌈
       </motion.div>
-      <h1 className="font-display text-3xl text-deep">Ciao! Benvenuta in AurorApp</h1>
+      <h1 className="font-display text-3xl text-deep">Ciao! Benvenuti in Arcobimbi</h1>
       <p className="max-w-xs font-body text-lg text-stone">
-        Prepariamo insieme un&apos;estate piena di gioco, scoperta e sorrisi 💛
+        Prepariamo insieme giornate piene di gioco, scoperta e sorrisi 💛
       </p>
       <Button type="button" size="xl" onClick={onNext}>
         Iniziamo

@@ -10,7 +10,7 @@ export interface TimerKindCopy {
   chip: string;
   /** Testo del bottone di avvio. */
   startButton: string;
-  /** Riga sotto "Bravissima!" in Celebration. */
+  /** Riga sotto "Bravissima/o!" in Celebration; può contenere varianti `{f|m}` (vedi `genderize`). */
   celebration: string;
   /** Durata di default in minuti (per pranzo/cena si usano comunque settings.meals). */
   defaultMinutes: number;
@@ -19,7 +19,7 @@ export interface TimerKindCopy {
 export const TIMER_KINDS: Record<TimerKind, TimerKindCopy> = {
   pranzo:   { emoji: '🍝', chip: 'Pranzo',       startButton: 'Si mangia! 🍝',   celebration: 'Pranzo delizioso! 🍝',        defaultMinutes: 60 },
   cena:     { emoji: '🍽️', chip: 'Cena',         startButton: 'Si mangia! 🍽️',  celebration: 'Cena deliziosa! 🍽️',         defaultMinutes: 60 },
-  vestirsi: { emoji: '👕', chip: 'Vestirsi',     startButton: 'Ci vestiamo! 👕', celebration: 'Tutta vestita, che brava! 👕', defaultMinutes: 10 },
+  vestirsi: { emoji: '👕', chip: 'Vestirsi',     startButton: 'Ci vestiamo! 👕', celebration: 'Tutt{a|o} vestit{a|o}, che brav{a|o}! 👕', defaultMinutes: 10 },
   riordino: { emoji: '🧸', chip: 'Riordino',     startButton: 'Si riordina! 🧸', celebration: 'Tutto in ordine! 🧸',          defaultMinutes: 5 },
   libero:   { emoji: '⭐', chip: 'Altro',         startButton: 'Via! ⭐',         celebration: 'Ce l’abbiamo fatta! ⭐',  defaultMinutes: 15 },
 };

@@ -12,7 +12,8 @@ async function completeWizardFlow(page: Page) {
   await page.getByRole('button', { name: /iniziamo/i }).click();
 
   // Step 2 — Nome & avatar
-  await page.getByLabel(/nome/i).fill('Aurora');
+  await page.getByLabel(/nome/i).fill('Sofia');
+  await page.getByRole('button', { name: /bambina/i }).click();
   await page.getByText('🦊').click();
   await page.getByRole('button', { name: /avanti/i }).click();
 
@@ -28,31 +29,32 @@ async function completeWizardFlow(page: Page) {
   await page.getByRole('button', { name: /avanti/i }).click();
 
   // Step 6 — Riepilogo
-  await page.getByRole('button', { name: /crea la nostra estate/i }).click();
+  await page.getByRole('button', { name: /si comincia/i }).click();
 }
 
 test('wizard completo porta a Oggi con il profilo creato', async ({ page }) => {
   await completeWizardFlow(page);
 
   await expect(page).toHaveURL(/oggi/);
-  await expect(page.getByText('Aurora', { exact: true })).toBeVisible();
+  await expect(page.getByText('Sofia', { exact: true })).toBeVisible();
 });
 
 test('refresh dopo wizard: profilo persistito', async ({ page }) => {
   await completeWizardFlow(page);
   await expect(page).toHaveURL(/oggi/);
-  await expect(page.getByText('Aurora', { exact: true })).toBeVisible();
+  await expect(page.getByText('Sofia', { exact: true })).toBeVisible();
 
   await page.reload();
 
   await expect(page).toHaveURL(/oggi/);
-  await expect(page.getByText('Aurora', { exact: true })).toBeVisible();
+  await expect(page.getByText('Sofia', { exact: true })).toBeVisible();
 });
 
 test('Indietro dal riepilogo (step 6) torna allo step 5', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /iniziamo/i }).click();
-  await page.getByLabel(/nome/i).fill('Aurora');
+  await page.getByLabel(/nome/i).fill('Sofia');
+  await page.getByRole('button', { name: /bambina/i }).click();
   await page.getByText('🦊').click();
   await page.getByRole('button', { name: /avanti/i }).click();
   await page.getByRole('button', { name: /avanti/i }).click();
@@ -62,14 +64,14 @@ test('Indietro dal riepilogo (step 6) torna allo step 5', async ({ page }) => {
   await page.getByRole('button', { name: /avanti/i }).click();
 
   // Ora siamo sul riepilogo (step 6): il CTA finale e' visibile.
-  await expect(page.getByRole('button', { name: /crea la nostra estate/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /si comincia/i })).toBeVisible();
 
   await page.getByRole('button', { name: /indietro/i }).click();
 
   // Torniamo allo step 5 (interessi/spazi): la sua intestazione riappare e
   // il CTA del riepilogo scompare.
   await expect(page.getByRole('heading', { name: /cosa le piace fare/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /crea la nostra estate/i })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /si comincia/i })).toHaveCount(0);
 });
 
 test('rilancio parziale ?step=profilo apre sullo step Nome precompilato e conferma porta a Impostazioni (FR-8)', async ({
@@ -87,7 +89,7 @@ test('rilancio parziale ?step=profilo apre sullo step Nome precompilato e confer
   // Si apre direttamente sullo step Nome/avatar (niente Welcome), gia'
   // precompilato con i dati del profilo esistente.
   await expect(page.getByRole('heading', { name: /come si chiama/i })).toBeVisible();
-  await expect(page.getByLabel(/nome/i)).toHaveValue('Aurora');
+  await expect(page.getByLabel(/nome/i)).toHaveValue('Sofia');
 
   // Non essendoci step precedenti raggiungibili (entryStep = 1), "Indietro"
   // non e' mostrato su questo step.
@@ -99,7 +101,7 @@ test('rilancio parziale ?step=profilo apre sullo step Nome precompilato e confer
   await page.getByRole('button', { name: /avanti/i }).click(); // → Routine
   await page.getByRole('button', { name: /avanti/i }).click(); // → Interessi/spazi
   await page.getByRole('button', { name: /avanti/i }).click(); // → Riepilogo
-  await page.getByRole('button', { name: /crea la nostra estate/i }).click();
+  await page.getByRole('button', { name: /si comincia/i }).click();
 
   // Rilancio parziale: la conferma riporta a Impostazioni, non a Oggi.
   await expect(page).toHaveURL(/impostazioni/);
@@ -118,7 +120,7 @@ test('rilancio parziale ?step=interessi apre sullo step Interessi/spazi e confer
   await expect(page.getByRole('button', { name: /indietro/i })).toHaveCount(0);
 
   await page.getByRole('button', { name: /avanti/i }).click(); // → Riepilogo
-  await page.getByRole('button', { name: /crea la nostra estate/i }).click();
+  await page.getByRole('button', { name: /si comincia/i }).click();
 
   await expect(page).toHaveURL(/impostazioni/);
 });
@@ -131,7 +133,11 @@ test('step-gating: "Avanti" e\' disabilitato finche\' nome/avatar non sono valid
   await expect(page.getByRole('button', { name: /avanti/i })).toBeDisabled();
 
   // Nome valido ma nessun avatar scelto: ancora disabilitato.
-  await page.getByLabel(/nome/i).fill('Aurora');
+  await page.getByLabel(/nome/i).fill('Sofia');
+  await expect(page.getByRole('button', { name: /avanti/i })).toBeDisabled();
+
+  // Bambina/bambino scelto, avatar ancora no: ancora disabilitato.
+  await page.getByRole('button', { name: /bambino/i }).click();
   await expect(page.getByRole('button', { name: /avanti/i })).toBeDisabled();
 
   // Avatar scelto: ora entrambe le condizioni sono soddisfatte → abilitato.

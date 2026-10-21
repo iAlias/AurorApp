@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { CosaVieneDopo } from '../../../src/features/games/CosaVieneDopo';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocca burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -34,7 +35,7 @@ describe('CosaVieneDopo (smoke)', () => {
     // invece di usare getByText, che fallirebbe per ambiguità.
     expect(screen.getAllByText('Cosa viene dopo?')).toHaveLength(2);
     expect(screen.getByText('?')).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(optionButtons()).toHaveLength(2);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
 
     // Le singole stelle di avanzamento (GameShell) hanno anch'esse
@@ -52,7 +53,7 @@ describe('CosaVieneDopo (smoke)', () => {
     vi.useFakeTimers();
     renderGame();
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = optionButtons();
     const [first, second] = buttons;
 
     fireEvent.click(first);

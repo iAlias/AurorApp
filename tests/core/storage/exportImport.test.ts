@@ -8,13 +8,11 @@ function envelopeWithTwoPlans(): StorageEnvelope {
     savedAt: '2026-07-04T10:00:00.000Z',
     profile: {
       id: 'child-1',
-      name: 'Aurora',
-      avatarId: 'volpina',
+      name: 'Sofia',
+      avatarId: 'volpina', gender: 'f',
       birthdate: '2023-05-10',
       interests: ['animali', 'disegno'],
       spaces: ['casa', 'giardino'],
-      vacationStart: '2026-07-01',
-      vacationEnd: '2026-08-31',
       createdAt: '2026-07-04T09:00:00.000Z',
     },
     settings: DEFAULT_SETTINGS,
@@ -85,10 +83,10 @@ test('parseBackup: oggetto valido ma con campo obbligatorio mancante → invalid
   expect(result).toEqual({ ok: false, reason: 'invalid' });
 });
 
-test('backupFilename(new Date(2026,6,4)) → aurorapp-backup-2026-07-04.json', () => {
-  expect(backupFilename(new Date(2026, 6, 4))).toBe('aurorapp-backup-2026-07-04.json');
+test('backupFilename(new Date(2026,6,4)) → arcobimbi-backup-2026-07-04.json', () => {
+  expect(backupFilename(new Date(2026, 6, 4))).toBe('arcobimbi-backup-2026-07-04.json');
 });
 
 test('backupFilename: mese e giorno a due cifre con zero iniziale', () => {
-  expect(backupFilename(new Date(2026, 0, 5))).toBe('aurorapp-backup-2026-01-05.json');
+  expect(backupFilename(new Date(2026, 0, 5))).toBe('arcobimbi-backup-2026-01-05.json');
 });

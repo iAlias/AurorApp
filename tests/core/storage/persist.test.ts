@@ -1,6 +1,6 @@
 import type { StorageEnvelope } from '../../../src/core/catalog/types';
 import { DEFAULT_SETTINGS } from '../../../src/core/catalog/types';
-import { STORAGE_KEY, emptyEnvelope, MigrationError } from '../../../src/core/storage/envelope';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY, emptyEnvelope, MigrationError } from '../../../src/core/storage/envelope';
 import { loadEnvelope, saveNow, makeDebouncedSave } from '../../../src/core/storage/persist';
 
 function validEnvelope(): StorageEnvelope {
@@ -28,6 +28,23 @@ function fakeGetItemStorage(value: string | null): Pick<Storage, 'getItem'> {
 }
 
 describe('loadEnvelope', () => {
+  test('solo la chiave del vecchio nome → la legge (aggiornamento senza perdere dati)', () => {
+    const env = validEnvelope();
+    const storage = { getItem: (k: string) => (k === LEGACY_STORAGE_KEY ? JSON.stringify(env) : null) };
+    const result = loadEnvelope(storage);
+    expect(result.ok && result.env).toEqual(env);
+  });
+
+  test('chiave nuova e vecchia presenti → vince la nuova', () => {
+    const fresh = { ...validEnvelope(), savedAt: '2026-08-01T10:00:00.000Z' };
+    const storage = {
+      getItem: (k: string) =>
+        k === STORAGE_KEY ? JSON.stringify(fresh) : k === LEGACY_STORAGE_KEY ? JSON.stringify(validEnvelope()) : null,
+    };
+    const result = loadEnvelope(storage);
+    expect(result.ok && result.env.savedAt).toBe('2026-08-01T10:00:00.000Z');
+  });
+
   test('nessun dato salvato → ok true con envelope vuota', () => {
     const result = loadEnvelope(fakeGetItemStorage(null));
     expect(result.ok).toBe(true);

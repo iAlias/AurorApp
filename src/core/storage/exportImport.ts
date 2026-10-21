@@ -29,10 +29,10 @@ export function parseBackup(
   }
 }
 
-/** Nome file di backup: `aurorapp-backup-YYYY-MM-DD.json`. */
+/** Nome file di backup: `arcobimbi-backup-YYYY-MM-DD.json`. */
 export function backupFilename(now: Date): string {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  return `aurorapp-backup-${year}-${month}-${day}.json`;
+  return `arcobimbi-backup-${year}-${month}-${day}.json`;
 }

@@ -85,6 +85,7 @@ export function TrovaLaLettera() {
   return (
     <GameShell
       title="Trova la lettera"
+      prompt={`Trova la lettera ${round.target}`}
       emoji="🔤"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

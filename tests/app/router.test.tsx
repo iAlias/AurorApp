@@ -8,13 +8,11 @@ import type { ChildProfile } from '../../src/core/catalog/types';
 function profileFixture(): ChildProfile {
   return {
     id: 'child-1',
-    name: 'Aurora',
-    avatarId: 'volpina',
+    name: 'Sofia',
+    avatarId: 'volpina', gender: 'f',
     birthdate: '2023-05-10',
     interests: ['animali'],
     spaces: ['casa'],
-    vacationStart: '2026-07-01',
-    vacationEnd: '2026-08-31',
     createdAt: '2026-07-04T09:00:00.000Z',
   };
 }
@@ -26,6 +24,13 @@ function renderAt(path: string) {
 
 beforeEach(() => {
   useApp.setState({ profile: null });
+  // "Oggi" dentro la vacanza del fixture: con la data reale, a vacanza finita
+  // /oggi mostrerebbe il riepilogo di fine estate invece della giornata.
+  vi.setSystemTime(new Date('2026-07-10T10:00:00'));
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('router: "/" redirect (FR-1)', () => {

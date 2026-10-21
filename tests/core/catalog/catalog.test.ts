@@ -9,8 +9,8 @@ function byCat(cat: CategoryId) {
   return ACTIVITIES.filter((a) => a.category === cat);
 }
 
-test('CATALOG_VERSION è 1.0', () => {
-  expect(CATALOG_VERSION).toBe('1.0');
+test("CATALOG_VERSION è 1.1 (testi adatti a tutto l'anno)", () => {
+  expect(CATALOG_VERSION).toBe('1.1');
 });
 
 test('150 attività totali', () => {

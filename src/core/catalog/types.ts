@@ -2,7 +2,7 @@
 export type CategoryId = 'MOT'|'CRE'|'SEN'|'COG'|'MUS'|'SIM'|'ACQ'|'NAT'|'CUC'|'CAL';
 export type Energy = 'alta'|'media'|'bassa';
 export type Place = 'casa'|'esterno'|'entrambi';
-export type Weather = 'sole'|'pioggia'|'caldo';
+export type Weather = 'sole'|'pioggia'|'caldo'|'freddo';
 export type InterestTag = 'animali'|'disegno'|'musica'|'acqua'|'costruzioni'
                  |'travestimenti'|'natura'|'libri'|'cucinare'|'movimento';
 export type SpaceTag = 'casa'|'giardino'|'terrazzo'|'parco';
@@ -28,16 +28,20 @@ export interface Activity {
 }
 
 // ——— Profilo e impostazioni ———
+/** Accorda i testi rivolti al bambino ("Bravissima/o", "comanda lei/lui"). */
+export type Gender = 'f' | 'm';
+
 export interface ChildProfile {
   id: string; name: string; avatarId: string;
+  gender: Gender;
   birthdate: string;          // ISO yyyy-MM-dd
   interests: InterestTag[];   // ≥1
   spaces: SpaceTag[];         // ≥1
-  vacationStart: string; vacationEnd: string;  // ISO
   createdAt: string;          // ISO datetime — entra nel seed
 }
 
 export interface RoutineSettings {
+  school: boolean;            // lun–ven la mattina è al nido/asilo — default false
   wakeTime: string;           // 'HH:mm' — default '09:00'
   breakfastEnd: string;       //           default '09:45'
   morningSnackStart: string;  //           default '11:00'
@@ -118,7 +122,7 @@ export const ALL_INTERESTS: InterestTag[] = ['animali','disegno','musica','acqua
 export const ALL_SPACES: SpaceTag[] = ['casa','giardino','terrazzo','parco'];
 
 export const DEFAULT_ROUTINE: RoutineSettings = {
-  wakeTime: '09:00', breakfastEnd: '09:45', morningSnackStart: '11:00',
+  school: false, wakeTime: '09:00', breakfastEnd: '09:45', morningSnackStart: '11:00',
   morningSnackEnd: '11:20', lunchStart: '13:00', napStart: '14:00',
   napMinutes: 120, afternoonSnackEnd: '16:30', preDinnerMinutes: 30,
   dinnerStart: '19:30', bedTime: '21:00',

@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LeFormeGiuste } from '../../../src/features/games/LeFormeGiuste';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocka burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -43,7 +44,7 @@ describe('LeFormeGiuste (smoke)', () => {
 
     expect(findTargetLabel(container)).toEqual(expect.any(String));
     expect(container.querySelectorAll('svg')).toHaveLength(4); // 1 target + 3 opzioni
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(optionButtons()).toHaveLength(3);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
   });
 
@@ -64,8 +65,7 @@ describe('LeFormeGiuste (smoke)', () => {
   test('risposta sbagliata: il round non avanza e si puo\' ritentare', () => {
     const { container } = renderGame();
     const label = findTargetLabel(container);
-    const wrongButton = screen
-      .getAllByRole('button')
+    const wrongButton = optionButtons()
       .find((btn) => btn.getAttribute('aria-label') !== label);
     expect(wrongButton).toBeDefined();
 

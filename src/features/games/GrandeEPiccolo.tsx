@@ -83,6 +83,7 @@ export function GrandeEPiccolo() {
   return (
     <GameShell
       title="Grande e piccolo"
+      prompt={`Tocca il più ${round.target === 'max' ? 'grande' : 'piccolo'}`}
       emoji="🐘"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

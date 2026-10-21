@@ -5,4 +5,12 @@
 @layer base {
   html { @apply font-body text-deep bg-cream; }
   body { @apply antialiased overflow-x-hidden; }
+  /* Notch e barre di sistema (PWA su iPhone, app Android edge-to-edge con
+     viewport-fit=cover): il contenuto non ci finisce mai sotto. In basso ci
+     pensano la tab bar e i pannelli fissi, che aggiungono l'inset al proprio padding. */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }

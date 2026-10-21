@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MemoriaDegliAnimali } from '../../../src/features/games/MemoriaDegliAnimali';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocca burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -27,13 +28,13 @@ afterEach(() => {
 describe('MemoriaDegliAnimali', () => {
   test('mostra 6 carte coperte, nessuna coppia trovata', () => {
     renderGame();
-    expect(screen.getAllByRole('button')).toHaveLength(6);
+    expect(optionButtons()).toHaveLength(6);
     expect(screen.getByLabelText('0 round su 3 completati')).toBeInTheDocument();
   });
 
   test('girare due carte uguali le lascia scoperte e incrementa le coppie', () => {
     renderGame();
-    const cards = screen.getAllByRole('button');
+    const cards = optionButtons();
 
     fireEvent.click(cards[0]); // 🐶
     fireEvent.click(cards[2]); // 🐶 — coppia
@@ -46,7 +47,7 @@ describe('MemoriaDegliAnimali', () => {
   test('girare due carte diverse le richiude dopo ~900ms (le altre restano disabilitate nel frattempo)', () => {
     vi.useFakeTimers();
     renderGame();
-    const cards = screen.getAllByRole('button');
+    const cards = optionButtons();
 
     fireEvent.click(cards[0]); // 🐶
     fireEvent.click(cards[1]); // 🐱 — non coppia
@@ -64,7 +65,7 @@ describe('MemoriaDegliAnimali', () => {
 
   test('trovare tutte e 3 le coppie finisce il gioco', () => {
     renderGame();
-    const cards = screen.getAllByRole('button');
+    const cards = optionButtons();
 
     fireEvent.click(cards[0]);
     fireEvent.click(cards[2]);
@@ -78,7 +79,7 @@ describe('MemoriaDegliAnimali', () => {
 
   test('"Gioca ancora" rigenera il mazzo e azzera le coppie trovate', () => {
     renderGame();
-    let cards = screen.getAllByRole('button');
+    let cards = optionButtons();
     fireEvent.click(cards[0]);
     fireEvent.click(cards[2]);
     fireEvent.click(cards[1]);
@@ -91,7 +92,7 @@ describe('MemoriaDegliAnimali', () => {
 
     expect(screen.queryByText('Bravissima! 🎉')).not.toBeInTheDocument();
     expect(screen.getByLabelText('0 round su 3 completati')).toBeInTheDocument();
-    cards = screen.getAllByRole('button');
+    cards = optionButtons();
     expect(cards).toHaveLength(6);
     cards.forEach((card) => expect(card).not.toBeDisabled());
   });

@@ -1,26 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { addDays, differenceInCalendarDays, format, parseISO } from 'date-fns';
+import { Navigate } from 'react-router-dom';
+import { addDays, format, parseISO } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { useApp } from '../../app/store';
 import { useToday } from '../../app/useToday';
-import { CATEGORIES } from '../../core/catalog/categories';
-import { ACTIVITIES } from '../../core/catalog/activities';
+import { useCatalog } from '../../app/usePersonalize';
 import { deriveSlots, toMin } from '../../core/planner/slots';
 import type { SlotDef } from '../../core/planner/slots';
 import type {
-  CategoryId,
-  ChildProfile,
   DayPlan,
   MealSettings,
   PlannedSlot,
-  ProgressState,
   RoutineSettings,
   SlotId,
 } from '../../core/catalog/types';
 import { Card } from '../../ui/Card';
-import { Button } from '../../ui/Button';
 import { springSoft, useReducedMotionPref } from '../../ui/motion';
 import { burst } from '../../ui/confetti';
 import { audioManager } from '../../ui/audio';
@@ -67,7 +62,11 @@ type TimelineItem =
  * presenti nel piano (5 feriali, 2 in un giorno familiare). Costruita già in
  * ordine cronologico: nessun sort successivo necessario.
  */
-function buildTimeline(routine: RoutineSettings, meals: MealSettings, plan: DayPlan): TimelineItem[] {
+function buildTimeline(
+  routine: RoutineSettings,
+  meals: MealSettings,
+  plan: DayPlan,
+): TimelineItem[] {
   const defs = deriveSlots(routine, meals, plan.familyDay);
   const defBySlotId = new Map(defs.map((d) => [d.slotId, d] as const));
   const slotBySlotId = new Map(plan.slots.map((s) => [s.slotId, s] as const));
@@ -88,38 +87,62 @@ function buildTimeline(routine: RoutineSettings, meals: MealSettings, plan: DayP
     endMin: toMin(routine.breakfastEnd),
   });
 
-  const m1 = slotItem('M1');
-  if (m1) items.push(m1);
+  if (routine.school && !plan.familyDay) {
+    // Mattina, pranzo e nanna sono al nido/asilo: un solo blocco fino alla merenda.
+    const snackEnd = toMin(routine.afternoonSnackEnd);
+    items.push({
+      kind: 'anchor',
+      key: 'asilo',
+      label: "Al nido / all'asilo 🎒",
+      startMin: toMin(routine.breakfastEnd),
+      endMin: snackEnd - 30,
+    });
+    items.push({
+      kind: 'anchor',
+      key: 'merenda-pomeriggio',
+      label: 'Merenda',
+      startMin: snackEnd - 30,
+      endMin: snackEnd,
+    });
+  } else {
+    const m1 = slotItem('M1');
+    if (m1) items.push(m1);
 
-  items.push({
-    kind: 'anchor',
-    key: 'merenda-mattina',
-    label: 'Merenda',
-    startMin: toMin(routine.morningSnackStart),
-    endMin: toMin(routine.morningSnackEnd),
-  });
+    items.push({
+      kind: 'anchor',
+      key: 'merenda-mattina',
+      label: 'Merenda',
+      startMin: toMin(routine.morningSnackStart),
+      endMin: toMin(routine.morningSnackEnd),
+    });
 
-  const m2 = slotItem('M2');
-  if (m2) items.push(m2);
+    const m2 = slotItem('M2');
+    if (m2) items.push(m2);
 
-  items.push({ kind: 'meal', key: 'pranzo', meal: 'pranzo', startMin: toMin(routine.lunchStart) });
+    items.push({
+      kind: 'meal',
+      key: 'pranzo',
+      meal: 'pranzo',
+      startMin: toMin(routine.lunchStart),
+    });
 
-  const napStart = toMin(routine.napStart);
-  items.push({
-    kind: 'anchor',
-    key: 'riposino',
-    label: 'Riposino',
-    startMin: napStart,
-    endMin: napStart + routine.napMinutes,
-  });
+    const napStart = toMin(routine.napStart);
+    items.push({
+      kind: 'anchor',
+      key: 'riposino',
+      label: 'Riposino',
+      startMin: napStart,
+      endMin: napStart + routine.napMinutes,
+    });
 
-  items.push({
-    kind: 'anchor',
-    key: 'merenda-pomeriggio',
-    label: 'Risveglio dolce e merenda',
-    startMin: napStart + routine.napMinutes,
-    endMin: toMin(routine.afternoonSnackEnd),
-  });
+    items.push({
+      kind: 'anchor',
+      key: 'merenda-pomeriggio',
+      label: 'Risveglio dolce e merenda',
+      startMin: napStart + routine.napMinutes,
+      endMin: toMin(routine.afternoonSnackEnd),
+    });
+  }
 
   const p1 = slotItem('P1');
   if (p1) items.push(p1);
@@ -148,7 +171,11 @@ function buildTimeline(routine: RoutineSettings, meals: MealSettings, plan: DayP
 }
 
 function itemStartMin(item: TimelineItem): number {
-  return item.kind === 'anchor' ? item.startMin : item.kind === 'meal' ? item.startMin : item.def.startMin;
+  return item.kind === 'anchor'
+    ? item.startMin
+    : item.kind === 'meal'
+      ? item.startMin
+      : item.def.startMin;
 }
 
 /** Riga statica (nessuna animazione infinita fuori dal timer, §9.3/NFR-1). */
@@ -170,49 +197,14 @@ function SpecialDayCard({ special }: { special: NonNullable<DayPlan['special']> 
   );
 }
 
-/** Recap di fine periodo (E10): mostrato quando `todayISO > vacationEnd`. */
-function EndOfSummary({ profile, plans, progress }: { profile: ChildProfile; plans: Record<string, DayPlan>; progress: ProgressState }) {
-  const navigate = useNavigate();
-
-  const fullDays = Object.values(plans).filter(
-    (p) => p.slots.filter((s) => s.status === 'done').length >= 2,
-  ).length;
-
-  const categoryEntries = Object.entries(progress.doneByCategory) as [CategoryId, number][];
-  const topEntry = categoryEntries.sort((a, b) => b[1] - a[1])[0];
-  const topCategoryName = topEntry && topEntry[1] > 0 ? CATEGORIES[topEntry[0]].name : null;
-  const badgeCount = Object.keys(progress.badges).length;
-
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-cream px-6 py-10 text-center">
-      <h1 className="font-display text-3xl text-deep">Che estate! 🎉</h1>
-      <p className="font-body text-stone">Ecco cosa avete fatto insieme, {profile.name}:</p>
-
-      <div className="flex w-full max-w-xs flex-col gap-2 rounded-card bg-card p-6 text-left shadow-soft">
-        <p className="font-body text-deep">🗓️ Giorni pieni: {fullDays}</p>
-        {topCategoryName && <p className="font-body text-deep">🏆 Categoria preferita: {topCategoryName}</p>}
-        <p className="font-body text-deep">⭐ Badge sbloccati: {badgeCount}</p>
-        <p className="font-body text-deep">🌈 Pasti sereni: {progress.mealTimersCompleted}</p>
-      </div>
-
-      <Button type="button" size="xl" onClick={() => navigate('/wizard')}>
-        Prepara una nuova avventura
-      </Button>
-    </div>
-  );
-}
-
 /**
  * Schermata "Oggi" (FR-5), la vista principale dell'app. Materializza sempre
- * fino a domani incluso (`ensurePlansUpTo`, che genera anche oggi in un solo
- * giro grazie all'ordine cronologico di Task 12) cosi' la sezione "Domani"
- * ha sempre un piano pronto — a meno che il periodo vacanza non sia già
- * finito (E10, `todayISO > vacationEnd`): in quel caso l'effect non chiama
- * più `ensurePlansUpTo` (altrimenti `materializeUpTo`, senza limite
- * superiore, continuerebbe a generare piani per sempre) e il componente non
- * renderizza affatto la timeline: mostra `EndOfSummary`.
+ * oggi e domani (`ensurePlans`, in ordine cronologico) così la sezione
+ * "Domani" ha sempre un piano pronto. Nessun periodo di vacanza: l'app si
+ * usa tutto l'anno, i giorni in cui non viene aperta restano senza piano.
  */
 export function TodayPage() {
+  const catalog = useCatalog();
   const profile = useApp((s) => s.profile);
   const plans = useApp((s) => s.plans);
   const progress = useApp((s) => s.progress);
@@ -220,17 +212,14 @@ export function TodayPage() {
   const { todayISO } = useToday();
   const reducedMotion = useReducedMotionPref();
 
-  const tomorrowISO = useMemo(() => format(addDays(parseISO(todayISO), 1), 'yyyy-MM-dd'), [todayISO]);
+  const tomorrowISO = useMemo(
+    () => format(addDays(parseISO(todayISO), 1), 'yyyy-MM-dd'),
+    [todayISO],
+  );
 
   useEffect(() => {
     if (!profile) return;
-    // E10: periodo vacanza finito (stesso bordo del render-guard più sotto,
-    // `vacationEnd` incluso) — non materializzare più nulla, altrimenti
-    // `materializeUpTo` (Task 12, senza limite superiore) genererebbe e
-    // scriverebbe su localStorage un DayPlan per ogni giorno trascorso da
-    // `vacationStart` a "domani", una quantità che cresce indefinitamente.
-    if (todayISO > profile.vacationEnd) return;
-    useApp.getState().ensurePlansUpTo(tomorrowISO);
+    useApp.getState().ensurePlans(todayISO, tomorrowISO);
   }, [profile, todayISO, tomorrowISO]);
 
   const [detailSlotId, setDetailSlotId] = useState<SlotId | null>(null);
@@ -276,11 +265,7 @@ export function TodayPage() {
 
   if (!profile) return <Navigate to="/wizard" replace />;
 
-  if (todayISO > profile.vacationEnd) {
-    return <EndOfSummary profile={profile} plans={plans} progress={progress} />;
-  }
-
-  if (!plan) return null; // ensurePlansUpTo materializza al prossimo giro di render
+  if (!plan) return null; // ensurePlans materializza al prossimo giro di render
 
   function handleMarkDone(slotId: SlotId) {
     useApp.getState().markSlot(todayISO, slotId, 'done');
@@ -303,10 +288,16 @@ export function TodayPage() {
     setPickingSlotId(null);
   }
 
-  const detailSlot = detailSlotId ? (plan?.slots.find((s) => s.slotId === detailSlotId) ?? null) : null;
-  const detailActivity = detailSlot ? (ACTIVITIES.find((a) => a.id === detailSlot.activityId) ?? null) : null;
+  const detailSlot = detailSlotId
+    ? (plan?.slots.find((s) => s.slotId === detailSlotId) ?? null)
+    : null;
+  const detailActivity = detailSlot
+    ? (catalog.find((a) => a.id === detailSlot.activityId) ?? null)
+    : null;
 
-  const pickingSlot = pickingSlotId ? (plan?.slots.find((s) => s.slotId === pickingSlotId) ?? null) : null;
+  const pickingSlot = pickingSlotId
+    ? (plan?.slots.find((s) => s.slotId === pickingSlotId) ?? null)
+    : null;
 
   const doneCount = plan.slots.filter((s) => s.status === 'done').length;
   const tomorrowPlan = plans[tomorrowISO];
@@ -329,12 +320,15 @@ export function TodayPage() {
           </div>
         </div>
         <p className="font-body text-sm text-stone">
-          {capitalize(format(parseISO(todayISO), 'EEE d MMMM', { locale: it }))} · Giorno{' '}
-          {differenceInCalendarDays(parseISO(todayISO), parseISO(profile.vacationStart)) + 1} di{' '}
-          {differenceInCalendarDays(parseISO(profile.vacationEnd), parseISO(profile.vacationStart)) + 1}
+          {capitalize(format(parseISO(todayISO), 'EEEE d MMMM', { locale: it }))}
         </p>
-        <WeatherSelector weather={plan.weather} onChange={(w) => useApp.getState().setWeather(todayISO, w)} />
-        <p className="font-body text-sm font-semibold text-deep">🔥 Streak: {progress.streak} giorni</p>
+        <WeatherSelector
+          weather={plan.weather}
+          onChange={(w) => useApp.getState().setWeather(todayISO, w)}
+        />
+        <p className="font-body text-sm font-semibold text-deep">
+          🔥 Streak: {progress.streak} giorni
+        </p>
       </header>
 
       {plan.familyDay && !plan.special && (
@@ -355,7 +349,8 @@ export function TodayPage() {
               // — è lo stagger "visibile" richiesto dal brief per il
               // cambio meteo, senza bisogno di uno stato di transizione ad hoc.
               const remountKey =
-                item.key + (item.kind === 'slot' ? `-${item.slot.activityId}-${item.slot.status}` : '');
+                item.key +
+                (item.kind === 'slot' ? `-${item.slot.activityId}-${item.slot.status}` : '');
               return (
                 <div key={remountKey}>
                   {idx === nowIndex && <NowIndicator />}
@@ -365,12 +360,16 @@ export function TodayPage() {
                     transition={{ ...springSoft, delay: reducedMotion ? 0 : idx * 0.06 }}
                   >
                     {item.kind === 'anchor' && (
-                      <AnchorPill label={item.label} startMin={item.startMin} endMin={item.endMin} />
+                      <AnchorPill
+                        label={item.label}
+                        startMin={item.startMin}
+                        endMin={item.endMin}
+                      />
                     )}
                     {item.kind === 'meal' && <MealCard meal={item.meal} startMin={item.startMin} />}
                     {item.kind === 'slot' &&
                       (() => {
-                        const activity = ACTIVITIES.find((a) => a.id === item.slot.activityId);
+                        const activity = catalog.find((a) => a.id === item.slot.activityId);
                         if (!activity) return null;
                         return (
                           <SlotCard
@@ -406,7 +405,10 @@ export function TodayPage() {
         </>
       )}
 
-      <TomorrowPreview plan={tomorrowPlan} onRegenerate={() => useApp.getState().regenerate(tomorrowISO)} />
+      <TomorrowPreview
+        plan={tomorrowPlan}
+        onRegenerate={() => useApp.getState().regenerate(tomorrowISO)}
+      />
 
       <ActivityDetail
         open={detailSlotId !== null}
@@ -439,7 +441,7 @@ export function TodayPage() {
       />
 
       {toast && (
-        <div className="fixed inset-x-4 bottom-24 z-40 rounded-card bg-deep px-4 py-3 text-center font-body text-sm font-semibold text-cream shadow-lift">
+        <div className="fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-40 rounded-card bg-deep px-4 py-3 text-center font-body text-sm font-semibold text-cream shadow-lift">
           {toast}
         </div>
       )}

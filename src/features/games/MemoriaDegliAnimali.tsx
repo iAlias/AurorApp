@@ -75,6 +75,7 @@ export function MemoriaDegliAnimali() {
   return (
     <GameShell
       title="Memoria degli animali"
+      prompt="Trova le coppie di animali"
       emoji="🐾"
       totalRounds={TOTAL_PAIRS}
       completedRounds={pairsFound}

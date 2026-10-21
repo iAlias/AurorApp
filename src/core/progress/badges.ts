@@ -10,7 +10,8 @@ export interface BadgeDef {
 }
 
 /**
- * I 13 badge di FR-9. Nomi verbatim dalla spec. Emoji/description non normati
+ * I 13 badge di FR-9. Nomi dalla spec, con le varianti `{f|m}` di `genderize`
+ * accordate al profilo (gli id restano quelli storici, sono chiavi salvate). Emoji/description non normati
  * esplicitamente: per i badge tematici (categoria) riusiamo l'emoji della
  * categoria corrispondente in `CATEGORIES` così restano coerenti in tutta
  * l'app; per gli altri (streak, pasti) un'emoji distinta e festosa.
@@ -32,17 +33,22 @@ export const BADGES: BadgeDef[] = [
   },
   {
     id: 'piccola-artista',
-    name: 'Piccola Artista',
+    name: 'Piccol{a|o} Artista',
     emoji: '🎨',
     description: 'Dieci attività di creatività, che artista!',
   },
-  { id: 'esploratrice', name: 'Esploratrice', emoji: '🌿', description: 'Dieci avventure nella natura!' },
-  { id: 'sirenetta', name: 'Sirenetta', emoji: '💦', description: 'Dieci giochi d\'acqua, che sirenetta!' },
-  { id: 'ballerina', name: 'Ballerina', emoji: '🎵', description: 'Dieci attività di musica e ritmo!' },
-  { id: 'chef-stellata', name: 'Chef Stellata', emoji: '🍪', description: 'Otto ricette cucinate insieme!' },
-  { id: 'scienziata', name: 'Scienziata', emoji: '🧩', description: 'Dieci scoperte di logica!' },
-  { id: 'campionessa', name: 'Campionessa', emoji: '🤸', description: 'Quindici attività di movimento!' },
-  { id: 'attrice', name: 'Attrice', emoji: '🎭', description: 'Dieci giochi di finzione e travestimenti!' },
+  { id: 'esploratrice', name: '{Esploratrice|Esploratore}', emoji: '🌿', description: 'Dieci avventure nella natura!' },
+  {
+    id: 'sirenetta',
+    name: '{Sirenetta|Pesciolino}',
+    emoji: '💦',
+    description: "Dieci giochi d'acqua, che {sirenetta|pesciolino}!",
+  },
+  { id: 'ballerina', name: '{Ballerina|Ballerino}', emoji: '🎵', description: 'Dieci attività di musica e ritmo!' },
+  { id: 'chef-stellata', name: 'Chef Stellat{a|o}', emoji: '🍪', description: 'Otto ricette cucinate insieme!' },
+  { id: 'scienziata', name: 'Scienziat{a|o}', emoji: '🧩', description: 'Dieci scoperte di logica!' },
+  { id: 'campionessa', name: '{Campionessa|Campione}', emoji: '🤸', description: 'Quindici attività di movimento!' },
+  { id: 'attrice', name: '{Attrice|Attore}', emoji: '🎭', description: 'Dieci giochi di finzione e travestimenti!' },
   {
     id: 'buona-forchetta',
     name: 'Buona Forchetta',

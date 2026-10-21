@@ -15,13 +15,11 @@ const TODAY = '2026-07-08'; // mercoledì: giorno feriale, 5 slot per piano
 function profileFixture(overrides: Partial<ChildProfile> = {}): ChildProfile {
   return {
     id: 'child-1',
-    name: 'Aurora',
-    avatarId: 'volpina',
+    name: 'Sofia',
+    avatarId: 'volpina', gender: 'f',
     birthdate: '2023-05-10',
     interests: ['animali', 'disegno'],
     spaces: ['casa', 'giardino'],
-    vacationStart: TODAY,
-    vacationEnd: '2026-08-31',
     createdAt: '2026-07-04T09:00:00.000Z',
     ...overrides,
   };
@@ -53,7 +51,7 @@ describe('markSlot → checkUnlocks (streak/badge)', () => {
     vi.setSystemTime(new Date(`${TODAY}T10:00:00`));
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo(TODAY);
+    useApp.getState().ensurePlans(TODAY, TODAY);
     const slots = useApp.getState().plans[TODAY].slots;
     expect(slots.length).toBeGreaterThanOrEqual(2);
 
@@ -70,7 +68,7 @@ describe('markSlot → checkUnlocks (streak/badge)', () => {
     vi.setSystemTime(new Date(`${TODAY}T10:00:00`));
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo(TODAY);
+    useApp.getState().ensurePlans(TODAY, TODAY);
     const slots = useApp.getState().plans[TODAY].slots;
     useApp.getState().markSlot(TODAY, slots[0].slotId, 'done');
     useApp.getState().markSlot(TODAY, slots[1].slotId, 'done');
@@ -93,7 +91,7 @@ describe('markSlot → checkUnlocks (streak/badge)', () => {
     vi.setSystemTime(new Date(`${TODAY}T10:00:00`));
     const { useApp } = await freshStore();
     useApp.getState().completeWizard(profileFixture(), routineFixture());
-    useApp.getState().ensurePlansUpTo(TODAY);
+    useApp.getState().ensurePlans(TODAY, TODAY);
     const targetSlot = useApp.getState().plans[TODAY].slots[0];
     const activity = ACTIVITIES.find((a) => a.id === targetSlot.activityId);
     expect(activity).toBeDefined();

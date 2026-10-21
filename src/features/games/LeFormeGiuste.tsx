@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../app/store';
 import { useReducedMotionPref } from '../../ui/motion';
-import { makeShapeRound, SHAPE_LABELS, type ShapeId, type ShapeRound } from '../../core/games/shapeRound';
+import {
+  makeShapeRound,
+  SHAPE_ARTICLES,
+  SHAPE_LABELS,
+  type ShapeId,
+  type ShapeRound,
+} from '../../core/games/shapeRound';
 import { GameShell } from './GameShell';
 import { celebrateRound } from './feedback';
 
@@ -99,6 +105,7 @@ export function LeFormeGiuste() {
   return (
     <GameShell
       title="Le forme giuste"
+      prompt={`Trova ${SHAPE_ARTICLES[round.target]} ${SHAPE_LABELS[round.target]}`}
       emoji="🔷"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}
@@ -108,7 +115,8 @@ export function LeFormeGiuste() {
       <div className="flex flex-col items-center gap-6 py-6">
         <ShapeIcon shape={round.target} color={TARGET_COLOR} size={120} />
         <p className="text-center font-body text-xl text-deep">
-          Trova il <span className="font-display font-bold">{SHAPE_LABELS[round.target]}</span>
+          Trova {SHAPE_ARTICLES[round.target]}{' '}
+          <span className="font-display font-bold">{SHAPE_LABELS[round.target]}</span>
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">

@@ -19,8 +19,7 @@ const GENERATION_MS = 2000;
 const PHRASE_INTERVAL_MS = 650;
 
 /**
- * Step 6/6 — riepilogo (FR-1): card avatar+nome, CTA "Crea la nostra estate
- * ✨" che avvia ~2s di animazione di generazione (coriandoli `burst({big:
+ * Step 6/6 — riepilogo (FR-1): card avatar+nome, CTA "Si comincia! ✨" che avvia ~2s di animazione di generazione (coriandoli `burst({big:
  * true})` + testo rotante) prima di chiamare `onConfirm` (fornito da
  * WizardPage: e' li' che avviene la scrittura nello store, non qui).
  */
@@ -77,7 +76,7 @@ export function StepSummary({ name, avatarEmoji, onConfirm }: StepSummaryProps) 
         </p>
       ) : (
         <Button type="button" size="xl" onClick={handleClick}>
-          Crea la nostra estate ✨
+          Si comincia! ✨
         </Button>
       )}
     </div>

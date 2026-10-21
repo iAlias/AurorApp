@@ -57,6 +57,7 @@ interface DayState {
  * weatherOk (§7.3):
  *  - pioggia → l'attività non è 'esterno' e non richiede asciutto ('entrambi' ok)
  *  - caldo   → negli slot centrali M2/P2 niente 'esterno'; M1/P1 (ore fresche, P6) ok
+ *  - freddo  → niente giochi d'acqua all'aperto (attività rinfrescanti 'esterno')
  *  - sole    → nessun vincolo
  */
 function weatherOk(a: Activity, weather: Weather, slot: SlotDef): boolean {
@@ -65,6 +66,7 @@ function weatherOk(a: Activity, weather: Weather, slot: SlotDef): boolean {
     if (slot.slotId === 'M2' || slot.slotId === 'P2') return a.place !== 'esterno';
     return true;
   }
+  if (weather === 'freddo') return !(a.heatFriendly && a.place === 'esterno');
   return true; // sole
 }
 
@@ -347,12 +349,16 @@ function buildDay(
 
   applyR6bis(built, st, rng, ctx);
 
+  // Uno slot fatto la cui fascia non esiste più (es. mattina, dopo aver attivato
+  // nido/asilo) resta nel piano: è un'attività davvero fatta, conta nei progressi.
+  const orphans = [...preserve.values()].filter((p) => !slotDefs.some((d) => d.slotId === p.slotId));
+
   return {
     date: dateISO,
     familyDay,
     weather,
     regenNonce,
-    slots: built.map((b) => b.planned),
+    slots: [...built.map((b) => b.planned), ...orphans].sort((a, b) => SLOT_ORDER[a.slotId] - SLOT_ORDER[b.slotId]),
   };
 }
 
@@ -368,22 +374,32 @@ export function generateDayPlan(
 }
 
 /**
- * Genera in ordine cronologico da vacationStart fino a `dateISO` incluso, saltando i
- * giorni già presenti in ctx.plans. Ritorna SOLO i piani nuovi (§7.2). Ogni giorno vede
- * quelli precedenti (history/"ieri" progressivi) accumulandoli in una copia di lavoro.
+ * Meteo di partenza di un giorno nuovo (poi lo si cambia dal selettore): da
+ * novembre a marzo 'freddo', così d'inverno il piano non propone giochi
+ * d'acqua all'aperto; il resto dell'anno 'sole'. Dipende solo dalla data: il
+ * seed del giorno resta deterministico.
  */
-export function materializeUpTo(dateISO: string, ctx: GenContext): Record<string, DayPlan> {
-  const start = ctx.profile.vacationStart;
-  const result: Record<string, DayPlan> = {};
-  if (dateISO < start) return result;
+export function seasonalWeather(dateISO: string): Weather {
+  const month = parseISO(dateISO).getMonth() + 1;
+  return month >= 11 || month <= 3 ? 'freddo' : 'sole';
+}
 
+/**
+ * Genera in ordine cronologico i giorni da `fromISO` a `toISO` inclusi, saltando quelli
+ * già presenti in ctx.plans. Ritorna SOLO i piani nuovi (§7.2). Ogni giorno vede
+ * quelli precedenti (history/"ieri" progressivi) accumulandoli in una copia di lavoro.
+ * L'app chiede solo oggi e domani: i giorni in cui non è stata aperta restano senza
+ * piano, così non "consumano" attività per la regola anti-ripetizione.
+ */
+export function materializeRange(fromISO: string, toISO: string, ctx: GenContext): Record<string, DayPlan> {
+  const result: Record<string, DayPlan> = {};
   const working: Record<string, DayPlan> = { ...ctx.plans };
-  let cursor = parseISO(start);
-  const end = parseISO(dateISO);
+  let cursor = parseISO(fromISO);
+  const end = parseISO(toISO);
   while (differenceInCalendarDays(end, cursor) >= 0) {
     const iso = format(cursor, 'yyyy-MM-dd');
     if (!working[iso]) {
-      const plan = generateDayPlan(iso, 'sole', 0, { ...ctx, plans: working });
+      const plan = generateDayPlan(iso, seasonalWeather(iso), 0, { ...ctx, plans: working });
       working[iso] = plan;
       result[iso] = plan;
     }

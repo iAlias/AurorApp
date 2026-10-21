@@ -75,6 +75,7 @@ export function TrovaLIntruso() {
   return (
     <GameShell
       title="Trova l'intruso"
+      prompt="Chi non c'entra?"
       emoji="🕵️"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

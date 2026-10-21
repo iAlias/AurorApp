@@ -1,5 +1,5 @@
 import type { StorageEnvelope } from '../catalog/types';
-import { STORAGE_KEY, emptyEnvelope, migrate, MigrationError } from './envelope';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY, emptyEnvelope, migrate, MigrationError } from './envelope';
 
 const DEFAULT_DEBOUNCE_MS = 300;
 
@@ -11,7 +11,7 @@ const DEFAULT_DEBOUNCE_MS = 300;
 export function loadEnvelope(
   storage: Pick<Storage, 'getItem'>,
 ): { ok: true; env: StorageEnvelope } | { ok: false; error: MigrationError; raw: string | null } {
-  const raw = storage.getItem(STORAGE_KEY);
+  const raw = storage.getItem(STORAGE_KEY) ?? storage.getItem(LEGACY_STORAGE_KEY);
   if (raw === null) {
     return { ok: true, env: emptyEnvelope() };
   }

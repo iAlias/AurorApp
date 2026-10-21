@@ -12,7 +12,8 @@ export async function completeWizardFast(page: Page) {
   await page.goto('/');
   await page.getByRole('button', { name: /iniziamo/i }).click();
 
-  await page.getByLabel(/nome/i).fill('Aurora');
+  await page.getByLabel(/nome/i).fill('Sofia');
+  await page.getByRole('button', { name: /bambina/i }).click();
   await page.getByText('🦊').click();
   await page.getByRole('button', { name: /avanti/i }).click();
 
@@ -23,6 +24,6 @@ export async function completeWizardFast(page: Page) {
   await page.getByRole('button', { name: /casa/i }).click();
   await page.getByRole('button', { name: /avanti/i }).click();
 
-  await page.getByRole('button', { name: /crea la nostra estate/i }).click();
+  await page.getByRole('button', { name: /si comincia/i }).click();
   await expect(page).toHaveURL(/oggi/);
 }

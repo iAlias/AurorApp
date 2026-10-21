@@ -1,5 +1,6 @@
 import { TimeField } from '../../ui/TimeField';
 import { Button } from '../../ui/Button';
+import { Chip } from '../../ui/Chip';
 import type { RoutineSettings } from '../../core/catalog/types';
 
 export interface RoutineFieldsProps {
@@ -12,7 +13,7 @@ const NAP_MAX = 180;
 const NAP_STEP = 15;
 
 /**
- * I campi editabili di una `RoutineSettings` (9 `TimeField` + stepper nanna),
+ * I campi editabili di una `RoutineSettings` (nido/asilo, 9 `TimeField` + stepper nanna),
  * senza intestazione né messaggio d'errore: estratti da `StepRoutine` (Task
  * 2) perché condivisi anche dalla sezione Routine di `SettingsPage` (Task 20,
  * FR-8) — stessi controlli, stesso comportamento, un solo posto da
@@ -30,6 +31,17 @@ export function RoutineFields({ routine, onRoutineChange }: RoutineFieldsProps) 
 
   return (
     <>
+      <div className="flex flex-col gap-2">
+        <Chip selected={routine.school} onToggle={() => setField('school', !routine.school)}>
+          <span aria-hidden="true">🎒</span> Va al nido o all&apos;asilo la mattina (lun–ven)
+        </Chip>
+        {routine.school && (
+          <p className="font-body text-xs text-stone">
+            Nei giorni di nido/asilo proponiamo solo le attività del pomeriggio e della sera.
+          </p>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <TimeField label="Sveglia" value={routine.wakeTime} onChange={(v) => setField('wakeTime', v)} />
         <TimeField

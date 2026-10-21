@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { TrovaLIntruso } from '../../../src/features/games/TrovaLIntruso';
+import { optionButtons } from './optionButtons';
 
 // jsdom non implementa canvas (v. GameShell.test.tsx): si mocca burst() cosi'
 // celebrateRound non fallisce in modo asincrono e non catturabile.
@@ -32,7 +33,7 @@ describe('TrovaLIntruso (smoke)', () => {
     renderGame();
 
     expect(screen.getByText("Chi non c'entra?")).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(4);
+    expect(optionButtons()).toHaveLength(4);
     expect(screen.getByLabelText('0 round su 5 completati')).toBeInTheDocument();
   });
 
@@ -40,7 +41,7 @@ describe('TrovaLIntruso (smoke)', () => {
     vi.useFakeTimers();
     renderGame();
 
-    const buttons = screen.getAllByRole('button');
+    const buttons = optionButtons();
     let advanced = false;
     for (const btn of buttons) {
       fireEvent.click(btn);

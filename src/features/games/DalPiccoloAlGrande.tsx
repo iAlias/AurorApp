@@ -96,6 +96,7 @@ export function DalPiccoloAlGrande() {
   return (
     <GameShell
       title="Dal più piccolo al più grande"
+      prompt="Tocca dal più piccolo al più grande"
       emoji="📏"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

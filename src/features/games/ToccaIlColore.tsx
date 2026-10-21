@@ -74,9 +74,13 @@ export function ToccaIlColore() {
     setWrongId(color.id);
   }
 
+  // "il ROSSO" ma "l'ARANCIONE".
+  const article = /^[AEIOU]/.test(round.target.label) ? "l'" : 'il ';
+
   return (
     <GameShell
       title="Tocca il colore"
+      prompt={`Tocca ${article}${round.target.label}`}
       emoji="🔴"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}
@@ -85,7 +89,8 @@ export function ToccaIlColore() {
     >
       <div className="flex flex-col items-center gap-8 py-6">
         <p className="text-center font-body text-xl text-deep">
-          Tocca il <span className="font-display font-bold">{round.target.label}</span>
+          Tocca {article}
+          <span className="font-display font-bold">{round.target.label}</span>
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">

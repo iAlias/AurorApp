@@ -14,7 +14,7 @@ import { Modal } from '../../ui/Modal';
  * Sezione "Dati" delle Impostazioni (FR-8): esporta/importa il backup JSON
  * (§6.2, AC-9) e azzera tutto con doppia conferma (primo tap apre il
  * dialogo, il bottone finale resta disabilitato finché non si scrive il
- * nome esatto della bimba — case-insensitive e con trim, cosi' un "Aurora "
+ * nome esatto del bambino — case-insensitive e con trim, cosi' un "Sofia "
  * digitato con uno spazio o in minuscolo non frustra inutilmente chi conferma).
  */
 export function DataSection() {
@@ -52,7 +52,7 @@ export function DataSection() {
       setImportError(
         result.reason === 'newer'
           ? 'Questo backup è di una versione più recente dell’app: aggiorna l’app prima di importarlo.'
-          : 'Questo file non sembra un backup valido di AurorApp.',
+          : 'Questo file non sembra un backup valido di Arcobimbi.',
       );
       return;
     }
@@ -149,7 +149,7 @@ export function DataSection() {
         <div className="flex flex-col gap-4">
           <p className="font-body text-sm text-deep">
             Verrà cancellato tutto: profilo, routine, piani e progressi. Per confermare, scrivi il nome di{' '}
-            {profile?.name ?? 'tua figlia'} qui sotto.
+            {profile?.name ?? 'tuo figlio o tua figlia'} qui sotto.
           </p>
           <label className="flex flex-col gap-1 font-body text-sm text-deep">
             Scrivi il nome per confermare

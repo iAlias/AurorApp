@@ -23,12 +23,9 @@ test('timer 60min: avvio, blocco "telefono", ripresa, celebrazione', async ({ pa
   // che il primo salto sopra non ha lasciato "avanzo" di sessione corsa):
   // deve bastare a far scattare `TICK` → celebrating.
   await page.clock.fastForward('01:05:00');
-  // Scoped al titolo (non a `page` intero): da quando /timer e' dentro
-  // `Layout` la sidebar desktop contiene il testo "AurorApp", che altrimenti
-  // farebbe fallire in strict mode un `getByText('Aurora')` non ancorato
-  // (substring-match case-insensitive: "AurorApp" contiene "Aurora").
+  // Scoped al titolo (non a `page` intero): il nome compare anche altrove.
   await expect(page.getByRole('heading', { name: /bravissima/i })).toBeVisible(); // celebrazione col nome
-  await expect(page.getByRole('heading', { name: /bravissima/i })).toContainText('Aurora');
+  await expect(page.getByRole('heading', { name: /bravissima/i })).toContainText('Sofia');
 });
 
 test('/timer mostra la navigazione principale (tab bar/sidebar di Layout)', async ({ page }) => {

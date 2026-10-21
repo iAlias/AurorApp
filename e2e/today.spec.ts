@@ -86,24 +86,23 @@ test.describe('Vista Oggi (FR-5)', () => {
     await expect(page.getByTestId('tomorrow-slot').first()).toBeVisible();
   });
 
-  test('fine periodo: vacationEnd nel passato mostra "Che estate!" invece della timeline', async ({
+  test('un salvataggio della vecchia versione "AurorApp" (vacanze) si apre sulla giornata di oggi', async ({
     page,
   }) => {
-    // Store precaricato (E10): un profilo la cui vacanza è finita da tempo,
-    // scritto direttamente in localStorage prima che l'app parta, cosi' non
-    // serve dipendere dalla data reale del giorno in cui gira il test.
+    // Store precaricato con la chiave e la forma della versione precedente:
+    // date di vacanza ormai passate, niente genere né opzione nido/asilo.
     const envelope = {
       schemaVersion: 1,
       savedAt: '2026-02-01T09:00:00.000Z',
       profile: {
         id: 'child-1',
-        name: 'Aurora',
+        name: 'Sofia',
         avatarId: 'volpina',
         birthdate: '2023-05-10',
         interests: ['animali'],
         spaces: ['casa'],
-        vacationStart: '2026-01-01',
-        vacationEnd: '2026-02-01',
+        vacationStart: '2026-06-15',
+        vacationEnd: '2026-09-15',
         createdAt: '2026-01-01T09:00:00.000Z',
       },
       settings: {
@@ -134,8 +133,8 @@ test.describe('Vista Oggi (FR-5)', () => {
       timer: null,
     };
 
-    // Stessa chiave di `STORAGE_KEY` in `src/core/storage/envelope.ts` — non
-    // importata da `src/` per non dipendere dal bundler dei test e2e (che
+    // Stessa chiave di `LEGACY_STORAGE_KEY` in `src/core/storage/envelope.ts` —
+    // non importata da `src/` per non dipendere dal bundler dei test e2e (che
     // gira fuori da Vite), duplicata qui deliberatamente.
     await page.addInitScript(
       ([key, value]) => {
@@ -146,7 +145,7 @@ test.describe('Vista Oggi (FR-5)', () => {
 
     await page.goto('/oggi');
 
-    await expect(page.getByText(/che estate/i)).toBeVisible();
-    await expect(page.getByTestId('slot-card')).toHaveCount(0);
+    await expect(page.getByTestId('profile-name')).toHaveText('Sofia');
+    await expect(page.getByTestId('slot-card').first()).toBeVisible();
   });
 });

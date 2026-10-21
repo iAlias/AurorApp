@@ -4,7 +4,7 @@ import { completeWizardFast } from './helpers';
 const LABELS = ['ROSSO', 'BLU', 'GIALLO', 'VERDE', 'ARANCIONE', 'VIOLA', 'ROSA', 'MARRONE'];
 
 test.describe('Sezione Giochi', () => {
-  test('la tab "Giochi" porta alla griglia con 10 card', async ({ page }) => {
+  test('la tab "Giochi" porta alla griglia con 16 card', async ({ page }) => {
     await completeWizardFast(page);
 
     await page
@@ -13,7 +13,7 @@ test.describe('Sezione Giochi', () => {
       .click();
 
     await expect(page).toHaveURL(/\/giochi$/);
-    await expect(page.getByTestId('game-item')).toHaveCount(10);
+    await expect(page.getByTestId('game-item')).toHaveCount(16);
   });
 
   test('"Tocca il colore": rispondere giusto porta a "1 round su 5 completati", poi si torna alla griglia', async ({
@@ -29,8 +29,8 @@ test.describe('Sezione Giochi', () => {
 
     // Scoped al <p> del prompt (non all'`<h1>Tocca il colore</h1>` del titolo,
     // che matcherebbe la stessa regex in strict mode).
-    const prompt = await page.locator('p', { hasText: /tocca il/i }).innerText();
-    const match = prompt.match(/[Tt]occa il (\w+)/);
+    const prompt = await page.locator('p', { hasText: /tocca (il|l')/i }).innerText();
+    const match = prompt.match(/[Tt]occa (?:il |l')\s*(\w+)/);
     expect(match).not.toBeNull();
     const label = LABELS.find((l) => l.toLowerCase() === match![1].toLowerCase());
     expect(label).toBeDefined();
@@ -41,7 +41,7 @@ test.describe('Sezione Giochi', () => {
 
     await page.getByRole('link', { name: /← giochi/i }).click();
     await expect(page).toHaveURL(/\/giochi$/);
-    await expect(page.getByTestId('game-item')).toHaveCount(10);
+    await expect(page.getByTestId('game-item')).toHaveCount(16);
   });
 
   test('un gameId inesistente reindirizza alla griglia', async ({ page }) => {
@@ -50,6 +50,6 @@ test.describe('Sezione Giochi', () => {
     await page.goto('/giochi/gioco-inesistente');
 
     await expect(page).toHaveURL(/\/giochi$/);
-    await expect(page.getByTestId('game-item')).toHaveCount(10);
+    await expect(page.getByTestId('game-item')).toHaveCount(16);
   });
 });

@@ -20,7 +20,7 @@ test.describe('Layout — sidebar fissa su desktop', () => {
     await completeWizardFast(page);
     await page.goto('/impostazioni');
 
-    await expect(page.locator('aside').getByText('AurorApp', { exact: false })).toBeVisible();
+    await expect(page.locator('aside').getByText('Arcobimbi', { exact: false })).toBeVisible();
     // Aspetta che l'ultima sezione della pagina (dentro `ProgressCard`, in
     // fondo a Impostazioni) sia montata: senza questo, `document.body.
     // scrollHeight` letto troppo presto potrebbe catturare un'altezza
@@ -33,7 +33,7 @@ test.describe('Layout — sidebar fissa su desktop', () => {
       return page.evaluate(() => {
         const aside = document.querySelector('aside');
         const brand = aside
-          ? Array.from(aside.querySelectorAll('span')).find((s) => s.textContent?.includes('AurorApp'))
+          ? Array.from(aside.querySelectorAll('span')).find((s) => s.textContent?.includes('Arcobimbi'))
           : null;
         return brand ? brand.getBoundingClientRect().top : null;
       });

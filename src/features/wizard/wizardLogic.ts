@@ -1,4 +1,4 @@
-import { differenceInCalendarDays, differenceInMonths, differenceInYears, parseISO } from 'date-fns';
+import { differenceInMonths, differenceInYears, parseISO } from 'date-fns';
 import { RoutineSettings, MealSettings } from '../../core/catalog/types';
 import { deriveSlots } from '../../core/planner/slots';
 
@@ -15,29 +15,6 @@ export function validateName(name: string): string | null {
 
   if (!nameRegex.test(trimmed)) {
     return 'Il nome deve avere 1–20 caratteri e contenere solo lettere, spazi e apostrofi.';
-  }
-
-  return null;
-}
-
-/**
- * Valida le date di vacanza.
- * Regole: end > start, differenza <= 180 giorni
- */
-export function validateVacation(startISO: string, endISO: string): string | null {
-  const start = parseISO(startISO);
-  const end = parseISO(endISO);
-
-  // end must be after start
-  if (end <= start) {
-    return 'La data di fine vacanza deve essere successiva alla data di inizio.';
-  }
-
-  // Calculate difference in calendar days (DST-safe, unlike raw ms subtraction)
-  const diffDays = differenceInCalendarDays(end, start);
-
-  if (diffDays > 180) {
-    return 'La vacanza non può durare più di 180 giorni.';
   }
 
   return null;
@@ -95,11 +72,11 @@ export function ageWarning(birthISO: string, todayISO: string): string | null {
   const years = differenceInYears(today, birth);
 
   if (years < 2) {
-    return 'Aurora è pensata per bambini tra i 2 e i 5 anni. Questo bambino è troppo piccolo.';
+    return 'Arcobimbi è pensata per bambini tra i 2 e i 5 anni: alcune attività potrebbero essere ancora troppo difficili.';
   }
 
   if (years > 5) {
-    return 'Aurora è pensata per bambini tra i 2 e i 5 anni. Questo bambino è troppo grande.';
+    return 'Arcobimbi è pensata per bambini tra i 2 e i 5 anni: alcune attività potrebbero risultare troppo semplici.';
   }
 
   return null;
@@ -163,12 +140,12 @@ export function validateRoutine(
  * Avatar costanti
  */
 export const AVATARS = [
-  { id: 'volpina', emoji: '🦊', label: 'volpina' },
-  { id: 'coniglietta', emoji: '🐰', label: 'coniglietta' },
-  { id: 'orsetta', emoji: '🐻', label: 'orsetta' },
-  { id: 'gattina', emoji: '🐱', label: 'gattina' },
-  { id: 'dinosaura', emoji: '🦖', label: 'dinosaura' },
+  { id: 'volpina', emoji: '🦊', label: 'volpe' },
+  { id: 'coniglietta', emoji: '🐰', label: 'coniglio' },
+  { id: 'orsetta', emoji: '🐻', label: 'orso' },
+  { id: 'gattina', emoji: '🐱', label: 'gatto' },
+  { id: 'dinosaura', emoji: '🦖', label: 'dinosauro' },
   { id: 'unicorno', emoji: '🦄', label: 'unicorno' },
-  { id: 'ranocchia', emoji: '🐸', label: 'ranocchia' },
-  { id: 'stellina', emoji: '⭐', label: 'stellina' },
+  { id: 'ranocchia', emoji: '🐸', label: 'rana' },
+  { id: 'stellina', emoji: '⭐', label: 'stella' },
 ];

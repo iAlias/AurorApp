@@ -10,7 +10,7 @@ describe('hashSeed', () => {
   });
 
   test('ritorna sempre un intero unsigned a 32 bit', () => {
-    const h = hashSeed('AurorApp|2026-07-04|0|sole');
+    const h = hashSeed('Arcobimbi|2026-07-04|0|sole');
     expect(Number.isInteger(h)).toBe(true);
     expect(h).toBeGreaterThanOrEqual(0);
     expect(h).toBeLessThanOrEqual(0xffffffff);

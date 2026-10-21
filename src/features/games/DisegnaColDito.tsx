@@ -109,6 +109,7 @@ export function DisegnaColDito() {
   return (
     <GameShell
       title="Disegna col dito"
+      prompt="Disegna quello che vuoi, col dito!"
       emoji="🎨"
       totalRounds={0}
       completedRounds={0}

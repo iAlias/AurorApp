@@ -9,6 +9,12 @@ import { CosaVieneDopo } from './CosaVieneDopo';
 import { MemoriaDegliAnimali } from './MemoriaDegliAnimali';
 import { DalPiccoloAlGrande } from './DalPiccoloAlGrande';
 import { DisegnaColDito } from './DisegnaColDito';
+import { DiChiELOmbra } from './DiChiELOmbra';
+import { ChiViveQui } from './ChiViveQui';
+import { ComeSiSente } from './ComeSiSente';
+import { ScoppiaLeBolle } from './ScoppiaLeBolle';
+import { SuonaLArcobaleno } from './SuonaLArcobaleno';
+import { IlTreninoDeiNumeri } from './IlTreninoDeiNumeri';
 
 /** Voce del catalogo dei giochi: usata sia dalla griglia (`GamesPage`) sia
  * dal routing (`gameId` diventa il segmento `/giochi/:gameId`). */
@@ -20,8 +26,8 @@ export interface GameDef {
   Component: ComponentType;
 }
 
-/** Registro dei 10 giochi disponibili (Task 2 infrastruttura, Task 3-6 le
- * voci): l'ordine qui è l'ordine visivo della griglia in `GamesPage`. */
+/** Registro dei 16 giochi disponibili: l'ordine qui è l'ordine visivo della
+ * griglia in `GamesPage` (i più immediati per i più piccoli in alto). */
 export const GAMES: GameDef[] = [
   {
     id: 'tocca-il-colore',
@@ -92,5 +98,47 @@ export const GAMES: GameDef[] = [
     emoji: '🎨',
     skill: 'Allena: la fantasia',
     Component: DisegnaColDito,
+  },
+  {
+    id: 'scoppia-le-bolle',
+    title: 'Scoppia le bolle',
+    emoji: '🫧',
+    skill: 'Allena: contare e la mira',
+    Component: ScoppiaLeBolle,
+  },
+  {
+    id: 'suona-l-arcobaleno',
+    title: "Suona l'arcobaleno",
+    emoji: '🎶',
+    skill: 'Allena: la musica',
+    Component: SuonaLArcobaleno,
+  },
+  {
+    id: 'come-si-sente',
+    title: 'Come si sente?',
+    emoji: '😊',
+    skill: 'Allena: le emozioni',
+    Component: ComeSiSente,
+  },
+  {
+    id: 'di-chi-e-l-ombra',
+    title: "Di chi è l'ombra?",
+    emoji: '👤',
+    skill: 'Allena: osservare le forme',
+    Component: DiChiELOmbra,
+  },
+  {
+    id: 'chi-vive-qui',
+    title: 'Chi vive qui?',
+    emoji: '🏡',
+    skill: 'Allena: animali e ambienti',
+    Component: ChiViveQui,
+  },
+  {
+    id: 'il-trenino-dei-numeri',
+    title: 'Il trenino dei numeri',
+    emoji: '🚂',
+    skill: 'Allena: i numeri in ordine',
+    Component: IlTreninoDeiNumeri,
   },
 ];

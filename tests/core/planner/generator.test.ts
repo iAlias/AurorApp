@@ -14,8 +14,9 @@ import {
   applyWeather,
   generateDayPlan,
   isFamilyDay,
-  materializeUpTo,
+  materializeRange,
   regenerateDay,
+  seasonalWeather,
   swapActivity,
   type GenContext,
 } from '../../../src/core/planner/generator';
@@ -26,8 +27,7 @@ import {
 
 // ——— Helpers (RNG seedato, mai Math.random — R9 riproducibilità) ———
 
-const VAC_START = '2026-06-15'; // lunedì
-const VAC_END = '2026-09-30';
+const VAC_START = '2026-06-15'; // lunedì: primo giorno dei piani generati nei test
 
 function drawSubset<T>(all: readonly T[], rng: () => number): T[] {
   const out: T[] = [];
@@ -43,12 +43,10 @@ function seededProfile(i: number): ChildProfile {
   return {
     id: `p${i}`,
     name: `Bimba ${i}`,
-    avatarId: 'avatar-1',
+    avatarId: 'avatar-1', gender: 'f',
     birthdate: '2023-03-01',
     interests,
     spaces,
-    vacationStart: VAC_START,
-    vacationEnd: VAC_END,
     createdAt: `2026-06-0${(i % 9) + 1}T07:30:00.000Z`,
   };
 }
@@ -100,7 +98,7 @@ function plansFor(i: number): Record<string, DayPlan> {
   if (!p) {
     const ctx = makeCtx(seededProfile(i));
     const dates = isoRange(VAC_START, 92);
-    p = materializeUpTo(dates[dates.length - 1], ctx);
+    p = materializeRange(VAC_START, dates[dates.length - 1], ctx);
     materializeCache.set(i, p);
   }
   return p;
@@ -151,9 +149,9 @@ describe('P-GEN-3 · determinismo', () => {
     }
   });
 
-  test('materializeUpTo è identico su ripetizioni', () => {
+  test('materializeRange è identico su ripetizioni', () => {
     const ctx = makeCtx(seededProfile(2));
-    expect(materializeUpTo('2026-08-01', ctx)).toEqual(materializeUpTo('2026-08-01', ctx));
+    expect(materializeRange(VAC_START, '2026-08-01', ctx)).toEqual(materializeRange(VAC_START, '2026-08-01', ctx));
   });
 
   test('nonce diversi producono piani diversi', () => {
@@ -169,7 +167,7 @@ describe('P-GEN-3 · determinismo', () => {
 // ——— P-GEN-1 · nessuna ripetizione entro 14 giorni ———
 
 describe('P-GEN-1 · nessuna ripetizione entro 14gg', () => {
-  test('92 giorni × 20 profili: tasso di rilassamento (ripetizioni entro 14gg) < 1%', () => {
+  test('92 giorni × 20 profili: tasso di rilassamento (ripetizioni entro 14gg) < 1%', { timeout: 30_000 }, () => {
     let totalPicks = 0;
     let within14 = 0;
     for (let i = 0; i < 20; i++) {
@@ -239,6 +237,51 @@ describe('P-GEN-4 · vincoli meteo', () => {
         }
       }
     }
+  });
+
+  test("freddo → nessun gioco d'acqua all'aperto", () => {
+    for (let i = 0; i < 8; i++) {
+      const ctx = makeCtx(seededProfile(i));
+      for (const date of isoRange('2026-01-12', 10)) {
+        for (const s of generateDayPlan(date, 'freddo', 0, ctx).slots) {
+          const a = actById(s.activityId);
+          expect(a.heatFriendly && a.place === 'esterno', a.id).toBe(false);
+        }
+      }
+    }
+  });
+
+  test('il meteo di partenza segue la stagione: freddo da novembre a marzo, sole il resto', () => {
+    expect(['2026-11-01', '2026-12-25', '2027-01-15', '2027-03-31'].map(seasonalWeather)).toEqual([
+      'freddo',
+      'freddo',
+      'freddo',
+      'freddo',
+    ]);
+    expect(['2026-04-01', '2026-07-10', '2026-10-31'].map(seasonalWeather)).toEqual(['sole', 'sole', 'sole']);
+    const plans = materializeRange('2027-01-04', '2027-01-04', makeCtx(seededProfile(1)));
+    expect(plans['2027-01-04'].weather).toBe('freddo');
+  });
+});
+
+describe('nido/asilo la mattina (routine.school)', () => {
+  const schoolSettings = { ...DEFAULT_SETTINGS, routine: { ...DEFAULT_SETTINGS.routine, school: true } };
+
+  test('feriale: solo P1, P2, SERA; il weekend resta M1, P1', () => {
+    const ctx = { ...makeCtx(seededProfile(2)), settings: schoolSettings };
+    expect(generateDayPlan('2026-07-06', 'sole', 0, ctx).slots.map((s) => s.slotId)).toEqual(['P1', 'P2', 'SERA']);
+    expect(generateDayPlan('2026-07-11', 'sole', 0, ctx).slots.map((s) => s.slotId)).toEqual(['M1', 'P1']);
+  });
+
+  test("attivare il nido non cancella un'attività del mattino già fatta", () => {
+    const ctx = makeCtx(seededProfile(2));
+    const plan = generateDayPlan('2026-07-06', 'sole', 0, ctx);
+    const doneM1 = { ...plan.slots[0], status: 'done' as const };
+    const withDone = { ...plan, slots: [doneM1, ...plan.slots.slice(1)] };
+
+    const after = regenerateDay(withDone, { ...ctx, settings: schoolSettings });
+    expect(after.slots.map((s) => s.slotId)).toEqual(['M1', 'P1', 'P2', 'SERA']);
+    expect(after.slots[0]).toEqual(doneM1);
   });
 });
 

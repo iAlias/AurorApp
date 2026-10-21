@@ -122,4 +122,14 @@ export const audioManager = {
       // resta silenziosa, mai errori visibili all'utente.
     }
   },
+
+  /** Una nota singola (lo xilofono dei giochi), con le stesse garanzie di `play`. */
+  tone(freq: number, durSec = 0.6): void {
+    if (!enabled || !ctx) return;
+    try {
+      playNote(ctx, { freq, startSec: 0, durSec }, ctx.currentTime);
+    } catch {
+      // E13: silenzio, mai errori visibili.
+    }
+  },
 };

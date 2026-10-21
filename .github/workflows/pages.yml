@@ -24,11 +24,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Il sito vive in una sottocartella del dominio (ialias.github.io/AurorApp/):
-      # senza BASE_PATH gli asset punterebbero alla radice e il sito sarebbe bianco.
-      - run: npm run build
-        env:
-          BASE_PATH: /AurorApp/
+      # Il sito vive in una sottocartella del dominio che si chiama come il repo
+      # (ialias.github.io/<repo>/): senza --base gli asset punterebbero alla
+      # radice e il sito sarebbe bianco. Rinominare il repo non richiede modifiche.
+      - run: npm run build -- --base=/${{ github.event.repository.name }}/
       # GitHub Pages non ha un fallback per le SPA: senza 404.html un link diretto
       # a una rotta interna restituisce l'errore di Pages invece dell'app.
       - run: cp dist/index.html dist/404.html

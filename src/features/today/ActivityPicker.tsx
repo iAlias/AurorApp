@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sheet } from '../../ui/Sheet';
 import { Card } from '../../ui/Card';
 import { CATEGORIES } from '../../core/catalog/categories';
-import { ACTIVITIES } from '../../core/catalog/activities';
+import { useCatalog } from '../../app/usePersonalize';
 import type { CategoryId } from '../../core/catalog/types';
 
 export interface ActivityPickerProps {
@@ -25,7 +25,8 @@ const CATEGORY_IDS = Object.keys(CATEGORIES) as CategoryId[];
  * (`setSlotActivity`).
  */
 export function ActivityPicker({ open, onClose, onPick, currentActivityId }: ActivityPickerProps) {
-  const currentActivity = currentActivityId ? ACTIVITIES.find((a) => a.id === currentActivityId) : undefined;
+  const catalog = useCatalog();
+  const currentActivity = currentActivityId ? catalog.find((a) => a.id === currentActivityId) : undefined;
   const [category, setCategory] = useState<CategoryId>(currentActivity?.category ?? CATEGORY_IDS[0]);
 
   // Ogni apertura riparte dalla categoria dell'attività corrente dello slot
@@ -35,7 +36,7 @@ export function ActivityPicker({ open, onClose, onPick, currentActivityId }: Act
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, currentActivityId]);
 
-  const activitiesInCategory = ACTIVITIES.filter((a) => a.category === category);
+  const activitiesInCategory = catalog.filter((a) => a.category === category);
 
   return (
     <Sheet open={open} onClose={onClose}>

@@ -70,6 +70,7 @@ export function ContaConMe() {
   return (
     <GameShell
       title="Conta con me"
+      prompt="Quanti sono?"
       emoji="🔢"
       totalRounds={TOTAL_ROUNDS}
       completedRounds={completedRounds}

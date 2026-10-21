@@ -14,13 +14,11 @@ function fullEnvelope(): StorageEnvelope {
     savedAt: '2026-07-04T10:00:00.000Z',
     profile: {
       id: 'child-1',
-      name: 'Aurora',
-      avatarId: 'volpina',
+      name: 'Sofia',
+      avatarId: 'volpina', gender: 'f',
       birthdate: '2023-05-10',
       interests: ['animali', 'disegno'],
       spaces: ['casa', 'giardino'],
-      vacationStart: '2026-07-01',
-      vacationEnd: '2026-08-31',
       createdAt: '2026-07-04T09:00:00.000Z',
     },
     settings: DEFAULT_SETTINGS,
@@ -68,7 +66,7 @@ function fullEnvelope(): StorageEnvelope {
 }
 
 test('STORAGE_KEY: chiave localStorage esatta', () => {
-  expect(STORAGE_KEY).toBe('aurorapp.state.v1');
+  expect(STORAGE_KEY).toBe('arcobimbi.state.v1');
 });
 
 test('emptyEnvelope: schemaVersion 1, profilo null, settings default', () => {
@@ -191,6 +189,29 @@ test('migrate: DayPlan senza campo weather → default "sole"', () => {
   expect(migrated.plans['2026-07-04'].weather).toBe('sole');
   // gli altri piani restano inalterati
   expect(migrated.plans['2026-07-05'].weather).toBe('caldo');
+});
+
+test('migrate: profilo salvato prima della scelta bambina/bambino → gender "f"', () => {
+  const env = fullEnvelope();
+  const raw = JSON.parse(JSON.stringify(env));
+  delete raw.profile.gender;
+  const migrated = migrate(raw);
+  expect(migrated.profile?.gender).toBe('f');
+});
+
+test('migrate: salvataggio della versione "vacanze" (date di vacanza, routine senza nido) si carica', () => {
+  const raw = JSON.parse(JSON.stringify(fullEnvelope()));
+  raw.profile.vacationStart = '2026-07-01';
+  raw.profile.vacationEnd = '2026-08-31';
+  delete raw.settings.routine.school;
+  const migrated = migrate(raw);
+  expect(migrated.profile).not.toHaveProperty('vacationStart');
+  expect(migrated.settings.routine.school).toBe(false);
+});
+
+test('EnvelopeSchema: rifiuta un gender inventato', () => {
+  const env = fullEnvelope();
+  expect(EnvelopeSchema.safeParse({ ...env, profile: { ...env.profile, gender: 'x' } }).success).toBe(false);
 });
 
 test('MigrationError: kind e message per "newer" e "invalid"', () => {

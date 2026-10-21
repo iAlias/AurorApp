@@ -58,7 +58,7 @@ export function Sheet({ open, onClose, children }: SheetProps) {
             aria-modal="true"
             aria-label="Finestra"
             tabIndex={-1}
-            className="max-h-[85vh] w-full max-w-lg overflow-auto rounded-t-modal bg-card p-6 shadow-lift outline-none"
+            className="max-h-[85vh] w-full max-w-lg overflow-auto rounded-t-modal bg-card p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-lift outline-none"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: '100%' }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: '100%' }}

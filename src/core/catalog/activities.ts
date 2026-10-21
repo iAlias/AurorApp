@@ -2,7 +2,7 @@ import type { Activity } from './types';
 
 // Trascrizione 1:1 di docs/superpowers/specs/2026-07-04-aurorapp-catalogo-attivita.md
 // Gli ID sono stabili e non vanno mai riusati o rinumerati.
-export const CATALOG_VERSION = '1.0';
+export const CATALOG_VERSION = '1.1';
 
 export const ACTIVITIES: Activity[] = [
   // ——— MOT · Movimento e motricità grossa ———
@@ -13,7 +13,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Costruite insieme il percorso: isole di cuscini da saltare, sedie sotto cui strisciare, linea di nastro su cui camminare.',
       'Fai tu il primo giro dimostrativo, esagerando.',
-      'Lei fa i suoi giri; applaudi lo sforzo e cambia un ostacolo a ogni giro.',
+      '{Lei|Lui} fa i suoi giri; applaudi lo sforzo e cambia un ostacolo a ogni giro.',
     ],
     develops: ['motricità grossa', 'pianificazione motoria', 'equilibrio'],
     variation: 'una campanella da suonare al traguardo.',
@@ -25,8 +25,8 @@ export const ACTIVITIES: Activity[] = [
     materials: ['nessuno'],
     steps: [
       'Grida "Corri a toccare qualcosa di… ROSSO!".',
-      'Lei corre, tocca e torna.',
-      'Alterna colori facili e difficili; poi invertite i ruoli: comanda lei.',
+      '{Lei|Lui} corre, tocca e torna.',
+      'Alterna colori facili e difficili; poi invertite i ruoli: comanda {lei|lui}.',
     ],
     develops: ['riconoscimento dei colori', 'ascolto', 'velocità di reazione'],
     variation: 'versione "qualcosa di morbido/freddo/rotondo" (proprietà, non solo colori).',
@@ -52,7 +52,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Preparate insieme i birilli (già questo è il gioco).',
       'Segnate la linea di tiro con il nastro.',
-      'Tira, conta insieme i birilli caduti, rimettili su tu-e-lei.',
+      'Tira, conta insieme i birilli caduti, rimettili su tu-e-{lei|lui}.',
     ],
     develops: ['coordinazione occhio-mano', 'conteggio 1–6', 'turnazione'],
     variation: 'numeri disegnati sulle bottiglie: "quale numero è caduto?".',
@@ -65,7 +65,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       '"Come salta la rana?" e lo fate insieme.',
       "A turno uno propone un animale e l'altro lo imita: canguro, granchio, serpente, elefante.",
-      "Finale: la sfilata dello zoo, uno dietro l'altra.",
+      "Finale: la sfilata dello zoo, uno dietro l'{altra|altro}.",
     ],
     develops: ['schemi motori diversi', 'immaginazione', 'conoscenza degli animali'],
     variation: "l'altro genitore al rientro deve indovinare gli animali dalla mossa.",
@@ -91,11 +91,11 @@ export const ACTIVITIES: Activity[] = [
     materials: ['nastro di carta (si stacca senza danni)'],
     steps: [
       'Crea sul pavimento strade dritte, a zig-zag, a spirale.',
-      "Si cammina solo sulle linee: in avanti, all'indietro, come un'equilibrista.",
+      "Si cammina solo sulle linee: in avanti, all'indietro, come {un'equilibrista|un equilibrista}.",
       'Poi le strade diventano piste per le macchinine o binari del trenino.',
     ],
     develops: ['equilibrio', 'controllo del corpo', 'attenzione'],
-    variation: 'cartelli fatti da lei: STOP, curva, casello.',
+    variation: 'cartelli fatti da {lei|lui}: STOP, curva, casello.',
     interests: ['movimento', 'costruzioni'], family: false,
   },
   {
@@ -105,7 +105,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Appallottolate i calzini insieme (ottimo esercizio per le manine).',
       'Cesti a distanze diverse: vicino facile, lontano difficile.',
-      'Tira e conta i canestri; sposta i cesti quando diventa brava.',
+      'Tira e conta i canestri; sposta i cesti quando diventa brav{a|o}.',
     ],
     develops: ['mira', 'forza calibrata', 'motricità fine (appallottolare)'],
     variation: 'ogni cesto vale una faccia buffa diversa da fare.',
@@ -117,7 +117,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['nessuno'],
     steps: [
       'Tu al muro conti "un due tre… stella!" e ti giri.',
-      'Lei avanza e si blocca quando ti giri.',
+      '{Lei|Lui} avanza e si blocca quando ti giri.',
       'Quando ti tocca, si scambiano i ruoli: contare è metà del divertimento.',
     ],
     develops: ['autocontrollo', 'attesa del turno', 'conteggio'],
@@ -144,10 +144,10 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Posizioni-gioco tenute 5 respiri: il gatto che si stiracchia, il cane a testa in giù, la farfalla seduta, l\'albero su un piede.',
       'Racconta una mini-storia che le collega ("il gatto si sveglia e vede un cane…").',
-      'Chiudete sdraiate: "respiriamo come orsi che dormono".',
+      'Chiudete a pancia in su: "respiriamo come orsi che dormono".',
     ],
     develops: ['consapevolezza corporea', 'equilibrio', 'respirazione e calma'],
-    variation: 'inventa lei una posizione nuova e le dà un nome.',
+    variation: 'inventa {lei|lui} una posizione nuova e le dà un nome.',
     interests: ['movimento', 'animali'], family: false,
   },
   {
@@ -155,9 +155,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['5–6 peluche'],
     steps: [
-      'Lei conta con te fino a 10 a occhi chiusi mentre nascondi i peluche (un pezzetto deve spuntare sempre).',
+      '{Lei|Lui} conta con te fino a 10 a occhi chiusi mentre nascondi i peluche (un pezzetto deve spuntare sempre).',
       'Via alla ricerca! Dai indizi caldo/freddo.',
-      'Poi nasconde lei e cerchi tu — sbagliando clamorosamente qualche ricerca.',
+      'Poi nasconde {lei|lui} e cerchi tu — sbagliando clamorosamente qualche ricerca.',
     ],
     develops: ['ricerca sistematica', "permanenza dell'oggetto", 'linguaggio spaziale (sopra/sotto/dietro)'],
     variation: 'ogni peluche trovato "racconta" dov\'era: "ero sotto il divano, che polvere!".',
@@ -209,7 +209,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 35, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 2,
     materials: ['colori a dita atossici', 'fogli grandi', 'grembiule o maglietta vecchia', 'tovaglia cerata'],
     steps: [
-      'Prepara la "zona pasticcio" insieme a lei (mettere la tovaglia è parte dell\'attività).',
+      'Prepara la "zona pasticcio" insieme a {lei|lui} (mettere la tovaglia è parte dell\'attività).',
       'Dita, palmi, pugni: lascia che esplori senza proporre un soggetto.',
       "Solo alla fine, se vuole, date un titolo all'opera e appendetela.",
     ],
@@ -223,7 +223,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['patate tagliate a metà con forme incise dall\'adulto (stella, cuore)', 'spugne a pezzi', 'tempera in piattini', 'fogli'],
     steps: [
       'Mostra il gesto: premi nel colore, premi sul foglio, "magia!".',
-      'Lei timbra liberamente: file, mucchi, sovrapposizioni.',
+      '{Lei|Lui} timbra liberamente: file, mucchi, sovrapposizioni.',
       'Nominate insieme forme e colori mentre compaiono.',
     ],
     develops: ['motricità fine', 'riconoscimento forme', 'sequenze'],
@@ -236,7 +236,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 45, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['1 tazza di farina', '½ di sale fino', "½ d'acqua (ricetta nell'app)", 'mattarello', 'formine'],
     steps: [
-      'Impastate insieme: versa lei, conta lei i cucchiai.',
+      'Impastate insieme: versa {lei|lui}, conta {lei|lui} i cucchiai.',
       'Creazioni libere + un "ciondolo ricordo" con l\'impronta della manina.',
       'In forno a 100° per 2 ore (lo farà "domani con te": l\'attesa fa parte del gioco).',
     ],
@@ -251,7 +251,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Strappare è la parte migliore: via libera a coriandoli e strisce.',
       'Caccia alle immagini: "trova tutti i cani!", "tutte le cose blu!".',
-      'Si incolla tutto su un cartellone a tema scelto da lei.',
+      'Si incolla tutto su un cartellone a tema scelto da {lei|lui}.',
     ],
     develops: ['motricità fine (strappo = pre-scrittura)', 'categorizzazione', 'linguaggio'],
     variation: 'il cartellone diventa "il giornale di {nome}" da mostrare all\'altro genitore a cena.',
@@ -262,7 +262,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'entrambi', requiresDry: false, heatFriendly: true, mess: 2,
     materials: ['cubetti di ghiaccio fatti con acqua + colorante alimentare e uno stecchino', 'fogli spessi'],
     steps: [
-      'Prepara i cubetti la sera prima con lei ("domani dipingiamo col ghiaccio!").',
+      'Prepara i cubetti la sera prima con {lei|lui} ("domani dipingiamo col ghiaccio!").',
       'Il cubetto si scioglie e dipinge: scie, pozzanghere, mescolanze.',
       'Perfetto all\'aperto nelle giornate roventi: si dipinge anche… sulla pancia.',
     ],
@@ -275,7 +275,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['penne o rigatoni (magari colorati in anticipo)', 'filo di lana con punta irrigidita da scotch'],
     steps: [
-      'Infilare la pasta nel filo: gesto lento e concentratissimo — non aiutarla se non lo chiede.',
+      'Infilare la pasta nel filo: gesto lento e concentratissimo — non aiutar{la|lo} se non lo chiede.',
       'Pattern a richiesta: "una gialla, una blu…".',
       'La collana si indossa subito, ovviamente.',
     ],
@@ -294,7 +294,7 @@ export const ACTIVITIES: Activity[] = [
       'Il sole cancella tutto: si ricomincia — la lavagna infinita.',
     ],
     develops: ['gesto grafico ampio (pre-scrittura)', 'causa-effetto (evaporazione)'],
-    variation: "traccia tu il contorno di lei sdraiata, lei lo riempie d'acqua.",
+    variation: "traccia tu il contorno di {lei sdraiata|lui sdraiato}, {lei|lui} lo riempie d'acqua.",
     interests: ['disegno', 'acqua'], family: false,
   },
   {
@@ -328,7 +328,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 40, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['2 tazze di farina', '½ di sale', "1 cucchiaio d'olio", "¾ d'acqua calda (dell'adulto)", 'colorante alimentare'],
     steps: [
-      'La "fabbrica del didò": lei versa e mescola, tu aggiungi l\'acqua calda.',
+      'La "fabbrica del didò": {lei|lui} versa e mescola, tu aggiungi l\'acqua calda.',
       'Dividete in palline e coloratele diversamente impastando.',
       'Gioco libero: formine, serpentoni, pizzette; si conserva in un barattolo chiuso per una settimana.',
     ],
@@ -354,8 +354,8 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 35, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['calzini spaiati', 'bottoni o occhietti adesivi', 'pennarelli per tessuto o pezzetti di stoffa', 'colla'],
     steps: [
-      'Ogni calzino diventa un personaggio: lei sceglie occhi, capelli-lana, nome.',
-      "L'adulto fissa le parti piccole; lei posiziona e decide.",
+      'Ogni calzino diventa un personaggio: {lei|lui} sceglie occhi, capelli-lana, nome.',
+      "L'adulto fissa le parti piccole; {lei|lui} posiziona e decide.",
       'Debutto immediato: le marionette si presentano e fanno merenda con voi.',
     ],
     develops: ['immaginazione narrativa', 'linguaggio (dialoghi)', 'motricità fine'],
@@ -369,8 +369,8 @@ export const ACTIVITIES: Activity[] = [
     materials: ['striscia di cartoncino', 'colla', '"tesori" da attaccare (bollini, pezzi di carta colorata, pasta)'],
     steps: [
       'Misura la corona sulla sua testa e uniscila.',
-      'Decorazione libera: lei incolla, tu ammiri.',
-      'Incoronazione solenne allo specchio: oggi è la Regina della Giornata (e sceglie la canzone della cena).',
+      'Decorazione libera: {lei|lui} incolla, tu ammiri.',
+      'Incoronazione solenne allo specchio: oggi è {la Regina|il Re} della Giornata (e sceglie la canzone della cena).',
     ],
     develops: ['motricità fine', 'autostima', 'senso del rito'],
     variation: 'corona per il genitore che rientra dal lavoro: cerimonia doppia.',
@@ -383,7 +383,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       "L'adulto soffia nel bicchiere fino a far traboccare le bolle colorate.",
       'Si appoggia il foglio sulle bolle: restano stampate!',
-      'Lei sceglie i colori e appoggia i fogli; a fine gioco, bolle libere per il prato.',
+      '{Lei|Lui} sceglie i colori e appoggia i fogli; a fine gioco, bolle libere per il prato.',
     ],
     develops: ['stupore scientifico', 'colori', 'attesa del turno'],
     variation: 'indovina: "di che colore verrà se mischiamo blu e giallo?".',
@@ -396,7 +396,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['vassoio con bordo', 'farina (o semolino) a velo'],
     steps: [
       'Uno strato sottile di farina sul vassoio: si disegna col dito.',
-      'Cerchi, strade, facce, il suo nome scritto da te che lei "ricalca".',
+      'Cerchi, strade, facce, il suo nome scritto da te che {lei|lui} "ricalca".',
       "Una scrollatina e la lavagna è di nuovo pulita: l'errore non esiste.",
     ],
     develops: ['pre-grafismo', 'tatto', 'sicurezza nel provare e riprovare'],
@@ -437,7 +437,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['sacchetto zip robusto con dentro gel per capelli + brillantini + bottoni, sigillato con nastro', 'scotch al tavolo'],
     steps: [
-      'Prepara il sacchetto davanti a lei: la fabbricazione è già spettacolo.',
+      'Prepara il sacchetto davanti a {lei|lui}: la fabbricazione è già spettacolo.',
       'Si schiaccia, si spingono i bottoni col dito attraverso il gel, si "disegnano" strade.',
       "Si attacca alla finestra: controluce cambia tutto.",
     ],
@@ -451,9 +451,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['scatola con un buco per la mano (calzino tagliato come manica)', '6–8 oggetti noti'],
     steps: [
-      'Dentro la scatola, di nascosto, un oggetto: lei infila la mano e indovina al tatto.',
+      'Dentro la scatola, di nascosto, un oggetto: {lei|lui} infila la mano e indovina al tatto.',
       '"Com\'è? Morbido? Punge?": le domande sono l\'attività.',
-      'Poi nasconde lei e tu indovini — sbagliando in modo teatrale.',
+      'Poi nasconde {lei|lui} e tu indovini — sbagliando in modo teatrale.',
     ],
     develops: ['discriminazione tattile', 'vocabolario descrittivo', 'memoria'],
     variation: 'versione difficile: due oggetti quasi uguali (cucchiaio grande/piccolo).',
@@ -496,7 +496,7 @@ export const ACTIVITIES: Activity[] = [
       'Poi a occhi chiusi tenendoti la mano: indovina dove sei!',
     ],
     develops: ['propriocezione', 'equilibrio', 'vocabolario sensoriale'],
-    variation: 'lo costruisce lei per te: obbedisci e commenta.',
+    variation: 'lo costruisce {lei|lui} per te: obbedisci e commenta.',
     interests: ['movimento', 'natura'], family: false,
   },
   {
@@ -544,7 +544,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 2,
     materials: ['8 tazze di farina + 1 di olio di semi mescolate (sabbia cinetica casalinga)', 'vaschetta', 'formine'],
     steps: [
-      'Fabbricazione: lei versa e mescola con le mani fino alla consistenza "neve bagnata".',
+      'Fabbricazione: {lei|lui} versa e mescola con le mani fino alla consistenza "neve bagnata".',
       'Castelli, polpette, montagne che si sbriciolano lente.',
       'Si conserva in un contenitore chiuso per giocarci più volte.',
     ],
@@ -612,7 +612,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['il cesto dei calzini puliti di famiglia'],
     steps: [
       'Rovescia il cesto: "aiutami a trovare i gemelli!".',
-      'Lei appaia per colore e misura; tu sbagli apposta ogni tanto ("questo di papà con il tuo?" "Nooo!").',
+      '{Lei|Lui} appaia per colore e misura; tu sbagli apposta ogni tanto ("questo di papà con il tuo?" "Nooo!").',
       'I calzini appaiati si arrotolano insieme: incarico vero (P3).',
     ],
     develops: ['appaiamento', 'confronto grande/piccolo', 'aiuto reale in casa'],
@@ -637,7 +637,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['costruzioni, cubi, o anche barattoli e scatole della dispensa'],
     steps: [
-      'Sfida: costruire la torre più alta di sempre (misurala con lei accanto: "ti supera!").',
+      'Sfida: costruire la torre più alta di sempre (misurala con {lei|lui} accanto: "ti supera!").',
       'Quando crolla: risata liberatoria e ipotesi — "perché è caduta?".',
       'Riprova con base più larga: la scoperta dell\'ingegneria.',
     ],
@@ -651,7 +651,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['un disegno fatto insieme (o la stampa di un disegno) incollato su cartoncino e tagliato in 4–6 pezzi grandi'],
     steps: [
       'Prima si crea l\'immagine: già questa è l\'attività.',
-      'L\'adulto taglia; lei ricompone.',
+      'L\'adulto taglia; {lei|lui} ricompone.',
       'Ogni volta che riesce, un pezzo in più al prossimo giro (fino a 8).',
     ],
     develops: ["percezione d'insieme", 'memoria visiva', 'perseveranza'],
@@ -664,7 +664,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['oggetti in triplette di misura: cucchiai, scarpe, peluche, ciotole'],
     steps: [
       'Storia dei tre orsi come cornice: "questa è la sedia di papà orso…".',
-      'Lei ordina le triplette dal più grande al più piccolo.',
+      '{Lei|Lui} ordina le triplette dal più grande al più piccolo.',
       'Caccia in casa: "trova qualcosa di più piccolo di questo!".',
     ],
     develops: ['seriazione', 'confronto', 'linguaggio (comparativi)'],
@@ -678,7 +678,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Missioni di conteggio vere: "portami 3 mollette", "quanti gradini fino al bagno?".',
       'Conta toccando: un numero = un oggetto (correggi solo ricontando insieme, mai "no, sbagliato").',
-      'Fino a 5 sicuro, oltre solo se traina lei.',
+      'Fino a 5 sicuro, oltre solo se traina {lei|lui}.',
     ],
     develops: ['corrispondenza numero-oggetto', 'memoria di lavoro'],
     variation: 'apparecchiare contando: "siamo in 3: quanti bicchieri?".',
@@ -690,7 +690,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['3–4 oggetti noti', 'un telo'],
     steps: [
       'Oggetti in fila, li nominate insieme.',
-      'Telo sopra, lei chiude gli occhi, tu ne togli uno.',
+      'Telo sopra, {lei|lui} chiude gli occhi, tu ne togli uno.',
       '"Cosa manca?!" — poi si invertono i ruoli (e tu sbagli teatralmente).',
     ],
     develops: ['memoria visiva', 'attenzione', 'linguaggio'],
@@ -730,7 +730,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Ogni giocattolo cerca "il suo letto": si appoggia sul contorno giusto.',
       'Ruota i fogli: più difficile.',
-      'Poi disegna lei i contorni di 2 oggetti nuovi (con la tua mano sulla sua se la chiede).',
+      'Poi disegna {lei|lui} i contorni di 2 oggetti nuovi (con la tua mano sulla sua se la chiede).',
     ],
     develops: ['percezione della forma', 'rotazione mentale', 'gesto grafico'],
     variation: "con la torcia: l'ombra vera del giocattolo sul muro combacia?",
@@ -754,8 +754,8 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['frecce di carta (o nastro) sparse per casa', 'un tesoro finale'],
     steps: [
-      'Le frecce guidano al tesoro: lei le segue indicandole ad alta voce.',
-      'Percorso 2: lo costruisce lei per te — dove NASCONDE il tesoro?',
+      'Le frecce guidano al tesoro: {lei|lui} le segue indicandole ad alta voce.',
+      'Percorso 2: lo costruisce {lei|lui} per te — dove NASCONDE il tesoro?',
       'Commentate le direzioni: di qua, di là, sopra, sotto.',
     ],
     develops: ['orientamento spaziale', 'simboli (la freccia "dice" qualcosa)', 'progettazione'],
@@ -769,10 +769,10 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Ogni oggetto sotto un bicchiere, ben mischiati.',
       'A turno si alzano 2 bicchieri: coppia trovata = si tiene.',
-      'Versione 3 anni: si gioca in squadra contro "la sbadataggine", non uno contro l\'altra.',
+      'Versione 3 anni: si gioca in squadra contro "la sbadataggine", non uno contro l\'{altra|altro}.',
     ],
     develops: ['memoria di lavoro', 'attenzione', 'rispetto dei turni'],
-    variation: 'da 6 a 8 coppie quando è pronta.',
+    variation: 'da 6 a 8 coppie quando è pront{a|o}.',
     interests: ['costruzioni'], family: false,
   },
   {
@@ -780,12 +780,12 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['costruzioni identiche divise in due mucchietti uguali (5–6 pezzi a testa)'],
     steps: [
-      'Tu costruisci una piccola struttura a vista: lei la copia col suo mucchietto.',
+      'Tu costruisci una piccola struttura a vista: {lei|lui} la copia col suo mucchietto.',
       'Poi dietro una scatola-sipario: la descrivi solo a parole ("metti il rosso SOPRA il blu…").',
       'Sipario via: confronto e risate.',
     ],
     develops: ['attenzione ai dettagli', 'linguaggio spaziale', 'ascolto'],
-    variation: 'comanda lei: costruisci tu dalle sue istruzioni (esegui alla lettera anche gli ordini assurdi).',
+    variation: 'comanda {lei|lui}: costruisci tu dalle sue istruzioni (esegui alla lettera anche gli ordini assurdi).',
     interests: ['costruzioni'], family: false,
   },
   {
@@ -793,7 +793,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['3 bicchieri con acqua colorata (rosso, giallo, blu)', 'bicchieri vuoti trasparenti', 'contagocce o cucchiaino'],
     steps: [
-      'Il laboratorio della piccola scienziata: mescola due colori a scelta nel bicchiere vuoto.',
+      'Il laboratorio {della piccola scienziata|del piccolo scienziato}: mescola due colori a scelta nel bicchiere vuoto.',
       'Prima l\'ipotesi ("cosa verrà?"), poi l\'esperimento.',
       'Scoperte da annunciare ufficialmente al genitore al rientro: "ho inventato l\'arancione!".',
     ],
@@ -821,7 +821,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['bottigliette piccole con tappo', 'riso/ceci/bottoni', 'nastro adesivo colorato per decorare e sigillare'],
     steps: [
-      'Fabbrica: lei riempie (imbuto!), sceglie i contenuti, confronta i suoni.',
+      'Fabbrica: {lei|lui} riempie (imbuto!), sceglie i contenuti, confronta i suoni.',
       "L'adulto sigilla i tappi col nastro.",
       'Si suona su una canzone vera: shake alto, basso, dietro la schiena.',
     ],
@@ -835,12 +835,12 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'alta', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['musica'],
     steps: [
-      'Uno di fronte all\'altra: tu ti muovi, lei è il tuo specchio.',
-      'Inversione: lo specchio è lei — copia TUTTO, anche gli starnuti finti.',
+      'Uno di fronte all\'{altra|altro}: tu ti muovi, {lei|lui} è il tuo specchio.',
+      'Inversione: lo specchio è {lei|lui} — copia TUTTO, anche gli starnuti finti.',
       'Finale libero: ognuno balla come vuole, insieme.',
     ],
     develops: ['imitazione motoria', "attenzione all'altro", 'espressività'],
-    variation: 'specchio "rotto": fa il contrario (tu su, lei giù) — difficilissimo e comicissimo.',
+    variation: 'specchio "rotto": fa il contrario (tu su, {lei|lui} giù) — difficilissimo e comicissimo.',
     interests: ['musica', 'movimento'], family: false,
   },
   {
@@ -849,11 +849,11 @@ export const ACTIVITIES: Activity[] = [
     materials: ['repertorio: "Whiskey il ragnetto", "Il coccodrillo come fa", "La macchina del capo"…'],
     steps: [
       'Ogni canzone con i suoi gesti, esagerati.',
-      'I "buchi": ti fermi prima della parola chiave e lei la completa.',
+      'I "buchi": ti fermi prima della parola chiave e {lei|lui} la completa.',
       'Una canzone nuova a settimana, le altre a richiesta (le richieste sono memoria).',
     ],
     develops: ['linguaggio', 'memoria verbale', 'coordinazione gesto-parola'],
-    variation: 'il microfono (mestolo): oggi presenta lei lo spettacolo.',
+    variation: 'il microfono (mestolo): oggi presenta {lei|lui} lo spettacolo.',
     interests: ['musica', 'libri'], family: true,
   },
   {
@@ -861,7 +861,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 15, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['mani', 'ginocchia', 'tavolo'],
     steps: [
-      'Batti le sillabe dei nomi di famiglia: AU-RO-RA, MAM-MA, PA-PÀ.',
+      'Batti le sillabe dei nomi di famiglia: il suo nome, MAM-MA, PA-PÀ.',
       'Ogni parola ha il suo ritmo: parole corte, lunghe, lunghissime (E-LI-COT-TE-RO!).',
       'Indovina: batto io un nome, tu dimmi di chi è.',
     ],
@@ -875,8 +875,8 @@ export const ACTIVITIES: Activity[] = [
     materials: ['un mestolo-bacchetta', "gli strumenti di casa o la voce"],
     steps: [
       'Il direttore comanda senza parlare: braccia in alto = forte, in basso = piano, ferme = silenzio!',
-      'Prima dirigi tu, lei suona.',
-      'Poi la bacchetta passa a lei: il potere del silenzio è la parte che adorano.',
+      'Prima dirigi tu, {lei|lui} suona.',
+      'Poi la bacchetta passa a {lei|lui}: il potere del silenzio è la parte che adorano.',
     ],
     develops: ['attenzione visiva', 'autoregolazione', 'linguaggio non verbale'],
     variation: 'dirigete una canzone della radio alzando e abbassando il volume immaginario.',
@@ -889,7 +889,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Il foulard vola a tempo: onde lente, tempeste veloci.',
       "Lancio in alto sull'acuto della canzone, presa al volo.",
-      'Nascondino-lampo: foulard sul viso, "dov\'è {nome}? Eccola!".',
+      'Nascondino-lampo: foulard sul viso, "dov\'è {nome}? Ecc{ola|olo}!".',
     ],
     develops: ['ritmo', 'tracking visivo', 'espressività'],
     variation: 'due foulard, uno per mano: il mulino a vento.',
@@ -914,7 +914,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['mestolo-microfono', 'playlist delle sue canzoni'],
     steps: [
       'Palco (tappeto), pubblico (peluche in fila), presentatore (tu): "Signore e signori… {nome}!".',
-      "Lei canta come viene: l'applauso è garantito a prescindere.",
+      "{Lei|Lui} canta come viene: l'applauso è garantito a prescindere.",
       'Duetto finale e inchino.',
     ],
     develops: ['sicurezza di sé', 'linguaggio', 'memoria delle canzoni'],
@@ -954,7 +954,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['secchielli capovolti', 'vasi (robusti)', 'il tavolo del terrazzo', 'due cucchiai di legno'],
     steps: [
       'Giro di prova: ogni superficie ha la sua voce (il vaso fa "tum", il tavolo "tac").',
-      'Eco-ritmo: tu batti una sequenza corta, lei la ripete.',
+      'Eco-ritmo: tu batti una sequenza corta, {lei|lui} la ripete.',
       'Allunga piano piano le sequenze: 2 colpi, poi 3, poi 4.',
     ],
     develops: ['memoria uditiva sequenziale', 'ritmo', 'ascolto'],
@@ -971,7 +971,7 @@ export const ACTIVITIES: Activity[] = [
       'Silenzio = statua (collega MOT-03).',
     ],
     develops: ['ascolto attivo', 'controllo motorio', 'associazione suono-movimento'],
-    variation: 'comanda lei col tamburo: tu cammini come suona lei.',
+    variation: 'comanda {lei|lui} col tamburo: tu cammini come suona {lei|lui}.',
     interests: ['musica', 'movimento', 'animali'], family: false,
   },
   {
@@ -1007,7 +1007,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['cucina giocattolo o pentoline', 'blocchetto per le ordinazioni', 'tovaglietta'],
     steps: [
       'Tu sei il cliente esigente: "Buongiorno! Cosa c\'è di buono oggi?".',
-      'Lei cucina e serve; tu assaggi con recensioni teatrali ("il miglior risotto di sassi della mia vita!").',
+      '{Lei|Lui} cucina e serve; tu assaggi con recensioni teatrali ("il miglior risotto di sassi della mia vita!").',
       'Il conto si paga con bottoni: "quanto costa? tre? ecco a lei".',
     ],
     develops: ['linguaggio sociale', 'sequenze (ordinare→cucinare→servire)', 'conteggio'],
@@ -1020,7 +1020,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['scatole e barattoli vuoti della dispensa', 'borsa della spesa', '"soldi" (bottoni/foglietti)'],
     steps: [
       'Allestite la bancarella sul divano: ogni cosa ha il suo posto.',
-      'Tu compri: "vorrei i biscotti… quanto costano?"; lei incassa e mette in busta.',
+      'Tu compri: "vorrei i biscotti… quanto costano?"; {lei|lui} incassa e mette in busta.',
       'Cambio ruoli: fare il negoziante È il gioco, fare il cliente è la pausa.',
     ],
     develops: ['scambio sociale', 'categorie merceologiche', 'primo concetto di quantità/valore'],
@@ -1032,7 +1032,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['peluche "pazienti"', 'kit dottore (o cucchiaino-termometro, sciarpe-bende)'],
     steps: [
-      "L'orso ha la febbre: la dottoressa visita, ascolta il cuore, misura.",
+      "L'orso ha la febbre: {la dottoressa|il dottore} visita, ascolta il cuore, misura.",
       'Diagnosi fantasiose benvenute ("ha mangiato troppi sassi"); cura: bende, nanna, coccole.',
       'Il paziente guarisce SEMPRE e ringrazia con un abbraccio.',
     ],
@@ -1050,7 +1050,7 @@ export const ACTIVITIES: Activity[] = [
       'Sfilata finale con presentazione ufficiale.',
     ],
     develops: ['identità e ruoli', 'linguaggio espressivo', 'autonomia nel vestirsi'],
-    variation: 'foto-ritratto di ogni personaggio (scatta lei col tuo aiuto) da mostrare a cena.',
+    variation: 'foto-ritratto di ogni personaggio (scatta {lei|lui} col tuo aiuto) da mostrare a cena.',
     interests: ['travestimenti'], family: false,
   },
   {
@@ -1067,16 +1067,16 @@ export const ACTIVITIES: Activity[] = [
     interests: ['costruzioni', 'libri'], family: true,
   },
   {
-    id: 'SIM-06', category: 'SIM', title: 'La maestra sei tu', emoji: '🏫',
+    id: 'SIM-06', category: 'SIM', title: '{La maestra|Il maestro} sei tu', emoji: '🏫',
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['peluche-alunni in fila', 'un libro', 'una "lavagna" (foglio appeso)'],
     steps: [
-      "Lei è la maestra: fa l'appello (i peluche rispondono con la tua voce buffa), legge la storia, insegna una canzone.",
-      'Un alunno è discolo (il tuo): la maestra lo gestisce.',
+      "{Lei è la maestra|Lui è il maestro}: fa l'appello (i peluche rispondono con la tua voce buffa), legge la storia, insegna una canzone.",
+      'Un alunno è discolo (il tuo): {la maestra|il maestro} lo gestisce.',
       'Tutti promossi con timbrino sulla zampa.',
     ],
     develops: ['linguaggio da "chi guida"', "memoria delle routine dell'asilo", 'gestione emotiva'],
-    variation: 'ricreazione: la maestra sorveglia i giochi in cortile (tappeto).',
+    variation: 'ricreazione: {la maestra|il maestro} sorveglia i giochi in cortile (tappeto).',
     interests: ['libri', 'animali', 'travestimenti'], family: false,
   },
   {
@@ -1085,7 +1085,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['spazzole', 'mollette', 'specchio', 'spruzzino con acqua', 'bambole/genitore-cliente'],
     steps: [
       'Il cliente prenota: "un\'acconciatura da festa, per favore!".',
-      'Lei spazzola, spruzza, appunta mollette (su di te: risultato da documentare).',
+      '{Lei|Lui} spazzola, spruzza, appunta mollette (su di te: risultato da documentare).',
       'Gran rivelazione allo specchio: "bellissimo!!".',
     ],
     develops: ['motricità fine', 'delicatezza', 'dialogo di servizio'],
@@ -1108,11 +1108,11 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'SIM-09', category: 'SIM', title: "L'ufficio postale", emoji: '📮',
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
-    materials: ['buste (o fogli piegati)', '"francobolli" (adesivi)', 'una scatola-cassetta delle lettere', 'zainetto da postina'],
+    materials: ['buste (o fogli piegati)', '"francobolli" (adesivi)', 'una scatola-cassetta delle lettere', 'zainetto da {postina|postino}'],
     steps: [
       'Si scrivono lettere-disegno per i destinatari di casa (papà, il gatto, la nonna per il weekend).',
       'Francobollo, timbro (pugnetto), imbucata.',
-      'La postina consegna porta a porta: ogni consegna, una firma.',
+      '{La postina|Il postino} consegna porta a porta: ogni consegna, una firma.',
     ],
     develops: ['comunicazione differita ("il messaggio viaggia")', 'gesto grafico con uno scopo', 'memoria dei destinatari'],
     variation: 'la lettera per la nonna si spedisce DAVVERO: francobollo vero, buca vera (gita bonus).',
@@ -1151,7 +1151,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['il divano come quinta', 'le marionette di CRE-12 o i peluche'],
     steps: [
       'Primo spettacolo lo fai tu: corto, buffo, con una canzone.',
-      'Poi tocca a lei: qualsiasi trama va bene, tu sei pubblico attivo ("nooo! attenta al lupo!").',
+      'Poi tocca a {lei|lui}: qualsiasi trama va bene, tu sei pubblico attivo ("nooo! attent{a|o} al lupo!").',
       'Applausi, bis, saluti dal "sipario".',
     ],
     develops: ['narrazione', 'alternanza di ruoli', 'voce e dizione'],
@@ -1164,7 +1164,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['sedie in fila', 'biglietti di carta', 'cappello da capotreno (qualsiasi cappello)', 'valigia (borsa)'],
     steps: [
       'Si costruisce il treno e si decide la destinazione: il mare! la luna! dalla nonna!',
-      'Lei è la capotreno: controlla i biglietti, dà il via ("in carrozzaaa!"), annuncia le fermate.',
+      '{Lei è la capotreno|Lui è il capotreno}: controlla i biglietti, dà il via ("in carrozzaaa!"), annuncia le fermate.',
       'A ogni fermata, mini-scenetta: si scende, si "nuota", si risale.',
     ],
     develops: ['immaginazione di scenario', 'ruoli con autorità', 'linguaggio degli annunci'],
@@ -1172,13 +1172,13 @@ export const ACTIVITIES: Activity[] = [
     interests: ['costruzioni', 'travestimenti', 'movimento'], family: false,
   },
   {
-    id: 'SIM-14', category: 'SIM', title: 'Supereroina per un giorno', emoji: '🦸',
+    id: 'SIM-14', category: 'SIM', title: '{Supereroina|Supereroe} per un giorno', emoji: '🦸',
     durationMin: 25, energy: 'alta', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['asciugamano-mantello con molletta', '"missioni" preparate (peluche in pericolo sul pensile basso, cuscino-macigno da spostare)'],
     steps: [
       'Vestizione ufficiale e scelta del nome: "Super {nome}!".',
       'Tre missioni di salvataggio con countdown drammatico ("3… 2… 1… vola!").',
-      'Medaglia finale (di CRE-13 o disegnata) e posa da eroina.',
+      'Medaglia finale (di CRE-13 o disegnata) e posa da {eroina|eroe}.',
     ],
     develops: ['fiducia in sé', 'coraggio giocato', 'motricità globale'],
     variation: 'anche il genitore ha un costume: la spalla pasticciona che va sempre salvata.',
@@ -1226,7 +1226,7 @@ export const ACTIVITIES: Activity[] = [
     interests: ['acqua', 'animali'], family: false,
   },
   {
-    id: 'ACQ-03', category: 'ACQ', title: 'Il lavello della chef', emoji: '🍽',
+    id: 'ACQ-03', category: 'ACQ', title: 'Il lavello {della|dello} chef', emoji: '🍽',
     durationMin: 25, energy: 'media', place: 'entrambi', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['bacinella con acqua e sapone', 'piattini e tazze giocattolo (o vere di plastica)', 'spugnetta', 'scolapiatti-asciugamano'],
     steps: [
@@ -1239,7 +1239,7 @@ export const ACTIVITIES: Activity[] = [
     interests: ['acqua', 'cucinare'], family: false,
   },
   {
-    id: 'ACQ-04', category: 'ACQ', title: 'Lo spruzzino della giardiniera', emoji: '🌺',
+    id: 'ACQ-04', category: 'ACQ', title: 'Lo spruzzino {della giardiniera|del giardiniere}', emoji: '🌺',
     durationMin: 20, energy: 'media', place: 'esterno', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['spruzzino (nebulizzatore) tutto suo', 'piante da "curare"'],
     steps: [
@@ -1269,8 +1269,8 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 30, energy: 'media', place: 'entrambi', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['bacinella-vasca', 'bambole lavabili', 'sapone', 'spugnetta', 'asciugamano piccolo'],
     steps: [
-      'Le bimbe delle bimbe si lavano con tutto il rituale: acqua giusta ("non troppo calda!"), shampoo, risciacquo.',
-      "Lei guida: è l'esperta di bagnetti.",
+      'Le bambole si lavano con tutto il rituale: acqua giusta ("non troppo calda!"), shampoo, risciacquo.',
+      "{Lei|Lui} guida: è {l'esperta|l'esperto} di bagnetti.",
       'Asciugatura, crema finta, pigiamino: il rito completo.',
     ],
     develops: ['cura ed empatia', 'sequenze del rito', 'rielaborazione del proprio bagnetto'],
@@ -1335,9 +1335,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'alta', place: 'esterno', requiresDry: true, heatFriendly: false, mess: 1,
     materials: ['acqua + sapone piatti + un cucchiaino di zucchero', 'bacchetta grande (fil di ferro piegato o due cannucce e spago)', 'vaschetta larga'],
     steps: [
-      "L'adulto crea le bolle giganti a movimento lento; lei le insegue.",
+      "L'adulto crea le bolle giganti a movimento lento; {lei|lui} le insegue.",
       'Missioni: scoppiala col dito, con il gomito, soffiandoci sopra.',
-      'Poi prova lei con la bacchetta, mano nella mano.',
+      'Poi prova {lei|lui} con la bacchetta, mano nella mano.',
     ],
     develops: ['tracking visivo', 'corsa con scopo', 'turni e attesa'],
     variation: '',
@@ -1378,8 +1378,8 @@ export const ACTIVITIES: Activity[] = [
     materials: ['annaffiatoio a pioggia dolce', 'costume', 'prato'],
     steps: [
       '"Che tempo fa? PIOGGIA!": doccia d\'annaffiatoio a sorpresa, si scappa e si torna.',
-      'Comanda lei il meteo: pioggerella (alto), temporale (basso e generoso), sole (stop).',
-      'Balletto sotto la pioggia finale: fradicia e felice.',
+      'Comanda {lei|lui} il meteo: pioggerella (alto), temporale (basso e generoso), sole (stop).',
+      'Balletto sotto la pioggia finale: fradici{a|o} e felice.',
     ],
     develops: ['gioco del far finta col corpo', 'tolleranza sensoriale gioiosa', 'alternanza tensione/rilascio'],
     variation: "le pozzanghere costruite apposta: il salto è d'obbligo.",
@@ -1391,7 +1391,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['secchio con acqua e sapone', 'spazzolone piccolo o spugnona', 'spruzzino', 'panno'],
     steps: [
       'Missione da grandi: oggi il terrazzo (o il tavolo, o i giochi da esterno) si lava sul serio.',
-      'Divisione dei compiti: lei insapona e spruzza, tu risciacqui.',
+      'Divisione dei compiti: {lei|lui} insapona e spruzza, tu risciacqui.',
       'Ispezione a piedi nudi sul pulito: soddisfazione vera.',
     ],
     develops: ['autonomia e contributo reale (P3)', 'gesto ampio', 'orgoglio del lavoro finito'],
@@ -1433,7 +1433,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       "Raccolta SOLO da terra (regola gentile: l'albero le sta usando).",
       'Confronti: la più grande, la più piccola, quella col buchino, quella che profuma.',
-      'A casa: le preferite si attaccano nel "quaderno dell\'estate" con la data.',
+      'A casa: le preferite si attaccano nel "quaderno della natura" con la data.',
     ],
     develops: ['confronto e seriazione', 'cura di una collezione', 'memoria del tempo'],
     variation: 'frottage col pastello a cera (collega CRE-09).',
@@ -1446,7 +1446,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Trapianto vero con le mani nella terra: buca, piantina, rincalzo, acqua.',
       'Battesimo: la pianta ha un nome, è SUA.',
-      "Da oggi l'app le ricorda la cura: è l'incarico dell'estate (P3).",
+      'Da oggi la cura della pianta è il suo incarico di ogni giorno (P3).',
     ],
     develops: ['responsabilità nel tempo', 'motricità con la terra', 'origine del cibo'],
     variation: 'tacca su un bastoncino ogni settimana: quanto è cresciuta?',
@@ -1483,9 +1483,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 60, energy: 'media', place: 'esterno', requiresDry: true, heatFriendly: false, mess: 1,
     materials: ['telo', 'merenda vera preparata insieme (CUC)', 'palla', 'sacchetto per NAT-01'],
     steps: [
-      'Preparazione partecipata: lei mette nel cestino le cose della sua lista.',
+      'Preparazione partecipata: {lei|lui} mette nel cestino le cose della sua lista.',
       'Al parco: merenda sul telo, poi esplorazione libera con base-telo.',
-      "Rito del rientro: un tesoro naturale scelto da portare a casa nel barattolo dell'estate.",
+      'Rito del rientro: un tesoro naturale scelto da portare a casa nel barattolo dei ricordi.',
     ],
     develops: ['autonomia organizzativa', "gioco all'aperto", 'rito familiare'],
     variation: "invito ufficiale disegnato per l'altro genitore nel weekend.",
@@ -1518,11 +1518,11 @@ export const ACTIVITIES: Activity[] = [
     interests: ['natura', 'disegno'], family: false,
   },
   {
-    id: 'NAT-10', category: 'NAT', title: 'La piccola giardiniera', emoji: '🪴',
+    id: 'NAT-10', category: 'NAT', title: '{La piccola giardiniera|Il piccolo giardiniere}', emoji: '🪴',
     durationMin: 20, energy: 'media', place: 'entrambi', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['annaffiatoio piccolo', 'panno per le foglie', 'le piante di casa'],
     steps: [
-      'Giro delle piante con la "dottoressa delle piante": chi ha sete? (dito nella terra: asciutta o umida?).',
+      'Giro delle piante con {la "dottoressa|il "dottore} delle piante": chi ha sete? (dito nella terra: asciutta o umida?).',
       'Acqua a chi serve, spolverata gentile alle foglie grandi.',
       'Rapporto finale al genitore: "il ficus sta benone".',
     ],
@@ -1561,8 +1561,8 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'bassa', place: 'esterno', requiresDry: true, heatFriendly: false, mess: 1,
     materials: ['briciole o semini', 'un piattino', 'un posto tranquillo visibile dalla finestra'],
     steps: [
-      'Si prepara la "mensa": piattino con briciole nel punto scelto da lei.',
-      'Appostamento alla finestra, silenziosissime: chi arriverà?',
+      'Si prepara la "mensa": piattino con briciole nel punto scelto da {lei|lui}.',
+      'Appostamento alla finestra, silenziosissim{e|i}: chi arriverà?',
       'Registro degli ospiti: "oggi 2 passerotti e 1 tortora".',
     ],
     develops: ['attesa silenziosa', 'osservazione', 'generosità verso i viventi'],
@@ -1583,16 +1583,16 @@ export const ACTIVITIES: Activity[] = [
     interests: ['natura', 'libri'], family: true,
   },
   {
-    id: 'NAT-15', category: 'NAT', title: "Il barattolo dell'estate", emoji: '🫙',
+    id: 'NAT-15', category: 'NAT', title: 'Il barattolo dei ricordi', emoji: '🫙',
     durationMin: 15, energy: 'bassa', place: 'entrambi', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['un barattolo grande e bello', 'i mini-tesori dei giorni (biglietto, conchiglia, petalo secco, sassolino)'],
     steps: [
       "Ogni tanto (l'app lo ripropone a rotazione) si sceglie il tesoro del giorno e si mette nel barattolo.",
-      'Ogni deposito ha la sua storia: "questo sasso è del giorno della piscina!".',
-      "A fine estate: il barattolo si rovescia e si riguarda tutta l'estate insieme.",
+      'Ogni deposito ha la sua storia: "questo sasso è del giorno del parco!".',
+      'Una volta al mese il barattolo si rovescia e si riguardano insieme tutti i ricordi.',
     ],
     develops: ['memoria autobiografica', 'narrazione', 'senso del tempo che passa'],
-    variation: 'l\'app a fine vacanze (schermata "Che estate!") suggerisce proprio il rito del barattolo.',
+    variation: 'al compleanno o a fine anno si apre tutto insieme: un rito che diventa tradizione di famiglia.',
     interests: ['natura', 'libri'], family: true,
   },
 
@@ -1602,7 +1602,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['frutta morbida a pezzi (banana, fragole, melone, uva TAGLIATA A METÀ)', 'bastoncini senza punta o cannucce rigide'],
     steps: [
-      'Tu tagli, lei infila: un pezzo alla volta, che concentrazione.',
+      'Tu tagli, {lei|lui} infila: un pezzo alla volta, che concentrazione.',
       'Pattern golosi: banana-fragola-banana…',
       "Lo spiedino più bello si offre al genitore al rientro (l'orgoglio è doppio).",
     ],
@@ -1616,7 +1616,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 45, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 2,
     materials: ['impasto frolla semplice (anche pronto)', 'farina', 'mattarello', 'formine'],
     steps: [
-      'Spianatoia infarinata, mattarello a quattro mani, poi da sola.',
+      'Spianatoia infarinata, mattarello a quattro mani, poi da sol{a|o}.',
       'Formine: stampa, solleva col tuo aiuto, disponi sulla teglia.',
       "Il forno è del grande; l'attesa profumata è di tutti; l'assaggio è suo.",
     ],
@@ -1630,7 +1630,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['basi pronte piccole (o pane)', 'pomodoro', 'mozzarella', 'olive SNOCCIOLATE e tagliate', 'verdurine a pezzetti'],
     steps: [
       'Ogni pizzetta è una faccia: occhi di oliva, sorriso di peperone, capelli di mozzarella.',
-      'Lei spalma (cucchiaio) e compone; nomina le parti del viso mentre le mette.',
+      '{Lei|Lui} spalma (cucchiaio) e compone; nomina le parti del viso mentre le mette.',
       'La pizzetta-papà, la pizzetta-nonna: il ritratto di famiglia che si cena.',
     ],
     develops: ['schema corporeo (il viso)', 'manualità con lo scopo', 'appetito curioso'],
@@ -1639,12 +1639,12 @@ export const ACTIVITIES: Activity[] = [
     safety: 'olive sempre snocciolate e in pezzi.',
   },
   {
-    id: 'CUC-04', category: 'CUC', title: 'La macedonia della chef', emoji: '🍉',
+    id: 'CUC-04', category: 'CUC', title: 'La macedonia {della|dello} chef', emoji: '🍉',
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['frutta morbida', 'coltellino a lama tonda da bimbi (o di plastica robusta)', 'tagliere', 'ciotolona'],
     steps: [
       'La banana si taglia DA SOLA (con la sua lama sicura, la tua mano vigila): concentrazione da chirurgo.',
-      'Tu tagli il resto; lei versa, mescola, spreme il limone.',
+      'Tu tagli il resto; {lei|lui} versa, mescola, spreme il limone.',
       'Zucchero? No: un segreto di menta o succo d\'arancia. Si serve nei bicchieri belli.',
     ],
     develops: ['uso strumenti veri in sicurezza', 'autonomia orgogliosa', 'gusto'],
@@ -1657,7 +1657,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 15, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['succo o frutta frullata', 'stampini da ghiacciolo (o bicchierini + cucchiaini)', 'pezzetti di frutta'],
     steps: [
-      'Lei riempie gli stampini con l\'imbuto e "annega" i pezzetti di frutta.',
+      '{Lei|Lui} riempie gli stampini con l\'imbuto e "annega" i pezzetti di frutta.',
       'In freezer: si disegna la lancetta dell\'attesa ("quando facciamo merenda saranno pronti").',
       'Lo scarto dallo stampo, la prima leccata: gloria.',
     ],
@@ -1671,7 +1671,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['pane morbido', 'formaggio spalmabile', 'verdure a pezzetti sicuri', 'formine da biscotto'],
     steps: [
       'Il pane si stampa con le formine: panini a stella, a cuore, a orso.',
-      'Farcitura autonoma: lei spalma col coltellino di plastica ("fino ai bordi, come dipingere").',
+      'Farcitura autonoma: {lei|lui} spalma col coltellino di plastica ("fino ai bordi, come dipingere").',
       'Composizione del piatto e merenda vera.',
     ],
     develops: ['manualità del gesto (spalmare = pre-scrittura!)', 'autonomia alimentare'],
@@ -1694,9 +1694,9 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'CUC-08', category: 'CUC', title: 'Il frullato magico', emoji: '🥤',
     durationMin: 20, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: true, mess: 1,
-    materials: ['frutta a pezzi', 'latte o yogurt', 'frullatore (comandato a due: lei preme, tu governi)'],
+    materials: ['frutta a pezzi', 'latte o yogurt', 'frullatore (comandato a due: {lei|lui} preme, tu governi)'],
     steps: [
-      'Lei carica il frullatore pezzo a pezzo e prevede il colore: "banana + fragola = ?".',
+      '{Lei|Lui} carica il frullatore pezzo a pezzo e prevede il colore: "banana + fragola = ?".',
       'Il pulsante magico (con la tua mano sopra la sua): RUMORE e vortice.',
       "Verifica dell'ipotesi, brindisi con cannuccia.",
     ],
@@ -1737,7 +1737,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 25, energy: 'media', place: 'casa', requiresDry: false, heatFriendly: false, mess: 1,
     materials: ['muffin o biscotti pronti (magari di CUC-02)', 'yogurt greco denso o formaggio spalmabile dolce', 'frutta a pezzetti', 'codette'],
     steps: [
-      'La pasticceria apre: ogni muffin riceve la sua "crema" spalmata da lei.',
+      'La pasticceria apre: ogni muffin riceve la sua "crema" spalmata da {lei|lui}.',
       'Decorazione libera: pezzetti, codette, disegni.',
       'Vassoio da pasticceria vera e degustazione col mignolo alzato.',
     ],
@@ -1750,7 +1750,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 15, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: true, mess: 1,
     materials: ['yogurt', 'ciotoline con topping: frutta a pezzetti, cereali, uvetta, scaglie di cocco'],
     steps: [
-      'Il "banco dei topping": lei costruisce la sua coppa scegliendo e dosando.',
+      'Il "banco dei topping": {lei|lui} costruisce la sua coppa scegliendo e dosando.',
       'Cucchiaini diversi per ogni topping: precisione.',
       "Merenda vera con la coppa d'autore.",
     ],
@@ -1789,12 +1789,12 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['tovaglia bella', 'tovaglioli', 'segnaposto da disegnare', 'un fiore in bicchiere'],
     steps: [
-      'Stasera si cena "al ristorante di casa": lei è la maître.',
+      'Stasera si cena "al ristorante di casa": {lei è la maître|lui è il maître}.',
       'Apparecchiatura guidata da una tovaglietta-mappa (piatto qui, bicchiere là): ogni cosa al suo posto.',
       'Segnaposto disegnati e accompagnamento degli ospiti al tavolo: "prego, signora mamma".',
     ],
     develops: ['ordine e corrispondenze (un posto = un piatto = un bicchiere)', 'ruolo sociale', 'motricità'],
-    variation: 'menu della cena dettato a te e "letto" da lei agli ospiti; poi si avvia il timer arcobaleno e si cena.',
+    variation: 'menu della cena dettato a te e "letto" da {lei|lui} agli ospiti; poi si avvia il timer arcobaleno e si cena.',
     interests: ['cucinare', 'travestimenti', 'disegno'], family: false,
   },
 
@@ -1802,10 +1802,10 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'CAL-01', category: 'CAL', title: 'Lettura nella tana', emoji: '📖',
     durationMin: 25, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
-    materials: ['2–3 libri scelti da lei', 'la tana di SIM-05 o una montagna di cuscini', 'luce calda'],
+    materials: ['2–3 libri scelti da {lei|lui}', 'la tana di SIM-05 o una montagna di cuscini', 'luce calda'],
     steps: [
-      'Lei sceglie i libri (anche lo stesso di ieri: la ripetizione è apprendimento).',
-      'Lettura con le voci: tu leggi, lei gira le pagine.',
+      '{Lei|Lui} sceglie i libri (anche lo stesso di ieri: la ripetizione è apprendimento).',
+      'Lettura con le voci: tu leggi, {lei|lui} gira le pagine.',
       'L\'ultima pagina si commenta: "e domani cosa farà il coniglio secondo te?".',
     ],
     develops: ['amore per i libri', 'vocabolario', 'intimità serale'],
@@ -1815,10 +1815,10 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'CAL-02', category: 'CAL', title: 'La storia dei tre oggetti', emoji: '🎲',
     durationMin: 20, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
-    materials: ['3 oggetti qualsiasi pescati da lei a occhi chiusi da un cesto'],
+    materials: ['3 oggetti qualsiasi pescati da {lei|lui} a occhi chiusi da un cesto'],
     steps: [
       'Estrazione solenne: un cucchiaio, un dinosauro, una molletta.',
-      'Tu inizi la storia che li unisce ("C\'era una volta un dinosauro che faceva la zuppa…"), lei aggiunge pezzi.',
+      'Tu inizi la storia che li unisce ("C\'era una volta un dinosauro che faceva la zuppa…"), {lei|lui} aggiunge pezzi.',
       'Finale sempre buono e una risata.',
     ],
     develops: ['narrazione creativa', 'ascolto', 'flessibilità mentale'],
@@ -1835,20 +1835,20 @@ export const ACTIVITIES: Activity[] = [
       "Finisce con l'abbraccio-coperta.",
     ],
     develops: ['consapevolezza corporea', 'rilassamento profondo', 'legame'],
-    variation: 'poi tocca a lei: massaggia il braccio a te o al peluche.',
+    variation: 'poi tocca a {lei|lui}: massaggia il braccio a te o al peluche.',
     interests: ['animali'], family: false,
   },
   {
     id: 'CAL-04', category: 'CAL', title: 'La storia a occhi chiusi', emoji: '🌙',
     durationMin: 15, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
-    materials: ['la tua voce', 'sdraiate vicine', 'luce spenta o quasi'],
+    materials: ['la tua voce', 'sdraiat{e|i} vicin{e|i}', 'luce spenta o quasi'],
     steps: [
-      'Niente libro: la storia stasera si ascolta al buio (protagonista: una bimba col suo stesso nome, ovviamente).',
+      'Niente libro: la storia stasera si ascolta al buio (protagonista: {una bimba|un bimbo} col suo stesso nome, ovviamente).',
       'Dentro la storia metti la giornata vera: la piscina, il gelato, la formica.',
       'Voce sempre più lenta e bassa: la storia atterra piano.',
     ],
     develops: ['immaginazione uditiva', 'rielaborazione della giornata', 'rilassamento'],
-    variation: '"e poi cosa successe?" — un pezzetto lo racconta lei.',
+    variation: '"e poi cosa successe?" — un pezzetto lo racconta {lei|lui}.',
     interests: ['libri'], family: false,
   },
   {
@@ -1856,9 +1856,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['album o scatola di foto stampate di famiglia'],
     steps: [
-      'Si sfoglia insieme: "chi è questa piccolina? SEI TU!".',
-      'Storie vere a richiesta: il giorno che sei nata, il primo mare, nonna da giovane.',
-      'Lei racconta le foto che riconosce: la memoria diventa racconto.',
+      'Si sfoglia insieme: "chi è {questa piccolina|questo piccolino}? SEI TU!".',
+      'Storie vere a richiesta: il giorno che sei nat{a|o}, il primo mare, nonna da giovane.',
+      '{Lei|Lui} racconta le foto che riconosce: la memoria diventa racconto.',
     ],
     develops: ['identità e appartenenza', 'memoria autobiografica', 'linguaggio del passato'],
     variation: 'scegliete la foto della settimana da appendere in cameretta.',
@@ -1869,7 +1869,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 10, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['un peluche leggero'],
     steps: [
-      'Sdraiata, peluche sulla pancia: quando respiri, il peluche va su e giù — "lo stai cullando tu".',
+      'Sdraiat{a|o}, peluche sulla pancia: quando respiri, il peluche va su e giù — "lo stai cullando tu".',
       'Il palloncino: gonfia la pancia contando fino a 3, sgonfia piano con "ssss".',
       'Tre respiri grandi e uno sbadiglio (il tuo, contagioso, strategico).',
     ],
@@ -1896,7 +1896,7 @@ export const ACTIVITIES: Activity[] = [
     materials: ['un puzzle adatto (6–12 pezzi grandi) o quello autoprodotto di COG-04'],
     steps: [
       "Sul tappeto, luce buona, niente fretta: si osserva l'immagine sulla scatola.",
-      'Lei prova, tu porgi i pezzi "sospetti" senza indicare il posto.',
+      '{Lei|Lui} prova, tu porgi i pezzi "sospetti" senza indicare il posto.',
       'Ultimo pezzo sempre suo: il diritto del clic finale.',
     ],
     develops: ['percezione visiva', 'pazienza', 'soddisfazione del completamento'],
@@ -1934,9 +1934,9 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 20, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['un libro molto conosciuto o solo illustrato'],
     steps: [
-      'Stasera si invertono i ruoli: legge LEI a te (cioè: racconta le figure a modo suo).',
+      'Stasera si invertono i ruoli: legge {LEI|LUI} a te (cioè: racconta le figure a modo suo).',
       'Tu sei un ascoltatore modello: domande curiose, mai correzioni ("e poi?! davvero?!").',
-      'Applauso finale alla lettrice.',
+      'Applauso finale {alla lettrice|al lettore}.',
     ],
     develops: ['narrazione autonoma', 'struttura della storia', 'fiducia in sé'],
     variation: 'legge ai peluche in fila (collega SIM-06): pubblico numeroso.',
@@ -1947,12 +1947,12 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 15, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['le mani e la schiena'],
     steps: [
-      "Sulla schiena di lei passano gli animali: la formichina (ditini leggeri), il gatto (carezza lunga), l'elefante (palmo lento e pesante), il serpente (zigzag).",
+      "Sulla schiena di {lei|lui} passano gli animali: la formichina (ditini leggeri), il gatto (carezza lunga), l'elefante (palmo lento e pesante), il serpente (zigzag).",
       "Indovina l'animale a occhi chiusi.",
       'Poi gli animali camminano sulla schiena tua: delicatezza in pratica.',
     ],
     develops: ['discriminazione tattile', 'delicatezza attiva', 'calma condivisa'],
-    variation: "l'animale nuovo inventato da lei: come cammina il drago?",
+    variation: "l'animale nuovo inventato da {lei|lui}: come cammina il drago?",
     interests: ['animali'], family: false,
   },
   {
@@ -1975,7 +1975,7 @@ export const ACTIVITIES: Activity[] = [
     steps: [
       'Il rito delle tre domande, sempre le stesse: "Cosa ti è piaciuto di più oggi? Cosa ti ha fatto ridere? A chi vogliamo mandare un bacio?".',
       'Risposte di ogni tipo benvenute, anche "il gelato" per la terza volta.',
-      'Bacio ai peluche in fila, bacio a lei, luce giù.',
+      'Bacio ai peluche in fila, bacio a {lei|lui}, luce giù.',
     ],
     develops: ['gratitudine', 'rielaborazione emotiva della giornata', "rito d'attaccamento"],
     variation: 'rispondi anche tu, sul serio: i bimbi ricordano le risposte dei grandi.',
@@ -1986,7 +1986,7 @@ export const ACTIVITIES: Activity[] = [
     durationMin: 15, energy: 'bassa', place: 'casa', requiresDry: false, heatFriendly: false, mess: 0,
     materials: ['tappeto o letto', 'pigiama'],
     steps: [
-      'Tre posizioni lente da fare insieme: la luna (in piedi, braccia ad arco), il gatto che si stira (a quattro zampe), il seme (rannicchiate, immobili).',
+      'Tre posizioni lente da fare insieme: la luna (in piedi, braccia ad arco), il gatto che si stira (a quattro zampe), il seme (rannicchiat{e|i}, immobili).',
       'Ogni posizione con 3 respiri sussurrati.',
       'Dal seme si "germoglia" lentissimamente fino al cuscino: la nanna è la fioritura.',
     ],
